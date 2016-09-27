@@ -1,0 +1,79 @@
+# Thick disk
+Ad 2500
+Bd 15000 
+n1 0.0116
+H1 1638
+
+# Thin disk
+
+A2 1200
+B2 4000  
+n2 0.397
+K2 1.462
+
+# Spiral arm
+Ads 2500
+Bds 15000
+B2s 4000
+Ka 4.983
+Ele_arm 0.140000 0.113000 0.095000 0.114000 0.004400
+Wid_arm 300 500 300 500 300
+Aa 13751
+ncn 2.483
+wcn 9.18
+thetacn 109
+nsg 0.624
+wsg 20
+thetasg 74.5
+
+
+# Galactic center
+
+ngc 5.853
+Agc 160 
+Hgc 35
+
+# Gum nebula
+ngn 1.863
+Wgn 14.4
+Agn 126.4
+Kgn 1.4
+
+# Local enhancement
+J_LB 0.557
+nlb1 1.005
+detlb1 28.8
+wlb1 14.8
+hlb1 108.8
+thetalb1 196.2
+nlb2 2.149
+detlb2 15.8
+wlb2 15.9
+hlb2 42.8
+thetalb2 276.3
+
+# Loop I
+
+nLI 2.129
+RLI 80
+WLI 15 
+detthetaLI 30
+thetaLI 40
+ 
+#Fermi Bubble
+J_FB 1
+
+
+
+#LMC
+nlmc 0.0747
+
+
+#30 Doradus
+n30D 0.309
+
+
+#SMC
+nsmc 0.045
+
+
