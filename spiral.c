@@ -153,6 +153,8 @@ void spiral(double xx,  double yy,  double zz,  double *ne3,  double rr,  struct
         if(i==2)
         {
           ga=(1-(t3.nsg)*(exp(-((theta*RAD-t3.thetasg)*(theta*RAD-t3.thetasg))/(t3.wsg*t3.wsg))))*(1+t3.ncn*exp(-((theta*RAD-t3.thetacn)*(theta*RAD-t3.thetacn))/(t3.wcn*t3.wcn)))*pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
+          if(rr>6000 && theta*RAD>t3.thetacn) ga=(1-(t3.nsg)*(exp(-((theta*RAD-t3.thetasg)*(theta*RAD-t3.thetasg))/(t3.wsg*t3.wsg))))*(1+t3.ncn)*pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
+          
         }
         else ga=pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
         if(smin<sminmin)

@@ -2,20 +2,21 @@
 #define max(a,b) ( ((a)>(b)) ? (a):(b) )
 #define min(a,b) ( ((a)>(b)) ? (b):(a) )
 
-/* Program version 1.0, 2016 June 3 */
-
+/* Program version 1.1, 2016 September 1 */
 void usage(int status)
 {
   printf("\nConverts from DM to Dist and vice versa - electron density model\n");
   printf("Usage:\n");
-  printf("ymw16 [-h] [-d <dirname>] [-v] [-V] <mode> gl gb DM/Dist [DM_Host] ndir\n");
+  printf("ymw16 [-h] [-t text] [-d <dirname>] [-v] [-V] <mode> gl gb DM/Dist [DM_Host] ndir\n");
   printf("-h prints this help page\n");
+  printf("-t <text>, where <text> (no spaces, max 64 char) is appended to the output line\n");
   printf("-d <dirname>, where <dirname> is a directory containing YMW16 data files\n");
   printf("-v prints diagnostics\n");
   printf("-V prints more diagnostics\n");
   printf("<mode> is Gal, MC, or IGM\n");
   printf("gl, gb in deg, DM in cm^-3 pc, Dist in pc (Gal, MC) or Mpc (IGM)\n");
-  printf("DM_Host is optional. Only used for IGM mode, default=100 cm^-3 pc\n");
+  printf("DM_Host is the contribution of the FRB host galaxy to the observed DM\n");
+  printf("Only used for IGM mode; optional input, default=100 cm^-3 pc\n");
   printf("ndir=1 for DM->Dist, ndir=2 for Dist->DM\n");
   printf("Output includes log(tau_sc) where tau_sc is scattering time in sec at 1 GHz\n");
   printf("\n");
@@ -50,6 +51,10 @@ int main(int argc, char *argv[])
   double tau_Gal=0;
   double tau_MC=0;
   double tau_MC_sc=0;
+  //The localtion of Sun relative to GP and Warp
+  double z_warp, zz_w, R_warp, theta_warp, theta_max;
+  R_warp=8400;//pc
+  theta_max=0.0; //In +x direction
 
   int WGN=0;
   int WLB=0; 
@@ -57,12 +62,12 @@ int main(int argc, char *argv[])
   int WFB=0;
   int np, ndir,vbs, nk, uu, nn;
   char str[5];
-  char dirname[64]="NULL";
+  char dirname[64]="NULL",text[64]="";
   char *p;
   static int i, ncount;
   int umc=1;
   char *s;
-
+  struct Warp_Sun t0;
   struct Thick t1;
   struct Thin t2;
   struct Spiral t3;
@@ -88,6 +93,10 @@ int main(int argc, char *argv[])
       case 'h':
       case '?':
 	usage(0);
+      case 't':
+	if(sscanf(*argv,"%s",text) != 1)usage(1);
+	argc--; argv++;
+	break;
       case 'd':
 	if(sscanf(*argv,"%s",dirname) != 1)usage(1);
 	argc--; argv++;
@@ -200,7 +209,7 @@ int main(int argc, char *argv[])
   }
   if(vbs>=1)printf("File directory: %s\n",dirname);
       
-  ymw16par(&t1, &t2, &t3, &t4, &t5, &t6, &t7, &t8, &t9, &t10, &t11, dirname);
+  ymw16par(&t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7, &t8, &t9, &t10, &t11, dirname);
 
   if(ndir==1)printf("%s: gl=%8.3f gb=%8.3f DM=%8.2f", p, gl, gb, dordm);
   else printf("%s: gl=%8.3f gb=%8.3f Dist=%9.1f", p, gl, gb, dordm);
@@ -264,17 +273,29 @@ int main(int argc, char *argv[])
     r=dd*cb;     /* r is different from rr */
     xx=r*sl;
     yy=R0*1000-r*cl;
-    zz=dd*sb;
+    zz=dd*sb+t0.z_Sun;
     rr=sqrt(xx*xx+yy*yy);
+    
+    /* Definition of warp */
+    if(rr<R_warp){
+      zz_w=zz; 
+    }else{
+      theta_warp=atan2(yy,xx);
+      z_warp=t0.Gamma_w*(rr-R_warp)*cos(theta_warp-theta_max);
+      zz_w=zz-z_warp;
+    }
+
     if(vbs>=2)
     {
-      printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr); 
+      printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr);
+      printf("theta_warp=%lf, z_warp=%lf, zz_w=%lf\n",theta_warp,z_warp,zz_w);
     }
+    
     if(ndir==1){   	
       if(dmm<=dm){
-	thick(xx, yy, zz, &ne1, rr, t1);
-        thin(xx, yy, zz, &ne2, rr, t2);
-        spiral(xx, yy, zz, &ne3, rr, t3, dirname);
+	     thick(xx, yy, zz_w, &ne1, rr, t1);
+        thin(xx, yy, zz_w, &ne2, rr, t2);
+        spiral(xx, yy, zz_w, &ne3, rr, t3, dirname);
         galcen(xx, yy, zz, &ne4, t4);
         gum(xx, yy, zz, &ll, &ne5, t5);
         localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
@@ -326,7 +347,7 @@ int main(int argc, char *argv[])
 	dmm+=dmstep;
 	dist=dd;
         if(np==0&&umc==1){
-	  if(rr>25000||fabs(zz)>(8*t1.H1)){
+	  if(rr>30000||fabs(zz)>(8*t1.H1)){
 	    DM_Gal=dmm;
 	    tau_Gal=0.5*tsc(dmm);
 	    printf(" DM_Gal:%8.2f",DM_Gal);
@@ -341,8 +362,8 @@ int main(int argc, char *argv[])
 	    tau_MC_sc=max(tau_Gal, tau_MC);
 	    printf(" DM_MC:%8.2f",DM_MC);
 	  }   
-	  if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f\n",dist, log10(tau_MC_sc));
-	  if(np==1)printf(" Dist:%9.1f log(tau_sc):%7.3f\n",dist,log10(tau_sc));
+	  if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist, log10(tau_MC_sc),text);
+	  if(np==1)printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dmm, dist,log10(tau_sc),text);
 	}	    
         if(vbs>=2){
 	  printf("dmm=%lf\n", dmm);
@@ -364,17 +385,17 @@ int main(int argc, char *argv[])
           }  
           printf(" DM_MC:%8.2f", DM_MC);
         }
-     	if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f\n",dist,log10(tau_MC_sc));
-	if(np==1)printf(" Dist:%9.1f log(tau_sc):%7.3f\n",dist,log10(tau_sc));
+     	if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
+	if(np==1)printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
 	break;
       }
     }
-
+    
     if(ndir==2){
       if(dd<=dtest){
-	thick(xx, yy, zz, &ne1, rr, t1);
-        thin(xx, yy, zz, &ne2, rr, t2);
-        spiral(xx, yy, zz, &ne3, rr, t3, dirname);
+	      thick(xx, yy, zz_w, &ne1, rr, t1);
+        thin(xx, yy, zz_w, &ne2, rr, t2);
+        spiral(xx, yy, zz_w, &ne3, rr, t3, dirname);
         galcen(xx, yy, zz, &ne4, t4);
         gum(xx, yy, zz, &ll, &ne5, t5);
         localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
@@ -383,7 +404,6 @@ int main(int argc, char *argv[])
         lmc(gl,gb,dd,&ne8,t9);
         dora(gl,gb,dd,&ne9,t10);
         smc(xx, yy, zz, &ne10, t11);
-
 	if(WFB==1){
 	  ne1=t8.J_FB*ne1;
 	}
@@ -424,7 +444,7 @@ int main(int argc, char *argv[])
 	dmstep=ne*dstep;
 	dm+=dmstep;
 	if(np!=1&&umc==1){
-          if(rr>25000||fabs(zz)>(8*t1.H1)){ 
+          if(rr>30000||fabs(zz)>(8*t1.H1)){ 
 	    DM_Gal=dm;
 	    tau_Gal=0.5*tsc(dm);
 	    printf(" DM_Gal:%8.2f",dm);
@@ -440,8 +460,8 @@ int main(int argc, char *argv[])
           }
           tau_sc=tsc(dmpsr);
           tau_MC_sc=max(tau_Gal, tau_MC);
-          if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f\n", dmpsr,log10(tau_MC_sc));
-          if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f\n", dmpsr, log10(tau_sc));
+          if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+          if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
         }
 
         if(i==nk&&np==-1){
@@ -449,7 +469,7 @@ int main(int argc, char *argv[])
 	    DM_MC=dm-DM_Gal;
 	    printf(" DM_MC:%8.2f",DM_MC);
 	  } 
-          frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu);
+          frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
         }
       }
       else{
@@ -469,8 +489,8 @@ int main(int argc, char *argv[])
 	  printf(" DM_MC:%8.2f", DM_MC);
 	}
 	tau_sc=tsc(dmpsr);
-	if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f\n", dmpsr,log10(tau_MC_sc));
-	if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f\n", dmpsr, log10(tau_sc));
+	if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+	if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
 	break;
       }
     }    

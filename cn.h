@@ -7,9 +7,15 @@
 #define RAD 57.295779
 #define N0 0.013
 #define PI 3.14159265
-#define mc 4
+#define mc 6
 #define MAX(a,b) ( ((a)>(b)) ? (a):(b) )
 #define MIN(a,b) ( ((a)>(b)) ? (b):(a) )
+struct Warp_Sun
+{
+double Gamma_w;
+double z_Sun;
+};
+
 struct Thick
 {
   double Ad;
@@ -102,7 +108,7 @@ struct SMC
 {
   double nsmc;
 };
-int ymw16par(struct Thick *t1, struct Thin *t2,  struct Spiral *t3, struct GC *t4, struct Gum *t5, struct LB *t6, struct LI *t7, struct FB *t8, struct LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname);
+int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2,  struct Spiral *t3, struct GC *t4, struct Gum *t5, struct LB *t6, struct LI *t7, struct FB *t8, struct LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname);
 void thick(double xx, double yy, double zz, double *ne1, double rr, struct Thick t1);
 void thin(double xx, double yy, double zz, double *ne2, double rr, struct Thin t2);
 void spiral(double xx, double yy, double zz, double *ne3, double rr, struct Spiral t3, char *dirname);
@@ -114,5 +120,5 @@ void fermibubble(double xx, double yy, double zz, int *wfb);
 void lmc(double l, double b, double d, double *ne8, struct LMC t9);
 void dora(double l, double b, double d, double *ne9, struct Dora t10);
 void smc(double xx, double yy, double zz, double *ne10, struct SMC t11);
-void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu);
+void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char *text);
 double tsc(double dm);

@@ -1,5 +1,5 @@
 #include "cn.h"
-int ymw16par(struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4, struct Gum *t5,struct LB *t6,  struct LI *t7, struct FB *t8, struct  LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname){
+int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4, struct Gum *t5,struct LB *t6,  struct LI *t7, struct FB *t8, struct  LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname){
 
   FILE *fptr =NULL;
   char key[40], *cstr, filen[64];
@@ -27,6 +27,14 @@ int ymw16par(struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4
 	  //        printf("%s \n",cstr);
 	}
 	
+	//Warp and Sun
+    else if(strcmp(key,"Gamma_w") == 0){
+	  fscanf(fptr,"%lf",&((*t0).Gamma_w ) );
+	}    
+	else if(strcmp(key,"z_Sun") == 0){
+	  fscanf(fptr,"%lf",&((*t0).z_Sun ) );
+	}
+
 	//thick disk
 	else if(strcmp(key,"Ad") == 0){
 	  fscanf(fptr,"%lf",&((*t1).Ad ) );
