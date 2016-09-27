@@ -65,12 +65,6 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	}
 	
 	//spiral arm
-	else if(strcmp(key,"Ads") == 0){
-	  fscanf(fptr,"%lf",&((*t3).Ads ) );    
-	}
-	else if(strcmp(key,"Bds") == 0){
-	  fscanf(fptr,"%lf",&((*t3).Bds ) );    
-	}
 	else if(strcmp(key,"B2s") == 0){
 	  fscanf(fptr,"%lf",&((*t3).B2s ) );    
 	}

@@ -51,6 +51,9 @@ int main(int argc, char *argv[])
   double tau_Gal=0;
   double tau_MC=0;
   double tau_MC_sc=0;
+  double R_g=0;
+  double gd=0;
+  
   //The localtion of Sun relative to GP and Warp
   double z_warp, zz_w, R_warp, theta_warp, theta_max;
   R_warp=8400;//pc
@@ -65,6 +68,8 @@ int main(int argc, char *argv[])
   char dirname[64]="NULL",text[64]="";
   char *p;
   static int i, ncount;
+  int w_lmc=0;
+  int w_smc=0;
   int umc=1;
   char *s;
   struct Warp_Sun t0;
@@ -290,30 +295,41 @@ int main(int argc, char *argv[])
       printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr);
       printf("theta_warp=%lf, z_warp=%lf, zz_w=%lf\n",theta_warp,z_warp,zz_w);
     }
+    R_g=sqrt(xx*xx+yy*yy+zz_w*zz_w);
+
+    /* DM to Distance */
     
     if(ndir==1){   	
       if(dmm<=dm){
-	     thick(xx, yy, zz_w, &ne1, rr, t1);
-        thin(xx, yy, zz_w, &ne2, rr, t2);
-        spiral(xx, yy, zz_w, &ne3, rr, t3, dirname);
-        galcen(xx, yy, zz, &ne4, t4);
-        gum(xx, yy, zz, &ll, &ne5, t5);
-        localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
-        nps(xx, yy, zz, &ne7, &WLI, t7);
-        fermibubble(xx, yy, zz, &WFB);
-        lmc(gl,gb,dd,&ne8,t9);
-        dora(gl,gb,dd,&ne9,t10);
-        smc(xx, yy, zz, &ne10, t11);
-
+        if(R_g<=35000){
+	      thick(xx, yy, zz_w, &gd, &ne1, rr, t1);
+          thin(xx, yy, zz_w, gd, &ne2, rr, t2);
+          spiral(xx, yy, zz_w, gd, &ne3, rr, t3, dirname);
+          galcen(xx, yy, zz, &ne4, t4);
+          gum(xx, yy, zz, &ll, &ne5, t5);
+          localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
+          nps(xx, yy, zz, &ne7, &WLI, t7);
+          fermibubble(xx, yy, zz, &WFB);
+        }else{
+          if(np==1){
+	    dstep=5;
+          }else{
+            dstep=200;
+            if(w_lmc>=1||w_smc>=1) dstep=5;
+            lmc(gl,gb,dd,&w_lmc,&ne8,t9);
+            dora(gl,gb,dd,&ne9,t10);
+            smc(xx, yy, zz,&w_smc, &ne10, t11);	
+          }
+	} 
 	if(WFB==1){
 	  ne1=t8.J_FB*ne1;
 	}
 	ne0=ne1+max(ne2,ne3);
 
-        if(hh>110){       /* Outside LB */
-          if(ne6>ne0 && ne6>ne5){
+	if(hh>110){       /* Outside LB */
+	  if(ne6>ne0 && ne6>ne5){
 	    WLB=1;
-          }else{
+	  }else{
 	    WLB=0;
 	  }
 	}else{            /* Inside LB */
@@ -324,30 +340,33 @@ int main(int argc, char *argv[])
 	    ne0=ne1+max(ne2,ne3);
 	    WLB=0;
 	  }
-        }
-        if(ne7>ne0){     /* Loop I */
+	}
+	if(ne7>ne0){     /* Loop I */
 	  WLI=1;
-        }else{
-          WLI=0;
-        }        
-        if(ne5>ne0){     /* Gum Nebula */
-          WGN=1;
-        }else{
-          WGN=0;
-        }
+	}else{
+	  WLI=0;
+	}        
+	if(ne5>ne0){     /* Gum Nebula */
+	  WGN=1;
+	}else{
+	  WGN=0;
+	}
 
 	/* Galactic ne */
-        ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4+ne8+ne9+ne10)+WLI*ne7)+WGN*ne5)+WLB*ne6;
+	ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4+ne8+ne9+ne10)+WLI*ne7)+WGN*ne5)+WLB*ne6;
 
-        if(vbs>=2){
-          printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
-        }
-	
+	if(vbs>=2){
+	  printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
+	}
 	dmstep=ne*dstep;
+	if(dmstep<=0.000001)dmstep=0;
+	if(vbs>=2){
+	  printf("dmstep=%lf, dstep=%lf\n", dmstep, dstep);
+	}
 	dmm+=dmstep;
 	dist=dd;
-        if(np==0&&umc==1){
-	  if(rr>30000||fabs(zz)>(8*t1.H1)){
+	if(np==0&&umc==1){
+	  if(R_g>35000){
 	    DM_Gal=dmm;
 	    tau_Gal=0.5*tsc(dmm);
 	    printf(" DM_Gal:%8.2f",DM_Gal);
@@ -355,7 +374,8 @@ int main(int argc, char *argv[])
 	  } 
 	}
 	if(i==nk){ 
-	  dist+=0.5*dstep; 
+	  dist+=0.5*dstep;
+	  if(dist>100000)dist=100000;
 	  if(np==0){
 	    DM_MC=dmm-DM_Gal;
 	    tau_MC=0.5*tsc(DM_MC);
@@ -385,25 +405,36 @@ int main(int argc, char *argv[])
           }  
           printf(" DM_MC:%8.2f", DM_MC);
         }
-     	if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
+	if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
 	if(np==1)printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
 	break;
       }
     }
+
+    /* Distance to DM */
     
     if(ndir==2){
       if(dd<=dtest){
-	      thick(xx, yy, zz_w, &ne1, rr, t1);
-        thin(xx, yy, zz_w, &ne2, rr, t2);
-        spiral(xx, yy, zz_w, &ne3, rr, t3, dirname);
-        galcen(xx, yy, zz, &ne4, t4);
-        gum(xx, yy, zz, &ll, &ne5, t5);
-        localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
-        nps(xx, yy, zz, &ne7, &WLI, t7);
-        fermibubble(xx, yy, zz, &WFB);
-        lmc(gl,gb,dd,&ne8,t9);
-        dora(gl,gb,dd,&ne9,t10);
-        smc(xx, yy, zz, &ne10, t11);
+        if(R_g<=35000){
+	      thick(xx, yy, zz_w, &gd, &ne1, rr, t1);
+          thin(xx, yy, zz_w, gd, &ne2, rr, t2);
+          spiral(xx, yy, zz_w, gd, &ne3, rr, t3, dirname);
+          galcen(xx, yy, zz, &ne4, t4);
+          gum(xx, yy, zz, &ll, &ne5, t5);
+          localbubble(xx, yy, zz, &ll, &ne6, &hh, t6);
+          nps(xx, yy, zz, &ne7, &WLI, t7);
+          fermibubble(xx, yy, zz, &WFB);
+        }else{
+	  if(np==1)dstep=5;
+	  else{
+	    dstep=200;
+	    if(np==-1)dstep=5;
+	    if(w_lmc>=1||w_smc>=1) dstep=5;
+	    lmc(gl,gb,dd,&w_lmc,&ne8,t9);
+	    dora(gl,gb,dd,&ne9,t10);
+	    smc(xx, yy, zz,&w_smc, &ne10, t11);
+	  } 
+	}       
 	if(WFB==1){
 	  ne1=t8.J_FB*ne1;
 	}
@@ -436,15 +467,15 @@ int main(int argc, char *argv[])
         }        
 	/*  Galactic ne */
         ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4+ne8+ne9+ne10)+WLI*ne7)+WGN*ne5)+WLB*ne6;
-
+	
 	if(vbs>=2){
           printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
         }
-
 	dmstep=ne*dstep;
+	if(dmstep<=0.000001)dmstep=0;
 	dm+=dmstep;
 	if(np!=1&&umc==1){
-          if(rr>30000||fabs(zz)>(8*t1.H1)){ 
+	  if(R_g>35000){ 
 	    DM_Gal=dm;
 	    tau_Gal=0.5*tsc(dm);
 	    printf(" DM_Gal:%8.2f",dm);
@@ -463,13 +494,14 @@ int main(int argc, char *argv[])
           if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
           if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
         }
-
-        if(i==nk&&np==-1){
+	
+	if(i==nk&&np==-1){
           if(dordm==100000){
 	    DM_MC=dm-DM_Gal;
 	    printf(" DM_MC:%8.2f",DM_MC);
 	  } 
           frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
+          break;
         }
       }
       else{

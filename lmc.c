@@ -1,5 +1,5 @@
 #include"cn.h"
-void lmc(double l, double b, double d, double *ne8, struct LMC t9)
+void lmc(double l, double b, double d, int *w_lmc, double *ne8, struct LMC t9)
 {
 //coordinate system
   double X, Y, Z;
@@ -39,8 +39,17 @@ void lmc(double l, double b, double d, double *ne8, struct LMC t9)
   Y=d*(cos(iag)*(ss_dp*cos(npag)-sc_dp*sin(npag))+c_dag*sin(iag))-D_l*sin(iag);
   Z=d*(sin(iag)*(ss_dp*cos(npag)-sc_dp*sin(npag))-c_dag*cos(iag))+D_l*cos(iag);
   Rl=sqrt(X*X+Y*Y);
-  if(Rl>mc*Al||fabs(Z)>mc*Hl)gl=0;
-  else gl=1;
+  if(Rl>mc*Al||fabs(Z)>mc*Hl)
+  {
+  	*ne8=0;
+  	return;
+  }
+  else 
+  {
+    gl=1;
+    *w_lmc=1;
+
+  }
   *ne8=gl*(t9.nlmc)*exp(-(Rl*Rl)/(Al*Al))*pow(2/(exp(-Z/Hl)+exp(Z/Hl)),2);
 }          
 

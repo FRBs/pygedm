@@ -1,70 +1,45 @@
 #include "cn.h"
 int ww=1;
-void spiral(double xx,  double yy,  double zz,  double *ne3,  double rr,  struct Spiral t3, char *filedir)
+int m_3=0;
+void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double rr,  struct Spiral t3, char *filedir)
 {
   int i, which_arm;
   static double rmin[5], thmin[5], tpitch[5], cspitch[5], sspitch[5];
   double detrr=1e10;
   double armr1, armr2, smin, sminmin, saxis, uu, Aaa, HH, Hg;
-  static double theta=0;
-  static double armr=0;
+  double ne3s=0;
+  double theta, alpha, armr;
   double sech2=0;
   double ga=0;
-  double gd=0;
   double g1=0;
   char filen[64];
-  Hg=32+0.0016*rr+0.0000004*pow(rr, 2);
-  HH=t3.Ka*Hg;
   FILE *fp;
 
-  *ne3=0;
+  if(m_3>=1)return;
 
-  strcpy(filen,filedir);
-  strcat(filen,"spiral.txt");
-  fp=fopen(filen,"r");
+  Hg=32+0.0016*rr+0.0000004*pow(rr, 2);
+  HH=t3.Ka*Hg;
 
-  if(ww==1)
-  {
-    for(i=0;i<=4;i++)
-    {
+  if(ww==1){
+    strcpy(filen,filedir);
+    strcat(filen,"spiral.txt");
+    fp=fopen(filen,"r");
+    
+    for(i=0;i<=4;i++){
       fscanf(fp, "%lf %lf %lf %lf %lf", &rmin[i], &thmin[i], &tpitch[i], &cspitch[i], &sspitch[i]);
     }
+    fclose(fp);
+    ww++;
   }
-  ww++;
-//读入参数值
-  if(xx==0||yy==0)
-  {
-    if(xx==0&&yy>0)
-    {
-      theta=0.5*PI;
-    }
-    if(xx==0&&yy<0)
-    {
-      theta=1.5*PI;
-    }  
-    if(yy==0&&xx>0)
-    {
-      theta=0;
-    }
-    if(yy==0&&xx<0)
-    {
-      theta=PI;
-    }
-  } 
-  else
-  {
-    theta=atan(yy/xx);
-    if(theta>0&&xx>0)theta=theta;
-    if(theta>0&&xx<0)theta=theta+PI;
-    if(theta<0&&yy>0)theta=PI+theta;
-    if(theta<0&&yy<0)theta=2*PI+theta;
-  }
-//普通角度的计算
-  if(fabs(zz/300)<10)
-  {
+
+  theta=atan2(yy,xx);
+  if(theta<0)theta=2*PI+theta;
+  
+  //普通角度的计算
+  if(fabs(zz/300)<10){
     sminmin=1e10;
-    for(i=0;i<=4;i++)
-    {
+    ne3s=0.;
+    for(i=0;i<=4;i++){
       ga=0;
 //Norma-Outer
       if(i==0)
@@ -145,7 +120,12 @@ void spiral(double xx,  double yy,  double zz,  double *ne3,  double rr,  struct
           detrr=1e10;
         }
       }
-      if(detrr<mc*t3.warm[i])
+      if(detrr>mc*t3.warm[i])
+      {
+      	ga=0;
+      	continue;
+      }
+      else
       {
 
         smin=detrr*cspitch[i];
@@ -163,21 +143,16 @@ void spiral(double xx,  double yy,  double zz,  double *ne3,  double rr,  struct
           which_arm=i;
         }
       }
-      if((rr-t3.Bds)>(mc*t3.Ads)||fabs(zz)>(mc*HH)) gd=0;
-      else
-      {
-        if(rr<t3.Bds) gd=1;
-        else
-        {
-          g1=exp(-(rr-t3.Bds)/t3.Ads)+exp((rr-t3.Bds)/t3.Ads);
-          gd=pow(2/g1, 2);
-        }
+      if(gd==0||fabs(zz)>(mc*HH))
+      { m_3++;
+      	*ne3=0;
+      	return;
       }
       sech2=pow((2/(exp((rr-t3.B2s)/t3.Aa)+exp(-(rr-t3.B2s)/t3.Aa))), 2);
       ga=ga*sech2*gd;
       uu=pow(2/(exp((fabs(zz))/HH)+exp(-fabs(zz)/HH)), 2);
-      *ne3=(*ne3)+t3.narm[i]*ga*uu;
+      ne3s+=t3.narm[i]*ga*uu;
     }
+    *ne3=ne3s;
   }
-  fclose(fp);
 }

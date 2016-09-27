@@ -1,5 +1,5 @@
 #include"cn.h"
-void smc(double xx, double yy, double zz, double *ne10, struct SMC t11)
+void smc(double xx, double yy, double zz, int  *w_smc, double *ne10, struct SMC t11)
 {
   double rad=57.295779;
   double R=8.3;//kpc
@@ -17,11 +17,19 @@ void smc(double xx, double yy, double zz, double *ne10, struct SMC t11)
   xc=rgals*sls;
   yc=R*1000-rgals*cls;
   zc=ds*sbs;
-//printf("xc=%lf,yc=%lf,zc=%lf\n", xc, yc, zc);
   Rsmc=sqrt((xx-xc)*(xx-xc)+(yy-yc)*(yy-yc)+(zz-zc)*(zz-zc));
-  if(Rsmc>(mc*Asmc))gsmc=0;
-  else gsmc=1;
+  if(Rsmc>(mc*Asmc))
+  {
+  	*ne10=0;
+  	return;
+  }
+  else 
+  {
+   gsmc=1;
+   *w_smc=1; 
+  }
+    
+  
   *ne10=(t11.nsmc)*gsmc*exp(-(Rsmc*Rsmc)/(Asmc*Asmc));
-//printf("nesmc=%lf\n",t8.nesmc);
 }
 

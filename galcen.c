@@ -7,7 +7,11 @@ void galcen(double xx, double yy, double zz, double *ne4 ,struct GC t4)
   double Rgc, Az, Ar;
   double gc;
   Rgc=sqrt((xx-Xgc)*(xx-Xgc)+(yy-Ygc)*(yy-Ygc));
-  if(Rgc>(mc*t4.Agc)||fabs(zz)>(mc*t4.Hgc)) gc=0;
+  if(Rgc>(mc*t4.Agc)||fabs(zz)>(mc*t4.Hgc)) 
+  {
+  	*ne4=0;
+  	return;
+  }
   else
   {
     gc=1;

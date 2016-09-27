@@ -57,7 +57,11 @@ void dora(double l, double b, double d, double *ne9, struct Dora t10)
   Y_D=D_D*(cos(iag)*(ss_dpD*cos(npag)-sc_dpD*sin(npag))+c_dagD*sin(iag))-D_l*sin(iag);
   Z_D=D_D*(sin(iag)*(ss_dpD*cos(npag)-sc_dpD*sin(npag))-c_dagD*cos(iag))+D_l*cos(iag);
   R_D=sqrt((X-X_D)*(X-X_D)+(Y-Y_D)*(Y-Y_D)+(Z-Z_D)*(Z-Z_D));
-  if(R_D>(mc*A_D))gD=0;
+  if(R_D>(mc*A_D))
+  {
+  	*ne9=0;
+  	return;
+  }
   else gD=1;
   *ne9=gD*(t10.n30D)*exp(-(R_D*R_D)/(A_D*A_D));
 }          
