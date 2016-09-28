@@ -2,7 +2,7 @@
 #define max(a,b) ( ((a)>(b)) ? (a):(b) )
 #define min(a,b) ( ((a)>(b)) ? (b):(a) )
 
-/* Program version 1.1, 2016 September 1 */
+/* Program version 1.2, 2016 September 25 */
 void usage(int status)
 {
   printf("\nConverts from DM to Dist and vice versa - electron density model\n");
