@@ -13,9 +13,9 @@ Clouds, the intergalactic medium and FRB host galaxies is estimated.
 
 A paper (Yao, Manchester and Wang, 2016) describing the model and
 comparing its predictions with those of earlier Galactic electron
-density models has been submitted to the Astrophysical Journal. YMW16
-is the first electron-density model to estimate extragalactic pulsar
-distances and FRB distances.
+density models has been accepted by the Astrophysical Journal and is on 
+arXiv  (1610.09448). YMW16 is the first electron-density model to 
+estimate extragalactic pulsar distances and FRB distances.
 
 To make a command-line executable version of the program, download and
 unpack the latest version of the program. Then run "make_ymw16" to
@@ -24,9 +24,9 @@ up to point at a directory containing ymw16par.txt and
 spiral.txt. Access to these files is needed at runtime. 
 
 Websites allowing interactive access to the YMW16 distance model and
-download of the latest program version are available at http://www.xao.ac.cn/ymw16/ and
-http://www.atnf.csiro.au/research/pulsar/ymw16/.
+download of the latest program version are available at http://www.xao.ac.cn/ymw16/
+and http://www.atnf.csiro.au/research/pulsar/ymw16/.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/. Please provide an
-example illustrating the problem. 
+example illustrating the problem.
