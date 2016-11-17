@@ -9,9 +9,9 @@ void nps(double xx,double yy,double zz,double *ne7, int *WLI, struct LI t7)
   if(m_7>=1)return;
   
   theta_LI=(t7.thetaLI)/RAD;
-  x_c=-200*cos(14/RAD)*sin(3/RAD);
-  y_c=8300-200*cos(14/RAD)*cos(3/RAD);
-  z_c=200*sin(3/RAD);
+  x_c=-10.156;
+  y_c=8106.206;
+  z_c=10.467;
   double rr,theta;
   rr=sqrt((xx-x_c)*(xx-x_c)+(yy-y_c)*(yy-y_c)+(zz-z_c)*(zz-z_c));
   theta=acos(((xx-x_c)*(cos(theta_LI))+(zz-z_c)*(sin(theta_LI)))/rr)*RAD;
