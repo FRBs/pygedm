@@ -4,7 +4,7 @@ void thick(double xx, double yy, double zz, double *gd, double *ne1, double rr, 
   
   double gdd,gg;
 
-  if(fabs(zz)>(mc*t1.H1 || rr-t1.Bd)>mc*t1.Ad){
+  if(fabs(zz)> mc*t1.H1 || (rr-t1.Bd)> mc*t1.Ad){
     *ne1=0;
     return;
   }else{
