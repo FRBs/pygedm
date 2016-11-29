@@ -16,7 +16,7 @@ void galcen(double xx, double yy, double zz, double *ne4 ,struct GC t4)
   {
     gc=1;
     Ar=exp(-(Rgc*Rgc)/(t4.Agc*t4.Agc));
-    Az=exp(-((zz-Zgc)*(zz-Zgc))/(t4.Hgc*t4.Hgc));
+    Az=pow(2/(exp((zz-Zgc)/t4.Hgc)+exp(-(zz-Zgc)/t4.Hgc)),2);
   }
   *ne4=t4.ngc*Ar*Az*gc;
 }
