@@ -1,6 +1,4 @@
 #include "cn.h"
-int ww=1;
-int m_3=0;
 void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double rr,  struct Spiral t3, char *filedir)
 {
   int i, which_arm;
@@ -19,7 +17,6 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
 
   Hg=32+0.0016*rr+0.0000004*pow(rr, 2);
   HH=t3.Ka*Hg;
-
   if(ww==1){
     strcpy(filen,filedir);
     strcat(filen,"spiral.txt");
