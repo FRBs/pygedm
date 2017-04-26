@@ -1,5 +1,4 @@
 #include "cn.h"
-int m_5=0;
 void gum(double xx, double yy, double zz, double *ll, double *ne5, struct Gum t5)
 {
   double slc, clc, sbc, cbc, xc, yc, zc, rgalc;
