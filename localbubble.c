@@ -1,7 +1,6 @@
 #include "cn.h"
 #define Rlb 110
-int m_6=0;
-void localbubble(double xx, double yy, double zz, double *ll, double *ne6, double *WW, struct LB t6)
+void localbubble(double xx, double yy, double zz, double *ll,double *bb, double *ne6, double *WW, struct LB t6)
 {
   double g4=0;
   double g5=0;
@@ -11,14 +10,18 @@ void localbubble(double xx, double yy, double zz, double *ll, double *ne6, doubl
   double UU;
   double VVV=0;
   double WWW=0;
-  double nelb1;
-  double nelb2;
+  double nelb1=1e10;
+  double nelb2=1e10;
+  double Y_C=1e10;
+  double COS_A=1e10;
+  double COS_E=cos(PI/4);
+//  printf("m_6=%d\n\n",m_6);
 
-  if(m_6>=1)return;
-  
+  Y_C=8340+(0.34/0.94)*zz;//Center of local bubble
+  COS_A=(xx*xx+(8300-yy)*(Y_C-yy))/(sqrt(xx*xx+(8300-yy)*(8300-yy))*sqrt(xx*xx+(Y_C-yy)*(Y_C-yy)));
   UU=sqrt(((yy-8340)*0.94-0.34*zz)*((yy-8340)*0.94-0.34*zz)+xx*xx);
   *WW=UU;
-  
+  if(m_6>=1)return; 
   if((UU-Rlb)>(mc*t6.wlb1)||fabs(zz)>(mc*t6.hlb1)){
     nelb1=0;
   }else{
@@ -44,5 +47,8 @@ void localbubble(double xx, double yy, double zz, double *ll, double *ne6, doubl
     else glb2=1;
     nelb2=glb2*pow(2/(exp(-WWW/t6.detlb2)+exp(WWW/t6.detlb2)), 2)*t6.nlb2*pow(2/(exp(g6)+exp(-g6)), 2)*g7;
   }
+
+  if(COS_A<COS_E)nelb1=0; 
+  if((*bb==90)&&(*ll==180))nelb1=0;
   *ne6=nelb1+nelb2;
 }
