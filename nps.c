@@ -1,5 +1,4 @@
 #include "cn.h"
-int m_7=0;
 void nps(double xx,double yy,double zz,double *ne7, int *WLI, struct LI t7)
 {
   double x_c, y_c, z_c;
