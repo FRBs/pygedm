@@ -1,3 +1,28 @@
+/*Copyright (C) 2016, 2017  J. M. Yao, R. N. Manchester, N. Wang.
+
+This file is part of the YMW16 program. YMW16 is a model for the
+distribution of free electrons in the Galaxy, the Magellanic Clouds
+and the inter-galactic medium that can be used to estimate distances
+for real or simulated pulsars and fast radio bursts (FRBs) based on
+their position and dispersion measure.
+
+YMW16 is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+YMW16 is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
+available at http://www.gnu.org/licenses/, for more details. 
+
+Please report any issues or bugs at
+https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
+authors. Please provide an example illustrating the problem.
+
+Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
+(dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
+*/
 #include "cn.h"
 int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4, struct Gum *t5,struct LB *t6,  struct LI *t7, struct FB *t8, struct  LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname){
 
@@ -17,7 +42,7 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
   if(fptr == NULL)
   {
     printf("File %s open error\n",filen);
-    return 0;
+    return 1;
   }
   while(!feof(fptr))
     {
@@ -197,7 +222,8 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	}
       }
     }
-  
+  fclose(fptr);
   free(cstr);
+  return 0;
 }
 

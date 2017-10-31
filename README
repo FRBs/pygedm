@@ -1,7 +1,7 @@
-YMW16 is a model for the distribution of free electrons in the Galaxy
-(Gal), the Magellanic Clouds (MC) and the inter-galactic medium (IGM)
-that can be used to estimate distances for real or simulated pulsars
-and fast radio bursts (FRBs) based on their dispersion measure.
+YMW16 is a model for the distribution of free electrons in the Galaxy,
+the Magellanic Clouds and the inter-galactic medium, that can be used
+to estimate distances for real or simulated pulsars and fast radio
+bursts (FRBs) based on their position and dispersion measure.
 
 The Galactic model is based on 189 pulsars that have independently
 determined distances as well as dispersion measures, whereas simpler
@@ -11,11 +11,15 @@ have a relative error of less than a factor of 0.9. Pulse broadening
 due to scattering in the Galactic interstellar medium, the Magellanic
 Clouds, the intergalactic medium and FRB host galaxies is estimated.
 
-A paper (Yao, Manchester and Wang, 2016) describing the model and
-comparing its predictions with those of earlier Galactic electron
-density models has been accepted by the Astrophysical Journal and is on 
-arXiv  (1610.09448). YMW16 is the first electron-density model to 
-estimate extragalactic pulsar distances and FRB distances.
+As well as the ymw16 dm-distance program, we also provide a program,
+ymw16_ne, which gives the electron density at any point in the Galaxy
+or Magellanic Clouds.
+
+A paper (Yao, Manchester and Wang, 2017, Astrophys. J., 835, 29;
+arXiv:1610.09448) describes the model and compares its predictions
+with those of earlier Galactic electron density models. YMW16 is the
+first electron-density model to estimate extragalactic pulsar
+distances and FRB distances.
 
 To make a command-line executable version of the program, download and
 unpack the latest version of the program. Then run "make_ymw16" to
@@ -24,9 +28,26 @@ up to point at a directory containing ymw16par.txt and
 spiral.txt. Access to these files is needed at runtime. 
 
 Websites allowing interactive access to the YMW16 distance model and
-download of the latest program version are available at http://www.xao.ac.cn/ymw16/
-and http://www.atnf.csiro.au/research/pulsar/ymw16/.
+download of the latest program version are available at
+http://www.xao.ac.cn/ymw16/,
+http://www.atnf.csiro.au/research/pulsar/ymw16/ and
+https://bitbucket.org/psrsoft/ymw16/.
 
 Please report any issues or bugs at
-https://bitbucket.org/psrsoft/ymw16/issues/new/. Please provide an
-example illustrating the problem.
+https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
+authors. Please provide an example illustrating the problem.
+
+Copyright (C) 2016, 2017  J. M. Yao, R. N. Manchester, N. Wang.
+
+YMW16 is free software: you can redistribute it and/or modify　it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+YMW16 is distributed in the hope that it will be useful,　but WITHOUT
+ANY WARRANTY; without even the implied warranty of　MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the　GNU General Public License,
+available at http://www.gnu.org/licenses/, for more details.
+
+Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
+(dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn)

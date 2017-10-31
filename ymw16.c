@@ -1,3 +1,28 @@
+/*Copyright (C) 2016, 2017  J. M. Yao, R. N. Manchester, N. Wang.
+
+This file is part of the YMW16 program. YMW16 is a model for the
+distribution of free electrons in the Galaxy, the Magellanic Clouds
+and the inter-galactic medium that can be used to estimate distances
+for real or simulated pulsars and fast radio bursts (FRBs) based on
+their position and dispersion measure.
+
+YMW16 is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+YMW16 is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
+available at http://www.gnu.org/licenses/, for more details. 
+
+Please report any issues or bugs at
+https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
+authors. Please provide an example illustrating the problem.
+
+Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
+(dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
+*/
 #include "cn.h"
 /* Program version 1.2.3, 2017 March 22 */
 void usage(int status)
@@ -33,7 +58,7 @@ int main(int argc, char *argv[])
 {
   double gl, gb, dordm;
   double DM_Host=0;
-  int ndir, np;
+  int ndir, np, ns;
   int vbs=0;
   char dirname[64]="NULL",text[64]="";
 
@@ -107,6 +132,7 @@ int main(int argc, char *argv[])
     DM_Host=100;//default
   }
   if(argc==6){
+    ns=argc;
     if(sscanf(*argv,"%s",str) != 1){
       printf("Incorrect arguments\n");
       usage(1);
@@ -153,6 +179,11 @@ int main(int argc, char *argv[])
     usage(1);
     exit(1);
   }
+  if(ns==6&&np!=-1){
+  printf("Extra parameters exist in input\n");	
+  usage(1);	
+  }
+
   if(ndir!=1&&ndir!=2){
     printf("please input correct ndir\n");
     usage(1);

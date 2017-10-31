@@ -1,3 +1,29 @@
+/*Copyright (C) 2016, 2017  J. M. Yao, R. N. Manchester, N. Wang.
+
+This file is part of the YMW16 program. YMW16 is a model for the
+distribution of free electrons in the Galaxy, the Magellanic Clouds
+and the inter-galactic medium that can be used to estimate distances
+for real or simulated pulsars and fast radio bursts (FRBs) based on
+their position and dispersion measure.
+
+YMW16 is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+YMW16 is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
+available at http://www.gnu.org/licenses/, for more details. 
+
+Please report any issues or bugs at
+https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
+authors. Please provide an example illustrating the problem.
+
+Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
+(dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
+*/
+
 #include "cn.h"
 double tsc(double dm){
   return 4.1e-11*pow(dm, 2.2)*(1+0.00194*dm*dm);
@@ -16,7 +42,7 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
   double ne8=0;
   double ne9=0;
   double ne10=0;
-  double dist, xx, yy, zz, r, sl, cl, sb, cb, ll, bb, hh;
+  double dist, xx, yy, zz, r, glr, gbr, sl, cl, sb, cb, hh;
 
   double nstep, dstep, dmstep;
   static double dd, dtest, dmpsr, rr;
@@ -69,14 +95,12 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
   
   ymw16par(&t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7, &t8, &t9, &t10, &t11, dirname);
 
-  ll=gl;
-  bb=gb;
-  gl=gl/RAD;
-  gb=gb/RAD;
-  sl=sin(gl);
-  sb=sin(gb);
-  cl=cos(gl);
-  cb=cos(gb);    
+  glr=gl/RAD;
+  gbr=gb/RAD;
+  sl=sin(glr);
+  sb=sin(gbr);
+  cl=cos(glr);
+  cb=cos(gbr);    
   dstep=5.0;
   
   if(np==-1){                 // FRBs
@@ -145,19 +169,19 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
       printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr);
       printf("theta_warp=%lf, z_warp=%lf, zz_w=%lf\n",theta_warp,z_warp,zz_w);
     }
-    R_g=sqrt(xx*xx+yy*yy+zz_w*zz_w);
+    R_g=sqrt(xx*xx+yy*yy+zz*zz);
 
     /* DM to Distance */
     
-    if(ndir==1){   	
+    if(ndir==1){
       if(dmm<=dm){
         if(R_g<=35000){
-	      thick(xx, yy, zz_w, &gd, &ne1, rr, t1);
+	  thick(xx, yy, zz_w, &gd, &ne1, rr, t1);
           thin(xx, yy, zz_w, gd, &ne2, rr, t2);
           spiral(xx, yy, zz_w, gd, &ne3, rr, t3, dirname);
           galcen(xx, yy, zz, &ne4, t4);
-          gum(xx, yy, zz, &ll, &ne5, t5);
-          localbubble(xx, yy, zz, &ll, &bb, &ne6, &hh, t6);
+          gum(xx, yy, zz, &ne5, t5);
+          localbubble(xx, yy, zz, gl, gb, &ne6, &hh, t6);
           nps(xx, yy, zz, &ne7, &WLI, t7);
           fermibubble(xx, yy, zz, &WFB);
         }else{
@@ -166,8 +190,8 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
           }else{
             dstep=200;
             if(w_lmc>=1||w_smc>=1) dstep=5;
-            lmc(gl,gb,dd,&w_lmc,&ne8,t9);
-            dora(gl,gb,dd,&ne9,t10);
+            lmc(glr,gbr,dd,&w_lmc,&ne8,t9);
+            dora(glr,gbr,dd,&ne9,t10);
             smc(xx, yy, zz,&w_smc, &ne10, t11);	
           }
 	} 
@@ -270,8 +294,8 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
           thin(xx, yy, zz_w, gd, &ne2, rr, t2);
           spiral(xx, yy, zz_w, gd, &ne3, rr, t3, dirname);
           galcen(xx, yy, zz, &ne4, t4);
-          gum(xx, yy, zz, &ll, &ne5, t5);
-          localbubble(xx, yy, zz, &ll, &bb, &ne6, &hh, t6);
+          gum(xx, yy, zz, &ne5, t5);
+          localbubble(xx, yy, zz, gl, gb, &ne6, &hh, t6);
           nps(xx, yy, zz, &ne7, &WLI, t7);
           fermibubble(xx, yy, zz, &WFB);
         }else{
@@ -280,8 +304,8 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
 	    dstep=200;
 	    if(np==-1)dstep=5;
 	    if(w_lmc>=1||w_smc>=1) dstep=5;
-	    lmc(gl,gb,dd,&w_lmc,&ne8,t9);
-	    dora(gl,gb,dd,&ne9,t10);
+	    lmc(glr,gbr,dd,&w_lmc,&ne8,t9);
+	    dora(glr,gbr,dd,&ne9,t10);
 	    smc(xx, yy, zz,&w_smc, &ne10, t11);
 	  } 
 	}       

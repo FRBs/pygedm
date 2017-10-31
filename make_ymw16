@@ -1,1 +1,6 @@
-gcc -g  *.c -o ymw16 -lm
+rm *.o rm *.a
+gcc -g -c dmdtau.c dora.c fermibubble.c frb_d.c galcen.c gum.c lmc.c localbubble.c ne_crd.c nps.c smc.c spiral.c thick.c thin.c ymw16par.c
+ar -rvs ymw16.a *.o   
+gcc -g  ymw16.c ymw16.a  -o ymw16 -lm
+gcc -g  ymw16_ne.c ymw16.a  -o ymw16_ne -lm
+rm *.o
