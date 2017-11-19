@@ -24,7 +24,7 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
 #include "cn.h"
-/* Program version 1.3, 2017 October 31 */
+/* Program version 1.3.1, 2017 November 20 */
 void usage(int status)
 {
   printf("\nCalculate electron density at a given point with galactocentric coordinates (x, y, z)/with (gl, gb, dist)\n");
@@ -36,7 +36,7 @@ void usage(int status)
   printf("-v prints diagnostics\n");
   printf("For ncrd=1, input Galactocentric x, y and z in pc\n");
   printf("For ncrd=2, input gl, gb in deg, Dist in pc\n");
-  printf("Output ne in (pc cm^-3)\n");
+  printf("Output ne in cm^-3\n");
   printf("\n");
   exit(status);
 }
