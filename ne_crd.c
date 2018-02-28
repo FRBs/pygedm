@@ -154,7 +154,7 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
 
   R_g=sqrt(xx*xx+yy*yy+zz*zz);
   
-  printf("Ne_crd: %10.1f %10.3f %10.3f\n",R_g,*gl,*gb); 
+  if(vbs>=1)printf("Ne_crd: %10.1f %10.3f %10.3f\n",R_g,*gl,*gb); 
   if(R_g<=30000){
     np=1;
   }else if(*gl>265. && *gl<315. && *gb>-60. && *gb<-20.) np=0;

@@ -35,7 +35,7 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
   double sech2=0;
   double ga=0;
   double g1=0;
-  char filen[64];
+  char filen[256];
   FILE *fp;
 
   if(m_3>=1)return;
@@ -44,7 +44,7 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
   HH=t3.Ka*Hg;
   if(ww==1){
     strcpy(filen,filedir);
-    strcat(filen,"spiral.txt");
+    strcat(filen,"/spiral.txt");
     fp=fopen(filen,"r");
     
     for(i=0;i<=4;i++){

@@ -27,7 +27,7 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4, struct Gum *t5,struct LB *t6,  struct LI *t7, struct FB *t8, struct  LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname){
 
   FILE *fptr =NULL;
-  char key[40], *cstr, filen[64];
+  char key[40], *cstr, filen[256];
   double value;
   double a[5];
   int i;
@@ -36,7 +36,7 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
   cstr = (char *)malloc(sizeof(char)*size);
   
   strcpy(filen,dirname);
-  strcat(filen,"ymw16par.txt");
+  strcat(filen,"/ymw16par.txt");
   fptr = fopen(filen,"r");
 
   if(fptr == NULL)

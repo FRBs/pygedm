@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   int ncrd=0; 
   int np;
   int vbs=0;
-  char dirname[64]="NULL",text[64]="";
+  char dirname[256]="NULL",text[64]="";
 
   char *s;
   argc--; argv++;

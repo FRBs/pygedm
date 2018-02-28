@@ -24,7 +24,7 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
 #include "cn.h"
-/* Program version 1.3, 2017 October 31 */
+/* Program version 1.2.3, 2017 March 22 */
 void usage(int status)
 {
   printf("\nConverts from DM to Dist and vice versa - electron density model\n");
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   double DM_Host=0;
   int ndir, np, ns;
   int vbs=0;
-  char dirname[64]="NULL",text[64]="";
+  char dirname[256]="NULL",text[64]="";
 
   char str[5];
   char *p;
