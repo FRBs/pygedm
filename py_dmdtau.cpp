@@ -36,8 +36,10 @@ extern int m_3, ww,m_5, m_6, m_7;
 
 extern double tsc(double dm);
 
-void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
+// Function returns to Python dictionary via std::map
+std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
 {
+  std::map<std::string, float> result;
   double ne0=0;
   double ne=0;
   double ne1=0;
@@ -75,7 +77,7 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
   int WLB=0;
   int WLI=0;
   int WFB=0;
-  int nk, uu; // DCP 2019.02.14: nn not used;
+  int nk, uu; // DCP 2019.02.17 - Removed unusued nn variable
 
   static int i, ncount;
   int w_lmc=0;
@@ -252,6 +254,7 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
 	    DM_Gal=dmm;
 	    tau_Gal=0.5*tsc(dmm);
 	    printf(" DM_Gal:%8.2f",DM_Gal);
+      result.insert(std::make_pair("DM_Gal", DM_Gal));
 	    umc++;
 	  }
 	}
@@ -263,9 +266,20 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
 	    tau_MC=0.5*tsc(DM_MC);
 	    tau_MC_sc=MAX(tau_Gal, tau_MC);
 	    printf(" DM_MC:%8.2f",DM_MC);
+      result.insert(std::make_pair("DM_MC", DM_MC));
 	  }
-	  if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist, log10(tau_MC_sc),text);
-	  if(np==1)printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dmm, dist,log10(tau_sc),text);
+	  if(np==0){
+      printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist, log10(tau_MC_sc),text);
+      result.insert(std::make_pair("dist", dist));
+      result.insert(std::make_pair("tau_sc", tau_MC_sc));
+    }
+	  if(np==1){
+      printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dmm, dist,log10(tau_sc),text);
+      result.insert(std::make_pair("DM_Gal", dmm));
+      result.insert(std::make_pair("dist", dist));
+      result.insert(std::make_pair("tau_sc", tau_sc));
+
+    }
 	}
         if(vbs>=2){
 	  printf("dmm=%lf\n", dmm);
@@ -280,15 +294,26 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
             DM_Gal=dm;
             tau_MC_sc=tsc(dm);
             printf(" DM_Gal:%8.2f ", DM_Gal);
+            result.insert(std::make_pair("DM_Gal", DM_Gal));
           }
           else{
 	    tau_MC=0.5*tsc(DM_MC);
             tau_MC_sc=MAX(tau_MC, tau_Gal);
           }
           printf(" DM_MC:%8.2f", DM_MC);
+          result.insert(std::make_pair("DM_MC", DM_MC));
         }
-	if(np==0)printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
-	if(np==1)printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
+	if(np==0){
+    printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
+    result.insert(std::make_pair("dist", dist));
+    result.insert(std::make_pair("tau_sc", tau_MC_sc));
+  }
+	if(np==1){
+    printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
+    result.insert(std::make_pair("DM_Gal", DM_Gal));
+    result.insert(std::make_pair("dist", dist));
+    result.insert(std::make_pair("tau_sc", tau_sc));
+  }
 	break;
       }
     }
@@ -361,6 +386,7 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
 	    DM_Gal=dm;
 	    tau_Gal=0.5*tsc(dm);
 	    printf(" DM_Gal:%8.2f",dm);
+      result.insert(std::make_pair("DM_Gal", DM_Gal));
 	    umc++;
 	  }
         }
@@ -370,17 +396,27 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
             DM_MC=dm-DM_Gal;
             tau_MC=0.5*tsc(DM_MC);
             printf(" DM_MC:%8.2f", DM_MC);
+            result.insert(std::make_pair("DM_MC", DM_MC));
           }
           tau_sc=tsc(dmpsr);
           tau_MC_sc=MAX(tau_Gal, tau_MC);
-          if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
-          if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+          if(np==0){
+            printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+            result.insert(std::make_pair("DM", dmpsr));
+            result.insert(std::make_pair("tau_sc", tau_MC_sc));
+          }
+          if(np==1){
+            printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+            result.insert(std::make_pair("DM", dmpsr));
+            result.insert(std::make_pair("tau_sc", tau_sc));
+          }
         }
 
 	if(i==nk&&np==-1){
           if(dordm==100000){
 	    DM_MC=dm-DM_Gal;
 	    printf(" DM_MC:%8.2f",DM_MC);
+      result.insert(std::make_pair("DM_MC", DM_MC));
 	  }
           frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
           break;
@@ -395,20 +431,33 @@ void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int
 	    DM_Gal=dmpsr;
 	    tau_MC_sc=tsc(dmpsr);
 	    printf(" DM_Gal:%8.2f", DM_Gal);
+      result.insert(std::make_pair("DM_Gal", DM_Gal));
 	  }
 	  else{
 	    tau_MC=0.5*tsc(DM_MC);
 	    tau_MC_sc=MAX(tau_Gal, tau_MC);
 	  }
 	  printf(" DM_MC:%8.2f", DM_MC);
+    result.insert(std::make_pair("DM_MC", DM_MC));
 	}
 	tau_sc=tsc(dmpsr);
-	if(np==0)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
-	if(np==1)printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+	if(np==0){
+    printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+    result.insert(std::make_pair("DM", dmpsr));
+    result.insert(std::make_pair("tau_sc", tau_MC_sc));
+  }
+	if(np==1){
+    printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+    result.insert(std::make_pair("DM", dmpsr));
+    result.insert(std::make_pair("tau_sc", tau_sc));
+  }
+
 	break;
       }
     }
   }
+
+  return result;
 }
 
 PYBIND11_MODULE(ymw16, m) {
