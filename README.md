@@ -1,3 +1,10 @@
+# PyYMW16
+_A Python / C++ Version of YMW16 electron-density model_
+
+*Nb 2019.02.17:* Currently under development
+
+## YMW16
+
 YMW16 is a model for the distribution of free electrons in the Galaxy,
 the Magellanic Clouds and the inter-galactic medium, that can be used
 to estimate distances for real or simulated pulsars and fast radio
@@ -25,7 +32,7 @@ To make a command-line executable version of the program, download and
 unpack the latest version of the program. Then run "make_ymw16" to
 create the executable. The environment variable YMW16_DIR may be set
 up to point at a directory containing ymw16par.txt and
-spiral.txt. Access to these files is needed at runtime. 
+spiral.txt. Access to these files is needed at runtime.
 
 Websites allowing interactive access to the YMW16 distance model and
 download of the latest program version are available at
