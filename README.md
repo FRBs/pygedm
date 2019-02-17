@@ -22,8 +22,8 @@ As well as the ymw16 dm-distance program, we also provide a program,
 ymw16_ne, which gives the electron density at any point in the Galaxy
 or Magellanic Clouds.
 
-A paper (Yao, Manchester and Wang, 2017, Astrophys. J., 835, 29;
-arXiv:1610.09448) describes the model and compares its predictions
+A paper (Yao, Manchester and Wang, 2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
+[arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) describes the model and compares its predictions
 with those of earlier Galactic electron density models. YMW16 is the
 first electron-density model to estimate extragalactic pulsar
 distances and FRB distances.
@@ -56,5 +56,5 @@ ANY WARRANTY; without even the implied warranty of　MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the　GNU General Public License,
 available at http://www.gnu.org/licenses/, for more details.
 
-Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
-(dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn)
+Jumei Yao (yaojumei _@_ xao.ac.cn), Richard N Manchester
+(dick.manchester _@_ csiro.au), Na Wang (na.wang _@_ xao.ac.cn)
