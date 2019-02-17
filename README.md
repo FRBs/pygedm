@@ -1,9 +1,65 @@
 # PyYMW16
 _A Python / C++ Version of YMW16 electron-density model_
 
-*Nb 2019.02.17:* Currently under development
+**Update 2019.02.17:** First 'working' version (very beta). Don't expect
+this to work out of the box.
 
-## YMW16
+This is a Python / C++ port of the YMW16 electron density model.
+The code uses [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html)
+to create Python bindings to the (C++ ported) YMW16 code.
+
+### Installation
+
+Requires pybind11 and C++11. Should install (only tested on my mac)
+with `./make_ymw16`. This will compile:
+
+* `ymw16` - main program (output should be identical to C version)
+* `ymw16_ne` - main program, electron model output
+* `ymw16.so` - pybind shared object
+
+Once compiled, you can import the `ymw16.so` from ipython, as if it
+were a python module:
+
+```
+ipython
+> import ymw16
+> a = ymw16.dmdtau(204, -6.5, 100000, 0, 2, 1, 0, './data', '')
+DM:  252.05 log(tau_sc): -3.010
+> print a
+Out[4]: {u'DM': 252.05010986328125, u'tau_sc': 0.000978002673946321}
+> ymw16.dmdtau?
+Docstring:
+dmdtau(gl: float, gb: float, dordm: float, DM_Host: float, ndir: int, np: int, vbs: int, dirname: unicode, text: unicode) -> Dict[unicode, float]
+
+Args:
+  gl: Galactic longitude (deg.)
+  gb: Galactic latitude (deg.)
+  dordm: One of DM (cm−3 pc) or distance, depending
+         on ndir. Distance has units of pc for modes Gal and MC
+          and Mpc for mode IGM
+  DM_Host: Dispersion measure of the FRB host galaxy in
+           the observer frame (default 100 cm−3 pc). (Note: if
+           present, DM_Host is ignored for Gal and MC modes.)
+  ndir: ndir=1 converts from DM to distance and
+        ndir=2 converts from distance to DM.
+  np: -1 for IGM, 0 for Mag clouds, 1 for galaxy
+  vbs: Verbostiy level, 0, 1, or 2
+  dirname: directory where data files are stored
+  text: Text to prepend in print statement.
+Returns:
+  Python dictionary with computed values.
+  tsc has units of seconds.
+Type:      builtin_function_or_method
+```
+
+### Todo
+
+* Create nice python wrapper using `argparse`
+* Setuptools installation (e.g. `pip install ymw16`)
+* port `ymw16_ne`
+
+
+## YMW16 C Code
 
 YMW16 is a model for the distribution of free electrons in the Galaxy,
 the Magellanic Clouds and the inter-galactic medium, that can be used
