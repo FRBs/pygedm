@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
 #define max(a,b) ( ((a)>(b)) ? (a):(b) )
 void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char* text)
 {

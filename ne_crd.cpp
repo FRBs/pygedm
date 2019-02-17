@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,10 +23,13 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
+
+extern int m_3, ww,m_5, m_6, m_7;
+
 double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *dd, int ncrd, int vbs, char *dirname, char *text)
 {
-  	
+
   double ne0=0;
   double ne=0;
   double ne1=0;
@@ -46,14 +49,14 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
   static double rr;
   double R_g=0;
   double gd=0;
-  
+
   //The localtion of Sun relative to GP and Warp
   double z_warp, zz_w, R_warp, theta_warp, theta_max;
   R_warp=8400;//pc
   theta_max=0.0; //In +x direction
 
   int WGN=0;
-  int WLB=0; 
+  int WLB=0;
   int WLI=0;
   int WFB=0;
   int np=2;
@@ -73,8 +76,8 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
   struct Thick t1;
   struct Thin t2;
   struct Spiral t3;
-  struct GC t4; 
-  struct Gum t5; 
+  struct GC t4;
+  struct Gum t5;
   struct LB t6;
   struct LI t7;
   struct FB t8;
@@ -97,7 +100,7 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
     //D the heliocentric distance (pc)
     dist=sqrt(x_s*x_s+y_s*y_s+z_s*z_s);
     r=sqrt(x_s*x_s+y_s*y_s);
-    
+
 
     if(dist<1e-15){
       gbr=0;
@@ -105,7 +108,7 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
       gbr=asin(z_s/dist);
     }
     *gb=gbr*RAD;
-    
+
     if(r<1e-15){
       glr=0;
     }else{
@@ -122,7 +125,7 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
       glr=*gl/RAD;
       gbr=*gb/RAD;
       dist=*dd;
-      
+
       sl=sin(glr);
       sb=sin(gbr);
       cl=cos(glr);
@@ -131,20 +134,20 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
       xx=r*sl;
       yy=R0*1000-r*cl;
       zz=dist*sb+t0.z_Sun;
-    
+
       *x=xx;
       *y=yy;
       *z=zz;
   }else{
-      return(0.0);	
+      return(0.0);
     }
   }
-  
+
   rr=sqrt(xx*xx+yy*yy);
-  
+
   /* Definition of warp */
   if(rr<R_warp){
-    zz_w=zz; 
+    zz_w=zz;
   }
   else{
     theta_warp=atan2(yy,xx);
@@ -153,15 +156,15 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
   }
 
   R_g=sqrt(xx*xx+yy*yy+zz*zz);
-  
-  if(vbs>=1)printf("Ne_crd: %10.1f %10.3f %10.3f\n",R_g,*gl,*gb); 
+
+  if(vbs>=1)printf("Ne_crd: %10.1f %10.3f %10.3f\n",R_g,*gl,*gb);
   if(R_g<=30000){
     np=1;
   }else if(*gl>265. && *gl<315. && *gb>-60. && *gb<-20.) np=0;
-  
+
   //printf("np=%d\n",np);
 
-  if(R_g<100000){ 	
+  if(R_g<100000){
     if(np==1){
       thick(xx, yy, zz_w, &gd, &ne1, rr, t1);
       thin(xx, yy, zz_w, gd, &ne2, rr, t2);
@@ -175,7 +178,7 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
 	ne1=t8.J_FB*ne1;
       }
       ne0=ne1+MAX(ne2,ne3);
-      
+
       if(hh>110){       /* Outside LB */
 	if(ne6>ne0 && ne6>ne5){
 	  WLB=1;
@@ -197,13 +200,13 @@ double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *d
 	WLI=1;
       }else{
 	WLI=0;
-      }        
+      }
       if(ne5>ne0){     /* Gum Nebula */
 	WGN=1;
       }else{
 	WGN=0;
       }
-      
+
       /* Galactic ne */
       ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4)+WLI*ne7)+WGN*ne5)+WLB*ne6;
       if(vbs>=1){

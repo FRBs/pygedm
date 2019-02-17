@@ -23,49 +23,23 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
-void gum(double xx, double yy, double zz, double *ne5, struct Gum t5)
-{
-  double slc, clc, sbc, cbc, xc, yc, zc, rgalc;
-  double rp, RR, xyp, zp;
-  double theta, alpha;
-  double Dmin=1e5;
+#include "cn.hpp"
+
+void thick(double xx, double yy, double zz, double *gd, double *ne1, double rr, struct Thick t1){
   
-  //center of Gum Nebula
-  const double lc=264;
-  const double bc=-4;
-  const double dc=450;
-  
-  if(m_5>=1)return;
-  
-  slc=sin(lc/RAD);
-  clc=cos(lc/RAD);
-  sbc=sin(bc/RAD);
-  cbc=cos(bc/RAD);
-  
-  rgalc=dc*cbc;
-  xc=rgalc*slc;
-  yc=R0*1000-rgalc*clc;
-  zc=dc*sbc;
-  
-  theta=fabs(atan((zz-zc)/sqrt((xx-xc)*(xx-xc)+(yy-yc)*(yy-yc))));
-  zp=((t5.Agn)*(t5.Agn)*(t5.Kgn))/sqrt(((t5.Agn)*(t5.Agn))+((t5.Agn)*(t5.Agn)*(t5.Kgn)*(t5.Kgn))/(tan(theta)*tan(theta)));
-  xyp=zp/tan(theta);
-  if((t5.Agn-fabs(xyp))<1e-15)alpha=PI/2;
-  else alpha=-atan((-(t5.Agn)*(t5.Kgn)*xyp)/((t5.Agn)*sqrt((t5.Agn)*(t5.Agn)-xyp*xyp)));
-  RR=sqrt((xx-xc)*(xx-xc)+(yy-yc)*(yy-yc)+(zz-zc)*(zz-zc));
-  rp=sqrt((zp)*(zp)+(xyp)*(xyp));
-  Dmin=fabs((RR-rp)*sin(theta+alpha));
-  
-  if(Dmin>(mc*t5.Wgn)){
-    if(RR>500)m_5++;
-    *ne5=0;
+  double gdd,gg;
+
+  if(fabs(zz)> mc*t1.H1 || (rr-t1.Bd)> mc*t1.Ad){
+    *ne1=0;
     return;
+  }else{
+    if(rr<t1.Bd){
+      gdd=1;
+    }else{ 
+      gg=exp(-(rr-t1.Bd)/t1.Ad)+exp((rr-t1.Bd)/t1.Ad);
+      gdd=pow(2/gg,2);
+    }
   }
-  *ne5=(t5.ngn)*exp(-Dmin*Dmin/((t5.Wgn)*(t5.Wgn)));
+  *ne1=t1.n1*gdd*pow(2/(exp(-fabs(zz)/t1.H1)+exp(fabs(zz)/t1.H1)), 2);
+  *gd=gdd;
 }
-
-
-
-
-

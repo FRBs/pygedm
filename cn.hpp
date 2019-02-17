@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -35,7 +35,9 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 #define mc 6
 #define MAX(a,b) ( ((a)>(b)) ? (a):(b) )
 #define MIN(a,b) ( ((a)>(b)) ? (b):(a) )
-int m_3, ww,m_5, m_6, m_7;
+
+//int m_3, ww,m_5, m_6, m_7;
+
 struct Warp_Sun
 {
   double Gamma_w;
@@ -45,15 +47,15 @@ struct Warp_Sun
 struct Thick
 {
   double Ad;
-  double Bd; 
-  double n1; 
+  double Bd;
+  double n1;
   double H1;
 };
 
 struct Thin
 {
   double A2;
-  double B2; 
+  double B2;
   double n2;
   double K2;
 };
@@ -73,7 +75,7 @@ struct Spiral
   double nsg;
   double wsg;
   double thetasg;
-  
+
 };
 
 struct GC

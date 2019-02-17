@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,8 +23,9 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
 #define Rlb 110
+extern int m_3, ww,m_5, m_6, m_7;
 void localbubble(double xx, double yy, double zz, double gl,double gb, double *ne6, double *WW, struct LB t6)
 {
   double g4=0;
@@ -46,7 +47,7 @@ void localbubble(double xx, double yy, double zz, double gl,double gb, double *n
   COS_A=(xx*xx+(8300-yy)*(Y_C-yy))/(sqrt(xx*xx+(8300-yy)*(8300-yy))*sqrt(xx*xx+(Y_C-yy)*(Y_C-yy)));
   UU=sqrt(((yy-8340)*0.94-0.34*zz)*((yy-8340)*0.94-0.34*zz)+xx*xx);
   *WW=UU;
-  if(m_6>=1)return; 
+  if(m_6>=1)return;
   if((UU-Rlb)>(mc*t6.wlb1)||fabs(zz)>(mc*t6.hlb1)){
     nelb1=0;
   }else{
@@ -73,7 +74,7 @@ void localbubble(double xx, double yy, double zz, double gl,double gb, double *n
     nelb2=glb2*pow(2/(exp(-WWW/t6.detlb2)+exp(WWW/t6.detlb2)), 2)*t6.nlb2*pow(2/(exp(g6)+exp(-g6)), 2)*g7;
   }
 
-  if(COS_A<COS_E)nelb1=0; 
+  if(COS_A<COS_E)nelb1=0;
   if((gb==90)&&(gl==180))nelb1=0;
   *ne6=nelb1+nelb2;
 }

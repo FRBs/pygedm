@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
 void thin(double xx, double yy, double zz, double gd, double *ne2, double rr, struct Thin t2)
 {
   double g2, Hg, ex1, ex2, g3, HH;

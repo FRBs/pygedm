@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include"cn.h"
+#include"cn.hpp"
 void smc(double xx, double yy, double zz, int  *w_smc, double *ne10, struct SMC t11)
 {
   double rad=57.295779;

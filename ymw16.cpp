@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
 /* Program version 1.2.3, 2017 March 22 */
 void usage(int status)
 {
@@ -66,13 +66,13 @@ int main(int argc, char *argv[])
   char *p;
   char *s;
   argc--; argv++;
-  
+
   if(argc < 5)usage(1);
   while(argc > 5){                /* Get command line inputs */
     if((*argv)[0] == '-'){
       s=argv[0]+1;
       argc--; argv++;
-      
+
       switch(*s){
       case 'h':
       case '?':
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
       case 'd':
 	if(sscanf(*argv,"%s",dirname) != 1)usage(1);
 	argc--; argv++;
-	break;		       
+	break;
       case 'v':
 	vbs=1;
 	break;
@@ -96,19 +96,19 @@ int main(int argc, char *argv[])
       }
     }
     else{
-      if(argc>6){	
-	printf("Extra parameters exist in input\n");	
+      if(argc>6){
+	printf("Extra parameters exist in input\n");
 	usage(1);
       }
-      else break;	 	
-    }   
+      else break;
+    }
   }
-  if(argc==5){	
+  if(argc==5){
     if(sscanf(*argv,"%s",str) != 1){
       printf("Incorrect arguments\n");
       usage(1);
     }
-  
+
     argc--; argv++;
     if(sscanf(*argv,"%lf",&gl) != 1){
       printf("Incorrect arguments\n");
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
       printf("Incorrect arguments\n");
       usage(1);
     }
-    
+
     argc--; argv++;
     if(sscanf(*argv,"%lf",&gl) != 1){
       printf("Incorrect arguments\n");
@@ -163,25 +163,25 @@ int main(int argc, char *argv[])
       printf("Incorrect arguments\n");
       usage(1);
     }
-  }	
+  }
   //convert to upper case
-  
+
   p=strupr(str);
-  
+
   if(strcmp(p,"IGM") == 0) np=-1;    // IGM
   else if(strcmp(p,"MC") == 0) np=0; // Mag Clouds
   else if(strcmp(p,"GAL") == 0){     // Galaxy
-    np=1; 
-    p="Gal";
-  }  
+    np=1;
+    p=(char *)"Gal";
+  }
   else{
     printf("please input correct model\n");
     usage(1);
     exit(1);
   }
   if(ns==6&&np!=-1){
-  printf("Extra parameters exist in input\n");	
-  usage(1);	
+  printf("Extra parameters exist in input\n");
+  usage(1);
   }
 
   if(ndir!=1&&ndir!=2){
@@ -198,9 +198,9 @@ int main(int argc, char *argv[])
     }
   }
   if(vbs>=1)printf("File directory: %s\n",dirname);
-      
+
 
   if(ndir==1)printf("%s: gl=%8.3f gb=%8.3f DM=%8.2f", p, gl, gb, dordm);
   else printf("%s: gl=%8.3f gb=%8.3f Dist=%9.1f", p, gl, gb, dordm);
-  dmdtau(gl, gb, dordm, DM_Host, ndir, np, vbs, dirname, text); 
+  dmdtau(gl, gb, dordm, DM_Host, ndir, np, vbs, dirname, text);
 }

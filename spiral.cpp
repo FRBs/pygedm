@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,7 +23,10 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
+
+extern int m_3, ww,m_5, m_6, m_7;
+
 void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double rr,  struct Spiral t3, char *filedir)
 {
   int i, which_arm;
@@ -46,7 +49,7 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
     strcpy(filen,filedir);
     strcat(filen,"/spiral.txt");
     fp=fopen(filen,"r");
-    
+
     for(i=0;i<=4;i++){
       fscanf(fp, "%lf %lf %lf %lf %lf", &rmin[i], &thmin[i], &tpitch[i], &cspitch[i], &sspitch[i]);
     }
@@ -56,7 +59,7 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
 
   theta=atan2(yy,xx);
   if(theta<0)theta=2*PI+theta;
-  
+
   //普通角度的计算
   if(fabs(zz/300)<10){
     sminmin=1e10;
@@ -156,7 +159,7 @@ void spiral(double xx,  double yy,  double zz,  double gd, double *ne3,  double 
         {
           ga=(1-(t3.nsg)*(exp(-((theta*RAD-t3.thetasg)*(theta*RAD-t3.thetasg))/(t3.wsg*t3.wsg))))*(1+t3.ncn*exp(-((theta*RAD-t3.thetacn)*(theta*RAD-t3.thetacn))/(t3.wcn*t3.wcn)))*pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
           if(rr>6000 && theta*RAD>t3.thetacn) ga=(1-(t3.nsg)*(exp(-((theta*RAD-t3.thetasg)*(theta*RAD-t3.thetasg))/(t3.wsg*t3.wsg))))*(1+t3.ncn)*pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
-          
+
         }
         else ga=pow(2/(exp(-smin/t3.warm[i])+exp(smin/t3.warm[i])), 2);
         if(smin<sminmin)

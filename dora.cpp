@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include"cn.h"
+#include"cn.hpp"
 void dora(double l, double b, double d, double *ne9, struct Dora t10)
 {
   //coordinate system
@@ -89,5 +89,4 @@ void dora(double l, double b, double d, double *ne9, struct Dora t10)
   }
   else gD=1;
   *ne9=gD*(t10.n30D)*exp(-(R_D*R_D)/(A_D*A_D));
-}          
-
+}

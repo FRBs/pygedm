@@ -1,0 +1,9 @@
+rm *.o rm *.a
+g++ -g -c dora.cpp fermibubble.cpp frb_d.cpp galcen.cpp \
+          gum.cpp lmc.cpp localbubble.cpp ne_crd.cpp nps.cpp smc.cpp \
+          spiral.cpp thick.cpp thin.cpp ymw16par.cpp
+g++ -g -c  dmdtau.cpp 
+ar -rvs ymw16.a *.o
+g++ -g  ymw16.cpp ymw16.a  -o ymw16 -lm
+g++ -g  ymw16_ne.cpp ymw16.a  -o ymw16_ne -lm
+rm *.o

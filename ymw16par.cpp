@@ -14,7 +14,7 @@ option) any later version.
 YMW16 is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License,
-available at http://www.gnu.org/licenses/, for more details. 
+available at http://www.gnu.org/licenses/, for more details.
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -23,7 +23,7 @@ authors. Please provide an example illustrating the problem.
 Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
-#include "cn.h"
+#include "cn.hpp"
 int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spiral *t3, struct GC *t4, struct Gum *t5,struct LB *t6,  struct LI *t7, struct FB *t8, struct  LMC *t9, struct Dora *t10, struct SMC *t11, char *dirname){
 
   FILE *fptr =NULL;
@@ -34,7 +34,7 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
   size_t size=100;
 
   cstr = (char *)malloc(sizeof(char)*size);
-  
+
   strcpy(filen,dirname);
   strcat(filen,"/ymw16par.txt");
   fptr = fopen(filen,"r");
@@ -51,11 +51,11 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	  getline(&cstr,&size,fptr);
 	  //        printf("%s \n",cstr);
 	}
-	
+
 	//Warp and Sun
     else if(strcmp(key,"Gamma_w") == 0){
 	  fscanf(fptr,"%lf",&((*t0).Gamma_w ) );
-	}    
+	}
 	else if(strcmp(key,"z_Sun") == 0){
 	  fscanf(fptr,"%lf",&((*t0).z_Sun ) );
 	}
@@ -63,17 +63,17 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	//thick disk
 	else if(strcmp(key,"Ad") == 0){
 	  fscanf(fptr,"%lf",&((*t1).Ad ) );
-	}    
+	}
 	else if(strcmp(key,"Bd") == 0){
 	  fscanf(fptr,"%lf",&((*t1).Bd ) );
 	}
-	
+
 	else if(strcmp(key,"n1") == 0){
 	  fscanf(fptr,"%lf",&((*t1).n1 ) );
 	}
 	else if(strcmp(key,"H1") == 0){
 	  fscanf(fptr,"%lf",&((*t1).H1 ) );
-	} 
+	}
     //thin disk
 	else if(strcmp(key,"A2") == 0){
 	  fscanf(fptr,"%lf",&((*t2).A2 ) );
@@ -81,24 +81,24 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	else if(strcmp(key,"B2") == 0){
 	  fscanf(fptr,"%lf",&((*t2).B2 ) );
 	}
-	
+
 	else if(strcmp(key,"n2") == 0){
 	  fscanf(fptr,"%lf",&((*t2).n2 ) );
 	}
 	else if(strcmp(key,"K2") == 0){
 	  fscanf(fptr,"%lf",&((*t2).K2 ) );
 	}
-	
+
 	//spiral arm
 	else if(strcmp(key,"B2s") == 0){
-	  fscanf(fptr,"%lf",&((*t3).B2s ) );    
+	  fscanf(fptr,"%lf",&((*t3).B2s ) );
 	}
 	else if(strcmp(key,"Aa") == 0){
-	  fscanf(fptr,"%lf",&((*t3).Aa ) );    
+	  fscanf(fptr,"%lf",&((*t3).Aa ) );
 	}
 	else if(strcmp(key,"ncn") == 0){
-	  fscanf(fptr,"%lf",&((*t3).ncn) );        
-	}  
+	  fscanf(fptr,"%lf",&((*t3).ncn) );
+	}
 	else if(strcmp(key,"wcn") == 0){
 	  fscanf(fptr,"%lf",&((*t3).wcn ) );
 	}
@@ -123,18 +123,18 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	else if(strcmp(key,"Wid_arm") == 0){
         fscanf(fptr,"%lf %lf %lf %lf %lf",&((*t3).warm[0]),&((*t3).warm[1]),&((*t3).warm[2]),&((*t3).warm[3]),&((*t3).warm[4])  );
 	}
-      
-     
-  
+
+
+
 	//Galactic center
 	else if(strcmp(key,"Agc") == 0){
-	  fscanf(fptr,"%lf",&((*t4).Agc ) ); 
+	  fscanf(fptr,"%lf",&((*t4).Agc ) );
 	}
 	else if(strcmp(key,"Hgc") == 0){
-	  fscanf(fptr,"%lf",&((*t4).Hgc ) );                   
+	  fscanf(fptr,"%lf",&((*t4).Hgc ) );
 	}
 	else if(strcmp(key,"ngc") == 0){
-	  fscanf(fptr,"%lf",&((*t4).ngc ) ); 
+	  fscanf(fptr,"%lf",&((*t4).ngc ) );
 	}
 
 	//Gum nebula
@@ -150,7 +150,7 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	else if(strcmp(key,"Agn") == 0){
 	  fscanf(fptr,"%lf",&((*t5).Agn ) );
 	}
-	//Local Bubble 
+	//Local Bubble
 	else if(strcmp(key,"J_LB") == 0){
 	  fscanf(fptr,"%lf",&((*t6).J_LB ) );
 	}
@@ -184,7 +184,7 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	else if(strcmp(key,"thetalb2") == 0){
 	  fscanf(fptr,"%lf",&((*t6).thetalb2 ) );
 	}
-	
+
 	//Loop I
 	else if(strcmp(key,"nLI") == 0){
 	  fscanf(fptr,"%lf",&((*t7).nLI ) );
@@ -206,12 +206,12 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
 	else if(strcmp(key,"J_FB") == 0){
 	  fscanf(fptr,"%lf",&((*t8).J_FB ) );
 	}
-	
+
 	//LMC
 	else if(strcmp(key,"nlmc") == 0){
 	  fscanf(fptr,"%lf",&((*t9).nlmc ) );
 	}
-	
+
 	//30 Doradus
 	else if(strcmp(key,"n30D") == 0){
 	  fscanf(fptr,"%lf",&((*t10).n30D ) );
@@ -226,4 +226,3 @@ int ymw16par(struct Warp_Sun *t0, struct Thick *t1, struct Thin *t2, struct Spir
   free(cstr);
   return 0;
 }
-
