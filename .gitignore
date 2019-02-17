@@ -1,0 +1,7 @@
+ymw16
+ymw16_ne
+ymw16.so
+*.o
+*.a
+.DS_Store
+*.dSYM/

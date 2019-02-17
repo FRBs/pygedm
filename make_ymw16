@@ -1,4 +1,5 @@
 # Clean old .o and .a files
+cd src
 rm *.o rm *.a
 
 # Build source code
@@ -19,3 +20,8 @@ g++ -std=c++14 -O3 -Wall -shared -undefined dynamic_lookup py_dmdtau.cpp ymw16.a
 
 # Cleanup
 rm *.o
+
+# move executables to root
+mv ymw16 ../
+mv ymw16_ne ../
+mv ymw16.so ../
