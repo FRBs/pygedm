@@ -25,14 +25,18 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 */
 
 #include "cn.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <map>
+#include <string>
 
-int m_3, ww,m_5, m_6, m_7;
+namespace py = pybind11;
 
-double tsc(double dm){
-  return 4.1e-11*pow(dm, 2.2)*(1+0.00194*dm*dm);
-}
+extern int m_3, ww,m_5, m_6, m_7;
 
-void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
+extern double tsc(double dm);
+
+void py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
 {
   double ne0=0;
   double ne=0;
@@ -71,7 +75,7 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
   int WLB=0;
   int WLI=0;
   int WFB=0;
-  int nk, uu, nn;
+  int nk, uu; // DCP 2019.02.14: nn not used;
 
   static int i, ncount;
   int w_lmc=0;
@@ -405,4 +409,49 @@ void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np
       }
     }
   }
+}
+
+PYBIND11_MODULE(ymw16, m) {
+m.doc() = R"pbdoc(pyYMW16 -- python binding for YMW16.
+The program YMW16 computes distances for Galactic pulsars, Magellanic Cloud pulsars,
+and FRBs from their Galactic coordinates and DMs using the YMW16 model parameters.
+It also does the reverse calculation, computing DMs that correspond to given
+Galactic coordinates and distances. An estimate of the scattering timescale tsc
+is output for Galactic and Magellanic Cloud pulsars and FRBs.
+
+Ref: J. M. Yao, R. N. Manchester, and N. Wang (2017), doi:10.3847/1538-4357/835/1/29
+
+)pbdoc"; // optional module docstring
+
+m.def("dmdtau", &py_dmdtau, R"pbdoc(
+    Args:
+      gl: Galactic longitude (deg.)
+      gb: Galactic latitude (deg.)
+      dordm: One of DM (cm−3 pc) or distance, depending
+             on ndir. Distance has units of pc for modes Gal and MC
+              and Mpc for mode IGM
+      DM_Host: Dispersion measure of the FRB host galaxy in
+               the observer frame (default 100 cm−3 pc). (Note: if
+               present, DM_Host is ignored for Gal and MC modes.)
+      ndir: ndir=1 converts from DM to distance and
+            ndir=2 converts from distance to DM.
+      np: -1 for IGM, 0 for Mag clouds, 1 for galaxy
+      vbs: Verbostiy level, 0, 1, or 2
+      dirname: directory where data files are stored
+      text: Text to prepend in print statement.
+    Returns:
+      Python dictionary with computed values.
+      tsc has units of seconds.
+    )pbdoc",
+py::arg("gl"),
+py::arg("gb"),
+py::arg("dordm"),
+py::arg("DM_Host"),
+py::arg("ndir"),
+py::arg("np"),
+py::arg("vbs"),
+py::arg("dirname"),
+py::arg("text")
+);
+
 }
