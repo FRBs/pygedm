@@ -25,6 +25,8 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 */
 
 #include "cn.hpp"
+#include <pybind11/pybind11.h>
+
 int m_3, ww,m_5, m_6, m_7;
 
 double tsc(double dm){
