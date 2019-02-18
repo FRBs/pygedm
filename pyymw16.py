@@ -63,6 +63,35 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
     tau_sc = r['tau_sc'] * u.s
     return dm, tau_sc
 
+def calculate_electron_density_xyz(x, y, z):
+    """ Calculate electron density at a point with galactocentric coords (x, y, z)
+
+    Args:
+        (x, y, z): galactocentric coordinates in pc
+
+    Returns:
+        N_e: electron density in cm^-3
+    """
+    # ne = ne_crd(&x, &y, &z, &gl, &gb, &dist, ncrd, vbs, dirname, text);
+    ndir, vbs, txt = 1, 0, ''
+    ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
+    return ne
+
+def calculate_electron_density_lbr(ga, gl, b):
+    """ Calculate electron density at a point with Galactic coords (ga, gl)
+        at a given distance in pc
+
+    Args:
+        (gl, gb, dist): Galactic lat/long in deg, dist in pc
+
+    Returns:
+        N_e: electron density in cm^-3
+    """
+    # ne = ne_crd(&x, &y, &z, &gl, &gb, &dist, ncrd, vbs, dirname, text);
+    ndir, vbs, txt = 2, 0, ''
+    ne = ymw16.ne_crd(0, 0, 0, ga, gl, dist, ndir, vbs, DATAPATH, txt)
+    return ne
+
 def test_dm_to_dist():
     a = dm_to_dist(204, -6.5, 200)
     b = dm_to_dist(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
