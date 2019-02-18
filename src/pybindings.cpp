@@ -254,7 +254,7 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
 	  if(R_g>35000){
 	    DM_Gal=dmm;
 	    tau_Gal=0.5*tsc(dmm);
-	    printf(" DM_Gal:%8.2f",DM_Gal);
+	    //printf(" DM_Gal:%8.2f",DM_Gal);
       result.insert(std::make_pair("DM_Gal", DM_Gal));
 	    umc++;
 	  }
@@ -266,16 +266,16 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
 	    DM_MC=dmm-DM_Gal;
 	    tau_MC=0.5*tsc(DM_MC);
 	    tau_MC_sc=MAX(tau_Gal, tau_MC);
-	    printf(" DM_MC:%8.2f",DM_MC);
+	    //printf(" DM_MC:%8.2f",DM_MC);
       result.insert(std::make_pair("DM_MC", DM_MC));
 	  }
 	  if(np==0){
-      printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist, log10(tau_MC_sc),text);
+      //printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist, log10(tau_MC_sc),text);
       result.insert(std::make_pair("dist", dist));
       result.insert(std::make_pair("tau_sc", tau_MC_sc));
     }
 	  if(np==1){
-      printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dmm, dist,log10(tau_sc),text);
+      //printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dmm, dist,log10(tau_sc),text);
       result.insert(std::make_pair("DM_Gal", dmm));
       result.insert(std::make_pair("dist", dist));
       result.insert(std::make_pair("tau_sc", tau_sc));
@@ -305,12 +305,12 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
           result.insert(std::make_pair("DM_MC", DM_MC));
         }
 	if(np==0){
-    printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
+    //printf(" Dist:%9.1f log(tau_sc):%7.3f %s\n",dist,log10(tau_MC_sc),text);
     result.insert(std::make_pair("dist", dist));
     result.insert(std::make_pair("tau_sc", tau_MC_sc));
   }
 	if(np==1){
-    printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
+    //printf(" DM_Gal:%8.2f Dist:%9.1f log(tau_sc):%7.3f %s\n", dm, dist,log10(tau_sc),text);
     result.insert(std::make_pair("DM_Gal", DM_Gal));
     result.insert(std::make_pair("dist", dist));
     result.insert(std::make_pair("tau_sc", tau_sc));
@@ -386,7 +386,7 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
 	  if(R_g>35000){
 	    DM_Gal=dm;
 	    tau_Gal=0.5*tsc(dm);
-	    printf(" DM_Gal:%8.2f",dm);
+	    //printf(" DM_Gal:%8.2f",dm);
       result.insert(std::make_pair("DM_Gal", DM_Gal));
 	    umc++;
 	  }
@@ -396,18 +396,18 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
           if(np==0){
             DM_MC=dm-DM_Gal;
             tau_MC=0.5*tsc(DM_MC);
-            printf(" DM_MC:%8.2f", DM_MC);
+            //printf(" DM_MC:%8.2f", DM_MC);
             result.insert(std::make_pair("DM_MC", DM_MC));
           }
           tau_sc=tsc(dmpsr);
           tau_MC_sc=MAX(tau_Gal, tau_MC);
           if(np==0){
-            printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+            //printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
             result.insert(std::make_pair("DM", dmpsr));
             result.insert(std::make_pair("tau_sc", tau_MC_sc));
           }
           if(np==1){
-            printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+            //printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
             result.insert(std::make_pair("DM", dmpsr));
             result.insert(std::make_pair("tau_sc", tau_sc));
           }
@@ -416,7 +416,7 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
 	if(i==nk&&np==-1){
           if(dordm==100000){
 	    DM_MC=dm-DM_Gal;
-	    printf(" DM_MC:%8.2f",DM_MC);
+	    //printf(" DM_MC:%8.2f",DM_MC);
       result.insert(std::make_pair("DM_MC", DM_MC));
 	  }
           frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
@@ -431,24 +431,24 @@ std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, doubl
 	    DM_MC=0;
 	    DM_Gal=dmpsr;
 	    tau_MC_sc=tsc(dmpsr);
-	    printf(" DM_Gal:%8.2f", DM_Gal);
+	    //printf(" DM_Gal:%8.2f", DM_Gal);
       result.insert(std::make_pair("DM_Gal", DM_Gal));
 	  }
 	  else{
 	    tau_MC=0.5*tsc(DM_MC);
 	    tau_MC_sc=MAX(tau_Gal, tau_MC);
 	  }
-	  printf(" DM_MC:%8.2f", DM_MC);
+	  //printf(" DM_MC:%8.2f", DM_MC);
     result.insert(std::make_pair("DM_MC", DM_MC));
 	}
 	tau_sc=tsc(dmpsr);
 	if(np==0){
-    printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
+    //printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr,log10(tau_MC_sc),text);
     result.insert(std::make_pair("DM", dmpsr));
     result.insert(std::make_pair("tau_sc", tau_MC_sc));
   }
 	if(np==1){
-    printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
+    //printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", dmpsr, log10(tau_sc),text);
     result.insert(std::make_pair("DM", dmpsr));
     result.insert(std::make_pair("tau_sc", tau_sc));
   }
