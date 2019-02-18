@@ -20,7 +20,7 @@ with `./make_ymw16`. This will compile:
 Once compiled, you can import the `ymw16.so` from ipython, as if it
 were a python module:
 
-```
+```python
 ipython
 > import ymw16
 > a = ymw16.dmdtau(204, -6.5, 100000, 0, 2, 1, 0, './data', '')
@@ -49,6 +49,23 @@ Args:
 Returns:
   Python dictionary with computed values.
   tsc has units of seconds.
+Type:      builtin_function_or_method
+
+In [2]: ymw16.ne_crd?
+Docstring:
+ne_crd(x: float, y: float, z: float, gl: float, gb: float, dd: float, ncrd: int, vbs: int, dirname: unicode, text: unicode) -> float
+
+
+Calculate electron density at a given point with galactocentric coordinates
+(x, y, z) OR with (gl, gb, dist).
+
+Args:
+  (x, y, z): input Galactocentric x, y and z in pc
+  (gl, gb, dist): input gl, gb in deg, Dist in pc
+  ncrd: if ncrd==1, use xyz coords. If ncrd==2 use gl gb dist coords.
+  vbs: Verbosity level, 0, 1, or 2
+  dirname: directory where data files are stored
+  text: Text to prepend in print statement.
 Type:      builtin_function_or_method
 ```
 
