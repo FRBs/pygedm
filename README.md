@@ -4,7 +4,8 @@ _A Python / C++ Version of YMW16 electron-density model_
 **Update 2019.02.17:** First 'working' version (very beta). Don't expect
 this to work out of the box.
 
-This is a Python / C++ port of the YMW16 electron density model.
+This is a Python / C++ port of the Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
+[arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model.
 The code uses [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html)
 to create Python bindings to the (C++ ported) YMW16 code.
 
