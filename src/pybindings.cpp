@@ -35,6 +35,7 @@ namespace py = pybind11;
 extern int m_3, ww,m_5, m_6, m_7;
 
 extern double tsc(double dm);
+extern double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *dd, int ncrd, int vbs, char *dirname, char *text);
 
 // Function returns to Python dictionary via std::map
 std::map<std::string, float> py_dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
@@ -498,6 +499,30 @@ py::arg("dordm"),
 py::arg("DM_Host"),
 py::arg("ndir"),
 py::arg("np"),
+py::arg("vbs"),
+py::arg("dirname"),
+py::arg("text")
+);
+
+m.def("ne_crd", &ne_crd, R"pbdoc(
+    Calculate electron density at a given point with galactocentric coordinates
+    (x, y, z) OR with (gl, gb, dist).
+
+    Args:
+      (x, y, z): input Galactocentric x, y and z in pc
+      (gl, gb, dist): input gl, gb in deg, Dist in pc
+      ncrd: if ncrd==1, use xyz coords. If ncrd==2 use gl gb dist coords.
+      vbs: Verbostiy level, 0, 1, or 2
+      dirname: directory where data files are stored
+      text: Text to prepend in print statement.
+    )pbdoc",
+py::arg("x"),
+py::arg("y"),
+py::arg("z"),
+py::arg("gl"),
+py::arg("gb"),
+py::arg("dd"),
+py::arg("ncrd"),
 py::arg("vbs"),
 py::arg("dirname"),
 py::arg("text")

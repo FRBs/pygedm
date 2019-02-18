@@ -16,7 +16,7 @@ g++ -g  ymw16.cpp ymw16.a  -o ymw16 -lm
 g++ -g  ymw16_ne.cpp ymw16.a  -o ymw16_ne -lm
 
 # Make python Pybind11 shared object
-g++ -std=c++14 -O3 -Wall -shared -undefined dynamic_lookup py_dmdtau.cpp ymw16.a `python -m pybind11 --includes` -o ymw16.so
+g++ -std=c++14 -O3 -Wall -shared -undefined dynamic_lookup pybindings.cpp ymw16.a `python -m pybind11 --includes` -o ymw16.so
 
 # Cleanup
 rm *.o
