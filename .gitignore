@@ -5,3 +5,5 @@ ymw16.so
 *.a
 .DS_Store
 *.dSYM/
+.idea
+*.pyc
