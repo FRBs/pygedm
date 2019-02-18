@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """
-# plot_galaxy_ne.py
+# plot_los_dm.py
 
-Plot electron density of galaxy using ymw16.ne_crd
+Plot electron density from Earth-centric Galactic coordinates, out to a distance
+of 10,000 parsecs.
 """
 
 import pyymw16
@@ -24,6 +25,6 @@ plt.ylim(-45, 45)
 plt.xlabel("gl [deg]")
 plt.ylabel("gb [deg]")
 cbar = plt.colorbar(orientation='horizontal')
-cbar.set_label("DM [pc cm$^(-3)$]")
+cbar.set_label("DM [pc cm$^{-3}$]")
 plt.savefig("plot_los_dm.png")
 plt.show()
