@@ -1,2 +1,1 @@
-include *.hpp
-recursive-include *.hpp
+include src/cn.hpp
