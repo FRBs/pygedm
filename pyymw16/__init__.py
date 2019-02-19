@@ -7,11 +7,16 @@ import ymw16
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
+import os
+from pkg_resources import resource_filename
+DATAPATH = os.path.dirname(resource_filename("pyymw16", "spiral.txt"))
+
 
 MODE_IDS = {'gal': 1,
             'mc': 0,
             'igm': -1}
-DATAPATH = './data'
+
+
 
 def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     """ Convert a DM to a distance
@@ -77,7 +82,7 @@ def calculate_electron_density_xyz(x, y, z):
     ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
     return ne
 
-def calculate_electron_density_lbr(ga, gl, b):
+def calculate_electron_density_lbr(ga, gl, dist):
     """ Calculate electron density at a point with Galactic coords (ga, gl)
         at a given distance in pc
 
