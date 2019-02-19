@@ -28,14 +28,30 @@ ext_modules = [
     Extension(
         'ymw16',
         sources=[
-            'src/pybindings.cpp',
+            'src/main.cpp',
+            'src/dora.cpp',
+            'src/fermibubble.cpp',
+            'src/frb_d.cpp',
+            'src/galcen.cpp',
+            'src/gum.cpp',
+            'src/lmc.cpp',
+            'src/localbubble.cpp',
+            'src/ne_crd.cpp',
+            'src/nps.cpp',
+            'src/smc.cpp',
+            'src/spiral.cpp',
+            'src/thick.cpp',
+            'src/thin.cpp',
+            'src/ymw16par.cpp',
+            'src/dmdtau2.cpp',
         ],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True)
         ],
-        extra_link_args=[os.path.join(__here__, 'src/ymw16.a'), '-lm'],
+        #extra_link_args=[os.path.join(__here__, 'src/ymw16.a'), '-lm'],
+        extra_link_args=['-lm'],
         language='c++'
     ),
 ]
@@ -95,8 +111,8 @@ class BuildExt(build_ext):
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
 
-if sys.argv[1] in ('install', 'build', 'make'):
-    os.system(os.path.join(__here__, 'make_ymw16'))
+#if sys.argv[1] in ('install', 'build', 'make'):
+#    os.system(os.path.join(__here__, 'make_ymw16'))
 
 setup(
     name='pyymw16',
