@@ -8,6 +8,10 @@ import setuptools
 __version__ = '0.0.1'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
+if sys.version_info.major == 3:
+      astro = "astropy"
+else:
+    astro = "astropy<3.0"
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path
@@ -50,7 +54,6 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True)
         ],
-        #extra_link_args=[os.path.join(__here__, 'src/ymw16.a'), '-lm'],
         extra_link_args=['-lm'],
         language='c++'
     ),
@@ -123,8 +126,8 @@ setup(
     description='Python/C++ version of YMW16 electron density model',
     long_description='',
     ext_modules=ext_modules,
-    install_requires=['pybind11>=2.2', 'astropy'],
-    tests_require = ['pytest', 'astropy', 'numpy'],
+    install_requires=['pybind11>=2.2', astro],
+    tests_require = ['pytest', astro, 'numpy'],
     setup_requires = ['pytest-runner', 'pytest-cov'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
