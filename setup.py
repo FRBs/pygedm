@@ -4,7 +4,9 @@ import sys
 import os
 import setuptools
 
+
 __version__ = '0.0.1'
+__here__ = os.path.abspath(os.path.dirname(__file__))
 
 
 class get_pybind_include(object):
@@ -33,7 +35,7 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True)
         ],
-        extra_link_args=['src/ymw16.a', '-lm'],
+        extra_link_args=[os.path.join(__here__, 'src/ymw16.a'), '-lm'],
         language='c++'
     ),
 ]
@@ -94,7 +96,7 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 if sys.argv[1] in ('install', 'build', 'make'):
-    os.system('./make_ymw16')
+    os.system(os.path.join(__here__, 'make_ymw16'))
 
 setup(
     name='pyymw16',
