@@ -1,8 +1,8 @@
+[![Build Status](https://travis-ci.org/telegraphic/pyymw16.svg?branch=master)](https://travis-ci.org/telegraphic/pyymw16)
+[![Coverage Status](https://coveralls.io/repos/github/telegraphic/pyymw16/badge.svg?branch=master)](https://coveralls.io/github/telegraphic/pyymw16?branch=master)
+
 # PyYMW16
 _A Python / C++ Version of YMW16 electron-density model_
-
-**Update 2019.02.17:** First 'working' version (very beta). Don't expect
-this to work out of the box.
 
 This is a Python / C++ port of the Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
 [arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model.
@@ -11,71 +11,21 @@ to create Python bindings to the (C++ ported) YMW16 code.
 
 ### Installation
 
-Requires pybind11 and C++11. Should install (only tested on my mac)
-with `./make_ymw16`. This will compile:
+Requires pybind11 and C++11 (i.e. gcc>4.9, Ubuntu 16.04 should work).
 
-* `ymw16` - main program (output should be identical to C version)
-* `ymw16_ne` - main program, electron model output
-* `ymw16.so` - pybind shared object
+```
+python setup.py install
+```
 
-Once compiled, you can import the `ymw16.so` from ipython, as if it
-were a python module:
+and test
 
-```python
-ipython
-> import ymw16
-> a = ymw16.dmdtau(204, -6.5, 100000, 0, 2, 1, 0, './data', '')
-DM:  252.05 log(tau_sc): -3.010
-> print a
-Out[4]: {u'DM': 252.05010986328125, u'tau_sc': 0.000978002673946321}
-> ymw16.dmdtau?
-Docstring:
-dmdtau(gl: float, gb: float, dordm: float, DM_Host: float, ndir: int, np: int, vbs: int, dirname: unicode, text: unicode) -> Dict[unicode, float]
-
-Args:
-  gl: Galactic longitude (deg.)
-  gb: Galactic latitude (deg.)
-  dordm: One of DM (cm−3 pc) or distance, depending
-         on ndir. Distance has units of pc for modes Gal and MC
-          and Mpc for mode IGM
-  DM_Host: Dispersion measure of the FRB host galaxy in
-           the observer frame (default 100 cm−3 pc). (Note: if
-           present, DM_Host is ignored for Gal and MC modes.)
-  ndir: ndir=1 converts from DM to distance and
-        ndir=2 converts from distance to DM.
-  np: -1 for IGM, 0 for Mag clouds, 1 for galaxy
-  vbs: Verbostiy level, 0, 1, or 2
-  dirname: directory where data files are stored
-  text: Text to prepend in print statement.
-Returns:
-  Python dictionary with computed values.
-  tsc has units of seconds.
-Type:      builtin_function_or_method
-
-In [2]: ymw16.ne_crd?
-Docstring:
-ne_crd(x: float, y: float, z: float, gl: float, gb: float, dd: float, ncrd: int, vbs: int, dirname: unicode, text: unicode) -> float
-
-
-Calculate electron density at a given point with galactocentric coordinates
-(x, y, z) OR with (gl, gb, dist).
-
-Args:
-  (x, y, z): input Galactocentric x, y and z in pc
-  (gl, gb, dist): input gl, gb in deg, Dist in pc
-  ncrd: if ncrd==1, use xyz coords. If ncrd==2 use gl gb dist coords.
-  vbs: Verbosity level, 0, 1, or 2
-  dirname: directory where data files are stored
-  text: Text to prepend in print statement.
-Type:      builtin_function_or_method
+```
+python setup.py test
 ```
 
 ### Todo
 
 * Create nice python wrapper using `argparse`
-* Setuptools installation (e.g. `pip install ymw16`)
-* port `ymw16_ne`
-
 
 ## YMW16 C Code
 
