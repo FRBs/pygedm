@@ -1,0 +1,24 @@
+language: python
+python:
+  - "2.7"
+
+
+# command to install dependencies
+install:
+  - sudo apt-get update -qq
+  - pip install pytest coveralls
+  - pip install --only-binary=numpy numpy
+  - pip install -r requirements.txt
+  - pip install .
+
+# command to install dependencies
+script:
+  - python setup.py test
+
+# Run code coverage
+after_success: coveralls
+
+# Run on dev and master branches
+branches:
+  only:
+    - master
