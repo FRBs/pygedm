@@ -3,7 +3,7 @@ cd src
 rm *.o rm *.a
 
 # Build source code
-g++ -std=c++11 -g -c dora.cpp fermibubble.cpp frb_d.cpp galcen.cpp \
+g++ -std=c++11 -fPIC -g -c dora.cpp fermibubble.cpp frb_d.cpp galcen.cpp \
           gum.cpp lmc.cpp localbubble.cpp ne_crd.cpp nps.cpp smc.cpp \
           spiral.cpp thick.cpp thin.cpp ymw16par.cpp dmdtau.cpp
 
