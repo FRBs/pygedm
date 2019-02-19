@@ -11,3 +11,4 @@ ymw16.so
 .eggs
 build/
 dist/
+pyymw16.egg-info/
