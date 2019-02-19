@@ -10,7 +10,7 @@ import sys
 import os
 import setuptools
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
@@ -57,7 +57,8 @@ ext_modules = [
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
-            get_pybind_include(user=True)
+            get_pybind_include(user=True),
+            os.path.join(__here__, 'src')
         ],
         extra_link_args=['-lm'],
         language='c++'
