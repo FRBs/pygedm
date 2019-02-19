@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/telegraphic/pyymw16.svg?branch=master)](https://travis-ci.org/telegraphic/pyymw16)
-[![Coverage Status](https://coveralls.io/repos/github/telegraphic/pyymw16/badge.svg?branch=master)](https://coveralls.io/github/telegraphic/pyymw16?branch=master)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![Coverage Status](https://codecov.io/gh/telegraphic/pyymw16/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pyymw16)
 
 # PyYMW16
 _A Python / C++ Version of YMW16 electron-density model_
@@ -9,25 +10,64 @@ This is a Python / C++ port of the Yao, Manchester and Wang (2017, [Astrophys. J
 The code uses [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html)
 to create Python bindings to the (C++ ported) YMW16 code.
 
+### Usage
+
+Some usage examples can be found in the [examples directory](https://github.com/telegraphic/pyymw16/tree/master/examples). 
+
+```python
+import pyymw16
+
+# calculate DM at a given distance
+DM, tau_sc = pyymw16.dist_to_dm(204.0, -6.5, 200)
+
+# calculate distance for a given sky position and DM
+dist, tau_sc = pyymw16.dm_to_dist(123.4, 4.0, 200)
+
+# calculate N_e density at xyz galactocentric coordinates
+ne = pyynmw16.calculate_electron_density_xyz(1.0, 2.0, 3.0)
+
+# calculate N_e density at Galactic lat/long/distance coords
+ne = pyynmw16.calculate_electron_density_lbr(204.0, -6.5, 3000.0)
+
+```
+
+The methods return astropy [Quantities](http://docs.astropy.org/en/stable/units/quantity.html#quantity), which have units attached, and can accept astropy [Angles](http://docs.astropy.org/en/stable/coordinates/angles.html#working-with-angles) and Quantities as arguments:
+
+```python
+import pyymw16
+import astropy.units as u
+import astropy.coordinates as c
+DM = u.Quantity(10.0, unit='pc cm^-3')
+ra, dec = c.Angle(23.0, unit='hourangle'), c.Angle('-43:00:02', unit='degree')
+sky_coords = c.SkyCoord(ra, dec, frame='icrs')
+dist, tau_sc = pyymw16.dm_to_dist(sky_coords.galactic.l, sky_coords.galactic.b, DM)
+
+print(dist.to('lyr'))
+>> 3362.16343117 lyr
+print(tau_sc.to('ns'))
+>> 7.758686138 ns
+```
+
+
 ### Installation
 
-Requires pybind11 and C++11 (i.e. gcc>4.9, Ubuntu 16.04 should work).
+Requires pybind11, astropy, and a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work).
+
+You should be able to install with:
+
+```
+pip install git+https://github.com/telegraphic/pyymw16
+```
+
+Or, download this repository and install via
 
 ```
 python setup.py install
 ```
 
-and test
+To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings, not the underlying C source code.
 
-```
-python setup.py test
-```
-
-### Todo
-
-* Create nice python wrapper using `argparse`
-
-## YMW16 C Code
+## YMW16 C README
 
 YMW16 is a model for the distribution of free electrons in the Galaxy,
 the Magellanic Clouds and the inter-galactic medium, that can be used
@@ -68,6 +108,9 @@ Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
 authors. Please provide an example illustrating the problem.
 
+### YMW16 C LICENSE
+
+```
 Copyright (C) 2016, 2017  J. M. Yao, R. N. Manchester, N. Wang.
 
 YMW16 is free software: you can redistribute it and/or modify　it
@@ -82,3 +125,4 @@ available at http://www.gnu.org/licenses/, for more details.
 
 Jumei Yao (yaojumei _@_ xao.ac.cn), Richard N Manchester
 (dick.manchester _@_ csiro.au), Na Wang (na.wang _@_ xao.ac.cn)
+```
