@@ -16,8 +16,6 @@ MODE_IDS = {'gal': 1,
             'mc': 0,
             'igm': -1}
 
-
-
 def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     """ Convert a DM to a distance
 
@@ -77,12 +75,17 @@ def calculate_electron_density_xyz(x, y, z):
     Returns:
         N_e: electron density in cm^-3
     """
-    # ne = ne_crd(&x, &y, &z, &gl, &gb, &dist, ncrd, vbs, dirname, text);
+    if isinstance(x, Quantity):
+        x = x.to('pc').value
+    if isinstance(y, Quantity):
+        y = y.to('pc').value
+    if isinstance(z, Quantity):
+        z = z.to('pc').value
     ndir, vbs, txt = 1, 0, ''
     ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
-    return ne
+    return ne / u.cm**3
 
-def calculate_electron_density_lbr(ga, gl, dist):
+def calculate_electron_density_lbr(gl, gb, dist):
     """ Calculate electron density at a point with Galactic coords (ga, gl)
         at a given distance in pc
 
@@ -92,7 +95,12 @@ def calculate_electron_density_lbr(ga, gl, dist):
     Returns:
         N_e: electron density in cm^-3
     """
-    # ne = ne_crd(&x, &y, &z, &gl, &gb, &dist, ncrd, vbs, dirname, text);
+    if isinstance(gl, Angle):
+        gl = gl.to('deg').value
+    if isinstance(gb, Angle):
+        gb = gb.to('deg').value
+    if isinstance(dist, Quantity):
+        dist = dist.to('pc').value
     ndir, vbs, txt = 2, 0, ''
-    ne = ymw16.ne_crd(0, 0, 0, ga, gl, dist, ndir, vbs, DATAPATH, txt)
-    return ne
+    ne = ymw16.ne_crd(0, 0, 0, gl, gb, dist, ndir, vbs, DATAPATH, txt)
+    return ne  / u.cm**3

@@ -1,7 +1,7 @@
 import pyymw16
 import numpy as np
 from astropy.coordinates import Angle
-from astropy.units import Unit
+from astropy.units import Unit, Quantity
 
 
 def test_dm_to_dist():
@@ -20,6 +20,22 @@ def test_dist_to_dm():
     assert a[0] == b[0] == c[0]
     assert a[1] == b[1] == c[1]
 
+def test_calculate_electron_density_xyz():
+    pc = Unit('pc')
+    a = pyymw16.calculate_electron_density_xyz(1, 2, 3)
+    b = pyymw16.calculate_electron_density_xyz(1 * pc, 2, 3)
+    c = pyymw16.calculate_electron_density_xyz(1, 2 * pc, 3)
+    d = pyymw16.calculate_electron_density_xyz(1, 2, 3 * pc)
+    assert a == b == c == d
+
+def test_calculate_electron_density_lbr():
+    pc = Unit('pc')
+    a = pyymw16.calculate_electron_density_lbr(1, 2, 3)
+    b = pyymw16.calculate_electron_density_lbr(Angle(1, unit='deg'), 2, 3)
+    c = pyymw16.calculate_electron_density_lbr(1, Angle(2, unit='deg'), 3)
+    d = pyymw16.calculate_electron_density_lbr(1, 2, 3 * pc)
+    assert a == b == c == d
+
 def test_basic():
     """ Basic tests of YMW16 model
 
@@ -28,10 +44,10 @@ def test_basic():
     """
 
     a = pyymw16.calculate_electron_density_xyz(1,2,3)
-    assert np.isclose(a, 5.220655, atol=0.0001)
+    assert np.isclose(a.value, 5.220655, atol=0.0001)
 
     a = pyymw16.calculate_electron_density_lbr(0,0,4000)
-    assert np.isclose(a,  0.388407, atol=0.0001)
+    assert np.isclose(a.value,  0.388407, atol=0.0001)
 
     # FRB180301 value
     dm, tau = pyymw16.dist_to_dm(204, -6.5, 25000)
@@ -48,3 +64,4 @@ if __name__ == "__main__":
     test_basic()
     test_dm_to_dist()
     test_dist_to_dm()
+    test_calculate_electron_density_xyz()
