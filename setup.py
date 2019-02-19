@@ -10,7 +10,7 @@ import sys
 import os
 import setuptools
 
-__version__ = '1.0.0'
+__version__ = '2.0.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
