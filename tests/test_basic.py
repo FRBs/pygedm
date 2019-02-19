@@ -5,14 +5,15 @@ from astropy.units import Unit
 
 
 def test_dm_to_dist():
+    """ Test that astropy units / angles work with dm_to_dist """
     a = pyymw16.dm_to_dist(204, -6.5, 200)
     b = pyymw16.dm_to_dist(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
     c = pyymw16.dm_to_dist(204, -6.5, 200 * Unit('pc cm^-3'))
-
     assert a[0] == b[0] == c[0]
     assert a[1] == b[1] == c[1]
 
 def test_dist_to_dm():
+    """ Test that astropy units / angles work with dist_to_dm """
     a = pyymw16.dist_to_dm(204, -6.5, 200)
     b = pyymw16.dist_to_dm(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
     c = pyymw16.dist_to_dm(204, -6.5, 200 * Unit('pc'))
@@ -22,7 +23,7 @@ def test_dist_to_dm():
 def test_basic():
     """ Basic tests of YMW16 model
 
-    Tested against online YMW16 interface
+    Note: tested against online YMW16 interface
     http://www.atnf.csiro.au/research/pulsar/ymw16/index.php
     """
 
