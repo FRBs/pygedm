@@ -6,6 +6,8 @@ python:
 # command to install dependencies
 install:
   - sudo apt-get update -qq
+  - pip uninstall pytest
+  - pip install pytest==3.3 astropy==2.0
   - pip install -r requirements.txt
   - pip install .
 

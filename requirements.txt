@@ -1,4 +1,3 @@
 pybind11
 astropy
 numpy
-pytest<3.7
