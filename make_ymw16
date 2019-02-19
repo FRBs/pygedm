@@ -3,25 +3,12 @@ cd src
 rm *.o rm *.a
 
 # Build source code
-g++ -std=c++14 -g -c dora.cpp fermibubble.cpp frb_d.cpp galcen.cpp \
+g++ -std=c++11 -g -c dora.cpp fermibubble.cpp frb_d.cpp galcen.cpp \
           gum.cpp lmc.cpp localbubble.cpp ne_crd.cpp nps.cpp smc.cpp \
           spiral.cpp thick.cpp thin.cpp ymw16par.cpp dmdtau.cpp
-#g++ -std=c++14 -g -c   `python -m pybind11 --includes`
 
 # Create library archive ymw16.a
 ar -rvs ymw16.a *.o
 
-# Build main programs
-g++ -g  ymw16.cpp ymw16.a  -o ymw16 -lm
-g++ -g  ymw16_ne.cpp ymw16.a  -o ymw16_ne -lm
-
-# Make python Pybind11 shared object
-g++ -std=c++14 -O3 -Wall -shared -undefined dynamic_lookup pybindings.cpp ymw16.a `python -m pybind11 --includes` -o ymw16.so
-
 # Cleanup
 rm *.o
-
-# move executables to root
-mv ymw16 ../
-mv ymw16_ne ../
-mv ymw16.so ../
