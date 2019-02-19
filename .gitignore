@@ -7,3 +7,7 @@ ymw16.so
 *.dSYM/
 .idea
 *.pyc
+.coverage
+.eggs
+build/
+dist/
