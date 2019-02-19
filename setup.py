@@ -1,15 +1,20 @@
+# To increment version
+# Check you have ~/.pypirc filled in
+# git tag x.y.z
+# git push --tags
+# python setup.py sdist upload
+
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
 import os
 import setuptools
 
-
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
-      astro = "astropy"
+    astro = "astropy"
 else:
     astro = "astropy<3.0"
 
@@ -114,26 +119,28 @@ class BuildExt(build_ext):
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
 
-#if sys.argv[1] in ('install', 'build', 'make'):
-#    os.system(os.path.join(__here__, 'make_ymw16'))
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 
 setup(
     name='pyymw16',
     version=__version__,
-    author='YMW16',
+    author='D. Price',
     author_email='dancpr@berkeley.edu',
-    url='https://github.com/telegraphic/pyymw16',
     description='Python/C++ version of YMW16 electron density model',
-    long_description='',
-    ext_modules=ext_modules,
+    long_description=long_description,
+    url='https://github.com/telegraphic/pyymw16',
+    download_url='https://github.com/telegraphic/pyymw16/archive/%s.tar.gz' % __version__,
+    python_requires='>=2.7',
     install_requires=['pybind11>=2.2', astro],
     tests_require = ['pytest<3.7', astro, 'numpy'],
     setup_requires = ['pytest-runner', 'pytest-cov'],
-    cmdclass={'build_ext': BuildExt},
-    zip_safe=False,
+    ext_modules=ext_modules,
     packages=['pyymw16'],
+    package_data={'pyymw16': ['spiral.txt', 'ymw16par.txt']},
     include_package_data=True,
-    package_data={
-        'pyymw16': ['spiral.txt', 'ymw16par.txt'],
-    },
+    zip_safe=False,
+    cmdclass={'build_ext': BuildExt},
 )
