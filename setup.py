@@ -127,7 +127,7 @@ setup(
     long_description='',
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.2', astro],
-    tests_require = ['pytest', astro, 'numpy'],
+    tests_require = ['pytest<3.7', astro, 'numpy'],
     setup_requires = ['pytest-runner', 'pytest-cov'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
