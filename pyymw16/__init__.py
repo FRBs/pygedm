@@ -8,7 +8,14 @@ from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
 import os
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename, get_distribution, DistributionNotFound
+
+
+try:
+    __version__ = get_distribution('pyymw16').version
+except DistributionNotFound:
+    __version__ = '0.0.1 - manual install'
+
 DATAPATH = os.path.dirname(resource_filename("pyymw16", "spiral.txt"))
 
 
