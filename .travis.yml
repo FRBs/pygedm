@@ -6,7 +6,6 @@ python:
 # command to install dependencies
 install:
   - sudo apt-get update -qq
-  - sudo apt-get install g++
   - pip install pytest coveralls
   - pip install --only-binary=numpy numpy
   - pip install -r requirements.txt
@@ -15,8 +14,6 @@ install:
 # command to install dependencies
 script:
   - python setup.py test
-
-compiler: clang
 
 # Run code coverage
 after_success: coveralls
