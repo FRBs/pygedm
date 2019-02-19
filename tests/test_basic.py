@@ -1,5 +1,23 @@
 import pyymw16
 import numpy as np
+from astropy.coordinates import Angle
+from astropy.units import Unit
+
+
+def test_dm_to_dist():
+    a = pyymw16.dm_to_dist(204, -6.5, 200)
+    b = pyymw16.dm_to_dist(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
+    c = pyymw16.dm_to_dist(204, -6.5, 200 * Unit('pc cm^-3'))
+
+    assert a[0] == b[0] == c[0]
+    assert a[1] == b[1] == c[1]
+
+def test_dist_to_dm():
+    a = pyymw16.dist_to_dm(204, -6.5, 200)
+    b = pyymw16.dist_to_dm(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
+    c = pyymw16.dist_to_dm(204, -6.5, 200 * Unit('pc'))
+    assert a[0] == b[0] == c[0]
+    assert a[1] == b[1] == c[1]
 
 def test_basic():
     """ Basic tests of YMW16 model
@@ -23,3 +41,9 @@ def test_basic():
         dm, tau = pyymw16.dist_to_dm(0, 0, dist)
         dist_out, tau = pyymw16.dm_to_dist(0, 0, dm.value)
         assert np.isclose(dist_out.value, dist, rtol=0.1)
+
+
+if __name__ == "__main__":
+    test_basic()
+    test_dm_to_dist()
+    test_dist_to_dm()

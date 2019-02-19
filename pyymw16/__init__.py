@@ -96,22 +96,3 @@ def calculate_electron_density_lbr(ga, gl, dist):
     ndir, vbs, txt = 2, 0, ''
     ne = ymw16.ne_crd(0, 0, 0, ga, gl, dist, ndir, vbs, DATAPATH, txt)
     return ne
-
-def test_dm_to_dist():
-    a = dm_to_dist(204, -6.5, 200)
-    b = dm_to_dist(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
-    c = dm_to_dist(204, -6.5, 200 * Unit('pc cm^-3'))
-
-    assert a[0] == b[0] == c[0]
-    assert a[1] == b[1] == c[1]
-
-def test_dist_to_dm():
-    a = dist_to_dm(204, -6.5, 200)
-    b = dist_to_dm(Angle(204, unit='degree'), Angle(-6.5, unit='degree'), 200)
-    c = dist_to_dm(204, -6.5, 200 * Unit('pc'))
-    assert a[0] == b[0] == c[0]
-    assert a[1] == b[1] == c[1]
-
-if __name__ == "__main__":
-    test_dm_to_dist()
-    test_dist_to_dm()
