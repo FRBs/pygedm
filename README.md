@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/telegraphic/pyymw16.svg?branch=master)](https://travis-ci.org/telegraphic/pyymw16)
-[![Coverage Status](https://coveralls.io/repos/github/telegraphic/pyymw16/badge.svg?branch=master)](https://coveralls.io/github/telegraphic/pyymw16?branch=master)
+[![Coverage Status](https://codecov.io/gh/telegraphic/pyymw16/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pyymw16)
 
 # PyYMW16
 _A Python / C++ Version of YMW16 electron-density model_
