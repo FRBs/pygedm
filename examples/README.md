@@ -12,3 +12,16 @@ Computes Galactic DM contribution over galactic latitude/longitudes, out to
 a distance of 10,000 pc.
 
 ![dm_los](plot_los_dm.png)
+
+#### create_healpix_map.py
+
+Generates an all-sky healpix map showing galactic DM contribution.
+
+![healpix_map](create_healpix_map.png)
+
+#### compare_to_ne2001.py
+
+Compares output to that of [pyne2001](https://github.com/v-morello/pyne2001) package
+(NE2001).
+
+![compare_to_ne2001](compare_to_ne2001.png)
