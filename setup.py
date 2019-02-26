@@ -132,6 +132,7 @@ setup(
     author_email='dancpr@berkeley.edu',
     description='Python/C++ version of YMW16 electron density model',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/telegraphic/pyymw16',
     download_url='https://github.com/telegraphic/pyymw16/archive/%s.tar.gz' % __version__,
     python_requires='>=2.7',
