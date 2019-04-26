@@ -138,7 +138,7 @@ setup(
     python_requires='>=2.7',
     install_requires=['pybind11>=2.2', astro],
     tests_require = ['pytest<3.7', astro, 'numpy'],
-    setup_requires = ['pytest-runner', 'pytest-cov'],
+    setup_requires = ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
     packages=['pyymw16'],
     package_data={'pyymw16': ['spiral.txt', 'ymw16par.txt']},
