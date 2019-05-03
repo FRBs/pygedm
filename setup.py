@@ -2,7 +2,8 @@
 # Check you have ~/.pypirc filled in
 # git tag x.y.z
 # git push --tags
-# python setup.py sdist upload
+# python setup.py sdist bdist_wheel
+# twine upload dist/*
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
