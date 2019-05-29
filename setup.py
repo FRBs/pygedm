@@ -11,7 +11,7 @@ import sys
 import os
 import setuptools
 
-__version__ = '2.0.7'
+__version__ = '2.0.8'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
@@ -129,8 +129,8 @@ with open("README.md", "r") as fh:
 setup(
     name='pyymw16',
     version=__version__,
-    author='D. Price',
-    author_email='dancpr@berkeley.edu',
+    author='D. C. Price',
+    author_email='dancpr [at] berkeley [dot] edu',
     description='Python/C++ version of YMW16 electron density model',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -138,8 +138,8 @@ setup(
     download_url='https://github.com/telegraphic/pyymw16/archive/%s.tar.gz' % __version__,
     python_requires='>=2.7',
     install_requires=['pybind11>=2.2', astro],
-    tests_require = ['pytest<3.7', astro, 'numpy'],
-    setup_requires = ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
+    tests_require= ['pytest<3.7', astro, 'numpy'],
+    setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
     packages=['pyymw16'],
     package_data={'pyymw16': ['spiral.txt', 'ymw16par.txt']},

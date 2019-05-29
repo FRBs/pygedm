@@ -28,6 +28,8 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
+#include <map>
+#include <string>
 #define R0 8.3
 #define RAD 57.295779
 #define N0 0.013
@@ -149,7 +151,7 @@ void fermibubble(double xx, double yy, double zz, int *wfb);
 void lmc(double l, double b, double d, int *w_lmc, double *ne8, struct LMC t9);
 void dora(double l, double b, double d, double *ne9, struct Dora t10);
 void smc(double xx, double yy, double zz, int *w_smc, double *ne10, struct SMC t11);
-void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char* text);
+std::map<std::string, float> frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char* text);
 double tsc(double dm);
 void dmdtau(double gl, double gb ,double dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text);
 double ne_crd(double *x, double *y, double *z, double *gl, double *gb, double *dd, int ncrd, int vbs, char *dirname, char *text);

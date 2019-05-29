@@ -47,7 +47,12 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     ndir, vbs, txt = 1, 0, ''
 
     r = ymw16.dmdtau(gl, gb, dm, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
-    dist = r['dist'] * u.pc
+    if mode == 'igm':
+        r['dist'] *= u.Mpc
+        r['tau_sc'] = r['tau_FRB']
+    else:
+        r['dist'] *= u.pc
+    dist = r['dist']
     tau_sc = r['tau_sc'] * u.s
     return (dist, tau_sc)
 
@@ -69,6 +74,9 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
     ndir, dm_host, vbs, txt = 2, 0, 0, ''
 
     r = ymw16.dmdtau(gl, gb, dist, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
+    if mode == 'igm':
+        r['DM'] = r['DM_IGM']
+        r['tau_sc'] = r['tau_FRB']
     dm = r['DM'] * u.pc / u.cm**3
     tau_sc = r['tau_sc'] * u.s
     return dm, tau_sc

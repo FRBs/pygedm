@@ -25,10 +25,9 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 */
 
 #include "cn.hpp"
-#include <map>
-#include <string>
 
-extern int m_3, ww,m_5, m_6, m_7;
+
+extern int m_3, ww, m_5, m_6, m_7;
 
 double tsc(double dm){
   return 4.1e-11*pow(dm, 2.2)*(1+0.00194*dm*dm);
@@ -414,9 +413,9 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
           if(dordm==100000){
 	    DM_MC=dm-DM_Gal;
 	    //printf(" DM_MC:%8.2f",DM_MC);
-      result.insert(std::make_pair("DM_MC", DM_MC));
 	  }
-          frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
+          result = frb_d(DDM, DM_Gal, DM_MC, DM_Host, uu, vbs, text);
+          result.insert(std::make_pair("DM_MC", DM_MC));
           break;
         }
       }

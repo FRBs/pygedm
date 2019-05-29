@@ -24,9 +24,12 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 (dick.manchester@csiro.au), Na Wang (na.wang@xao.ac.cn).
 */
 #include "cn.hpp"
+
 #define max(a,b) ( ((a)>(b)) ? (a):(b) )
-void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char* text)
+std::map<std::string, float> frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int vbs, char* text)
 {
+
+std::map<std::string, float> result;
 
 //parameters for IG
   double c=3e8;//m/s
@@ -52,8 +55,13 @@ void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int 
     tau_FRB=max(tau_Gal,tau_MC); 
     tau_FRB=max(tau_FRB,tau_IGM); 
     tau_FRB=max(tau_FRB,tau_Host); 
-    printf(" DM_IGM:%8.2f DM_Host:%8.2f z:%7.3f", DM_IGM, DM_Host, z);
-    printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", DDM, log10(tau_FRB),text);
+    //printf(" DM_IGM:%8.2f DM_Host:%8.2f z:%7.3f", DM_IGM, DM_Host, z);
+    //printf(" DM:%8.2f log(tau_sc):%7.3f %s\n", DDM, log10(tau_FRB),text);
+    result.insert(std::make_pair("DM_IGM", DM_IGM));
+    result.insert(std::make_pair("DM_Host", DM_Host));
+    result.insert(std::make_pair("z", z));
+    result.insert(std::make_pair("DDM", DDM));
+    result.insert(std::make_pair("tau_FRB", tau_FRB));
     if(vbs>=1)printf("tsc_gal:%10.2e, tsc_MC:%10.2e, tsc_IGM:%10.2e, tsc_Host:%10.2e,\n",
        tau_Gal,tau_MC,tau_IGM,tau_Host); 
   }
@@ -64,8 +72,11 @@ void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int 
       DM_IGM=0.0;
       dist=0.0;
       z=0.0;
-      printf(" DM_IGM:%8.2f DM_Host:%8.2f\n", DM_IGM, DM_Host);
-      printf("Warning: DM < (DM_Gal+DM_MC+DM_Host), Dist=0.0)\n");
+      //printf(" DM_IGM:%8.2f DM_Host:%8.2f\n", DM_IGM, DM_Host);
+      //printf("Warning: DM < (DM_Gal+DM_MC+DM_Host), Dist=0.0)\n");
+      result.insert(std::make_pair("DM_IGM", DM_IGM));
+      result.insert(std::make_pair("DM_Host", DM_Host));
+      result.insert(std::make_pair("DM_too_small", 1));
     }else{
       z=DM_IGM*H0*3.086e22/(c*nIG);
       dist=(c/H0)*log(1+z)/3.086e22;
@@ -77,9 +88,15 @@ void frb_d(double DDM, double DM_Gal, double DM_MC, double DM_Host, int uu, int 
       tau_FRB=max(tau_Gal,tau_MC); 
       tau_FRB=max(tau_FRB,tau_IGM); 
       tau_FRB=max(tau_FRB,tau_Host); 
-      printf(" DM_IGM:%8.2f DM_Host:%8.2f z:%7.3f", DM_IGM, DM_Host, z);
-      printf(" Dist:%8.1f log(tau_sc):%7.3f %s\n", dist, log10(tau_FRB), text); //Mpc 
+      //printf(" DM_IGM:%8.2f DM_Host:%8.2f z:%7.3f", DM_IGM, DM_Host, z);
+      //printf(" Dist:%8.1f log(tau_sc):%7.3f %s\n", dist, log10(tau_FRB), text); //Mpc
+      result.insert(std::make_pair("DM_IGM", DM_IGM));
+      result.insert(std::make_pair("DM_Host", DM_Host));
+      result.insert(std::make_pair("dist", dist));
+      result.insert(std::make_pair("tau_FRB", tau_FRB));
+
     }
     if(vbs>=1)printf("tsc_gal:%10.2e, tsc_MC:%10.2e, tsc_IGM:%10.2e, tsc_Host:%10.2e,\n",tau_Gal,tau_MC,tau_IGM,tau_Host); 
   }
+  return result;
 }
