@@ -37,8 +37,12 @@ int m_3, ww,m_5, m_6, m_7; // These are shared among other *.cpp files
 extern double ne_crd(double *x, double *y, double *z, double *gl,
                      double *gb, double *dd, int ncrd, int vbs,
                      char *dirname, char *text);
+
 extern std::map<std::string, float> dmdtau2(double gl, double gb, double dordm,
        double DM_Host, int ndir, int np, int vbs, char *dirname, char *text);
+
+extern std::map<std::string, float> frb_d(double DDM, double DM_Gal, double DM_MC,
+       double DM_Host, int uu, int vbs, char* text);
 
 
 PYBIND11_MODULE(ymw16, m) {
@@ -52,6 +56,30 @@ is output for Galactic and Magellanic Cloud pulsars and FRBs.
 Ref: J. M. Yao, R. N. Manchester, and N. Wang (2017), doi:10.3847/1538-4357/835/1/29
 
 )pbdoc"; // optional module docstring
+
+m.def("frb_d", &frb_d, R"pbdoc(
+    Args:
+      DDM: distance or DM (cm−3 pc)
+      DM_Gal: DM of galaxy along line of sight (cm−3 pc)
+      DM_MC: DM of Magellanic cloud along line of sight (cm−3 pc)
+      DM_Host: Dispersion measure of the FRB host galaxy in
+               the observer frame (default 100 cm−3 pc). (Note: if
+               present, DM_Host is ignored for Gal and MC modes.)
+      uu: Direction, 1 for dist to DM, 0 for DM to dist
+      vbs: Verbostiy level, 0, 1, or 2
+    Returns:
+      Python dictionary with computed values.
+      tsc has units of seconds.
+    )pbdoc",
+py::arg("DDM"),
+py::arg("DM_Gal"),
+py::arg("DM_MC"),
+py::arg("DM_Host"),
+py::arg("uu"),
+py::arg("vbs"),
+py::arg("text")
+);
+
 
 m.def("dmdtau", &dmdtau2, R"pbdoc(
     Args:

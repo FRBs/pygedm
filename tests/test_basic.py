@@ -60,8 +60,41 @@ def test_basic():
         assert np.isclose(dist_out.value, dist, rtol=0.1)
 
 
+def test_igm():
+    """ Test that IGM mode works as expected
+
+    Note: tested against YMW16 code with:
+    # CMD:    ./ ymw16 -d data -v IGM 204 -6.5 2000 100 1
+    # OUTPUT: DM_Gal:  252.05 DM_MC:    0.00 DM_IGM: 1647.95 DM_Host:  100.00
+    #         z:  2.311   Dist:  5336.4   log(tau_sc): -2.218
+    """
+
+    dist, tau = pyymw16.dm_to_dist(204, -6.5, 2000, dm_host=100, mode='igm')
+    assert np.isclose(dist.value, 5336.4, rtol=0.1)
+    assert np.isclose(np.log10(tau.value), -2.218, rtol=0.1)
+
+    dm, tau = pyymw16.dist_to_dm(204, -6.5, 5336.4, mode='igm')
+    dm_total = dm.value + 252.05 + 100    # Add galactic and host contribution
+    assert np.isclose(dm_total, 2000, rtol=0.1)
+
+
+def test_magellanic_cloud():
+    """ Test that MC mode agrees with YMW16
+
+    Note: tested against YMW16 code with:
+    CMD:        ./ymw16 -d data -v MC 280.46 -32.88 50000 2
+    OUTPUT:     MC: gl= 280.460 gb= -32.880 Dist=  50000.0
+                dtest=50000.000000, nstep=10000.000000, dstep=5.000000
+                DM_Gal:   58.03 DM_MC:   78.87 DM:  136.90 log(tau_sc): -5.399
+    """
+    dm, tau = pyymw16.dist_to_dm(280.46, -32.88, 50000, mode='mc')
+    assert np.isclose(dm.value, 136.90)
+    assert np.isclose(np.log10(tau.value), -5.399, rtol=0.1)
+
 if __name__ == "__main__":
     test_basic()
     test_dm_to_dist()
     test_dist_to_dm()
     test_calculate_electron_density_xyz()
+    test_igm()
+    test_magellanic_cloud()
