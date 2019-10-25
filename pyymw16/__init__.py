@@ -57,19 +57,22 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     return (dist, tau_sc)
 
 def dist_to_dm(gl, gb, dist, mode='gal'):
-    """ Convert a DM to a distance
+    """ Convert a distance to a DM
 
     Args:
         gl: galactic longitude (deg)
         gb: galactic latitude (deg)
-        dist: distance to source (pc)
+        dist: distance to source (pc) or if in mode IGM (Mpc) 
     """
     if isinstance(gl, Angle):
         gl = gl.to('deg').value
     if isinstance(gb, Angle):
         gb = gb.to('deg').value
     if isinstance(dist, Quantity):
-        dist = dist.to('pc').value
+        if mode == 'igm':
+            dist = dist.to('Mpc').value
+        else:
+            dist = dist.to('pc').value
     mode_id = MODE_IDS.get(mode.lower().strip())
     ndir, dm_host, vbs, txt = 2, 0, 0, ''
 
