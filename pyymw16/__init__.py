@@ -4,6 +4,7 @@
 """
 
 import ymw16
+from . import ne2001
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit

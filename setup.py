@@ -9,9 +9,11 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
 import os
+import glob
 import setuptools
+from ne2001_src import compile_ne2001
 
-__version__ = '2.0.8'
+__version__ = '3.0.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
@@ -66,6 +68,10 @@ ext_modules = [
     ),
 ]
 
+ymw16_data_files  = ['spiral.txt', 'ymw16par.txt']
+ne2001_data_files = ['gal01.inp', 'ne_arms_log_mod.inp', 'ne_gc.inp',
+                     'nelism.inp', 'neclumpN.NE2001.dat', 'nevoidN.NE2001.dat']
+data_files = ymw16_data_files + ne2001_data_files
 
 # As of Python 3.6, CCompiler has a `has_flag` method.
 # cf http://bugs.python.org/issue26689
@@ -126,6 +132,17 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
+# Compile NE2001
+if sys.argv[1] in ('build', 'install', 'test'):
+    compile_ne2001.compile_ne2001()
+    ne2001_shared_objs = list(glob.glob(compile_ne2001.NE_SRC_PATH + '/*.so'))
+    for sobj in ne2001_shared_objs:
+        print("Copying {sobj} to pyymw16/".format(sobj=os.path.basename(sobj)))
+        os.system('cp {sobj} pyymw16/'.format(sobj=sobj))
+        data_files.append(os.path.basename(sobj))
+
+print(data_files)
+
 setup(
     name='pyymw16',
     version=__version__,
@@ -142,7 +159,7 @@ setup(
     setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
     packages=['pyymw16'],
-    package_data={'pyymw16': ['spiral.txt', 'ymw16par.txt']},
+    package_data={'pyymw16': data_files},
     include_package_data=True,
     zip_safe=False,
     cmdclass={'build_ext': BuildExt},

@@ -1,6 +1,6 @@
 import numpy as np
-import dmdsm
-import density
+from . import dmdsm
+from . import density
 
 """
     dmdsm f2py object
