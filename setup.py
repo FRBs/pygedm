@@ -11,7 +11,6 @@ import sys
 import os
 import glob
 import setuptools
-from ne2001_src import compile_ne2001
 
 __version__ = '3.0.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
@@ -133,15 +132,77 @@ with open("README.md", "r") as fh:
 
 
 # Compile NE2001
-if sys.argv[1] in ('build', 'install', 'test'):
-    compile_ne2001.compile_ne2001()
-    ne2001_shared_objs = list(glob.glob(compile_ne2001.NE_SRC_PATH + '/*.so'))
-    for sobj in ne2001_shared_objs:
-        print("Copying {sobj} to pyymw16/".format(sobj=os.path.basename(sobj)))
-        os.system('cp {sobj} pyymw16/'.format(sobj=sobj))
-        data_files.append(os.path.basename(sobj))
+NE_SRC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ne2001_src')
+FORTRAN_SRCS = ['dmdsm.NE2001.f', 'density.NE2001.f', 'neLISM.NE2001.f',
+                'neclumpN.f', 'nevoidN.f', 'scattering98.f']
+DATA_FILES   = ['gal01.inp', 'ne_arms_log_mod.inp', 'ne_gc.inp',
+                'nelism.inp', 'neclumpN.NE2001.dat', 'nevoidN.NE2001.dat']
 
-print(data_files)
+
+def runcmd(cmd):
+    """ Run a command with os.system, printing command to screen"""
+    print("\n> " + cmd)
+    os.system(cmd)
+
+
+def list_data_files():
+    return [os.path.join(NE_SRC_PATH, df) for df in DATA_FILES]
+
+
+def cleanup():
+    """ """
+    print("---- Running cleanup ----")
+    runcmd('rm *.o')
+    if os.path.exists('sgnFile.pyf'):
+        runcmd('rm sgnFile.pyf')
+
+
+def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
+    orig_cwd = os.getcwd()
+    try:
+        os.chdir(NE_SRC_PATH)
+
+        print("\n##########################")
+        print("#### Compiling NE2001 ####")
+        print("##########################\n")
+        print("Working directory: " + NE_SRC_PATH)
+        print("Fortran compiler: " + fcomp)
+
+        AR_CMD = 'ar {ar_flags} libNE2001.a '.format(ar_flags=ar_flags)
+        RANLIB_CMD = 'ranlib libNE2001.a'
+
+        for fsrc in FORTRAN_SRCS:
+            fobj = fsrc.replace('.f', '.o')
+            runcmd("{fcomp} -O -fPIC -std=gnu -c -o {fobj} {fsrc}".format(fcomp=fcomp, fobj=fobj, fsrc=fsrc))
+            AR_CMD += '{fobj} '.format(fobj=fobj)
+
+        runcmd(AR_CMD)
+        runcmd(RANLIB_CMD)
+
+        print("\n---- Generating F2PY shared object for DMDSM ----")
+        runcmd('f2py -m dmdsm -h sgnFile.pyf dmdsm.NE2001.f --overwrite-signature')
+        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f --L./ -fPIC -lNE2001 -m dmdsm')
+        runcmd('rm sgnFile.pyf')
+
+        print("\n---- Generating F2PY shared object for density ----")
+        runcmd('f2py -m density -h sgnFile.pyf density.NE2001.f --overwrite-signature')
+        runcmd('f2py -c sgnFile.pyf density.NE2001.f -L./ -lNE2001 -m density')
+        runcmd('rm sgnFile.pyf')
+    except:
+        raise
+    finally:
+        os.chdir(orig_cwd)
+
+####
+# COMPILE NE2001 FORTRAN
+####
+
+compile_ne2001()
+ne2001_shared_objs = list(glob.glob(NE_SRC_PATH + '/*.so'))
+for sobj in ne2001_shared_objs:
+    print("Copying {sobj} to pyymw16/".format(sobj=os.path.basename(sobj)))
+    os.system('cp {sobj} pyymw16/'.format(sobj=sobj))
+    data_files.append(os.path.basename(sobj))
 
 setup(
     name='pyymw16',

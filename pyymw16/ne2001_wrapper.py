@@ -7,7 +7,6 @@ from . import density
 
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
-
 """
     dmdsm f2py object
     --------------------
@@ -82,6 +81,12 @@ DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 """
 
 def run_from_pkgdir(f):
+    """ chdir() into package directory when running
+
+    Fortran code doesn't know the relative path to its data files.
+    This wraps the function call, changing into the right directory
+    first, calling it, then changing back to original directory.
+    """
     @wraps(f)
     def wrapped(*args, **kwargs):
         cwdpath = os.getcwd()
