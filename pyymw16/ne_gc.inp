@@ -1,0 +1,7 @@
+ne_gc.inp
+-0.01, 0., -0.020	xgc, ygc, zgc = centroid
+0.145			rgc
+0.026			hgc
+10.0			negc0  
+0.6e5			Fgc0    
+
