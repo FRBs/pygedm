@@ -1,6 +1,12 @@
 import numpy as np
+import os
+from functools import wraps
+from astropy import units as u
 from . import dmdsm
 from . import density
+
+DATA_PATH = os.path.dirname(os.path.abspath(__file__))
+
 
 """
     dmdsm f2py object
@@ -75,6 +81,17 @@ from . import density
 
 """
 
+def run_from_pkgdir(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        cwdpath = os.getcwd()
+        os.chdir(DATA_PATH)
+        r = f(*args, **kwargs)
+        os.chdir(cwdpath)
+        return r
+    return wrapped
+
+@run_from_pkgdir
 def dm_to_dist(l, b, dm):
     """ Convert DM to distance and compute scattering timescale
     
@@ -89,9 +106,10 @@ def dm_to_dist(l, b, dm):
     b_rad = np.deg2rad(b)
     ndir = 1
     limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
-    
-    return float(dist), smtau
-    
+
+    return float(dist) * u.kpc, smtau * u.s
+
+@run_from_pkgdir
 def dist_to_dm(l, b, dist):
     """ Convert distance to DM and compute scattering timescale
     
@@ -107,9 +125,10 @@ def dist_to_dm(l, b, dist):
     ndir = -1
     limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
     
-    return float(dm), smtau
+    return float(dm) * u.pc / u.cm**3, smtau * u.s
 
-def density_xyz(x, y, z):
+@run_from_pkgdir
+def calculate_electron_density_xyz(x, y, z):
     """ Compute electron density at Galactocentric X, Y, Z coordinates 
 
     x,y,z are Galactocentric Cartesian coordinates, measured in kiloparsecs,
@@ -119,7 +138,7 @@ def density_xyz(x, y, z):
         x, y, z (float): Galactocentric coordinates.
     """
     ne_out = density.density_2001(x, y, z)
-    return np.sum(ne_out[:7])
+    return np.sum(ne_out[:7]) / u.cm**3
 
 def test_dm():
     """ Run test against known values 

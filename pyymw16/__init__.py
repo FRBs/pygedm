@@ -3,8 +3,8 @@
 # PyYMW16.py -- python/C++ port of YMW16 C code
 """
 
-import ymw16
-from . import ne2001
+from . import ymw16_wrapper
+from . import ne2001_wrapper
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
@@ -17,14 +17,8 @@ try:
 except DistributionNotFound:
     __version__ = '0.0.1 - manual install'
 
-DATAPATH = os.path.dirname(resource_filename("pyymw16", "spiral.txt"))
 
-
-MODE_IDS = {'gal': 1,
-            'mc': 0,
-            'igm': -1}
-
-def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
+def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
     """ Convert a DM to a distance
 
     Args:
@@ -44,20 +38,15 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
         gb = gb.to('deg').value
     if isinstance(dm, Quantity):
         dm = dm.to('pc cm^(-3)').value
-    mode_id = MODE_IDS.get(mode.lower().strip())
-    ndir, vbs, txt = 1, 0, ''
-
-    r = ymw16.dmdtau(gl, gb, dm, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
-    if mode == 'igm':
-        r['dist'] *= u.Mpc
-        r['tau_sc'] = r['tau_FRB']
+    if method.lower() == 'ymw16':
+        return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode='gal')
+    elif method.lower() == 'ne2001':
+        return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host)
     else:
-        r['dist'] *= u.pc
-    dist = r['dist']
-    tau_sc = r['tau_sc'] * u.s
-    return (dist, tau_sc)
+        raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
-def dist_to_dm(gl, gb, dist, mode='gal'):
+
+def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
     """ Convert a distance to a DM
 
     Args:
@@ -74,18 +63,15 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
             dist = dist.to('Mpc').value
         else:
             dist = dist.to('pc').value
-    mode_id = MODE_IDS.get(mode.lower().strip())
-    ndir, dm_host, vbs, txt = 2, 0, 0, ''
+    if method.lower() == 'ymw16':
+        return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode='gal')
+    elif method.lower() == 'ne2001':
+        dist_kpc = dist / 1000.0
+        return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc)
+    else:
+        raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
-    r = ymw16.dmdtau(gl, gb, dist, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
-    if mode == 'igm':
-        r['DM'] = r['DM_IGM']
-        r['tau_sc'] = r['tau_FRB']
-    dm = r['DM'] * u.pc / u.cm**3
-    tau_sc = r['tau_sc'] * u.s
-    return dm, tau_sc
-
-def calculate_electron_density_xyz(x, y, z):
+def calculate_electron_density_xyz(x, y, z, method='ymw16'):
     """ Calculate electron density at a point with galactocentric coords (x, y, z)
 
     Args:
@@ -100,11 +86,14 @@ def calculate_electron_density_xyz(x, y, z):
         y = y.to('pc').value
     if isinstance(z, Quantity):
         z = z.to('pc').value
-    ndir, vbs, txt = 1, 0, ''
-    ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
-    return ne / u.cm**3
+    if method.lower() == 'ymw16':
+        return ymw16_wrapper.calculate_electron_density_xyz(x, y, z)
+    elif method.lower() == 'ne2001':
+        return ne2001_wrapper.calculate_electron_density_xyz(x, y, z)
+    else:
+        raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
-def calculate_electron_density_lbr(gl, gb, dist):
+def calculate_electron_density_lbr(gl, gb, dist, method='ymw16'):
     """ Calculate electron density at a point with Galactic coords (ga, gl)
         at a given distance in pc
 
@@ -120,6 +109,7 @@ def calculate_electron_density_lbr(gl, gb, dist):
         gb = gb.to('deg').value
     if isinstance(dist, Quantity):
         dist = dist.to('pc').value
-    ndir, vbs, txt = 2, 0, ''
-    ne = ymw16.ne_crd(0, 0, 0, gl, gb, dist, ndir, vbs, DATAPATH, txt)
-    return ne  / u.cm**3
+    if method.lower() == 'ymw16':
+        return ymw16_wrapper.calculate_electron_density_lbr(gl, gb, dist)
+    else:
+        raise RuntimeError("Only ymw16 model supported.")

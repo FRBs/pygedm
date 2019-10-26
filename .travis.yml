@@ -8,6 +8,7 @@ python:
 # command to install dependencies
 install:
   - sudo apt-get update -qq
+  - sudo apt-get install gfortran
   - pip install codecov
   - pip install -r requirements.txt
   - pip install .
