@@ -38,8 +38,9 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
         gb = gb.to('deg').value
     if isinstance(dm, Quantity):
         dm = dm.to('pc cm^(-3)').value
+
     if method.lower() == 'ymw16':
-        return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode='gal')
+        return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode=mode)
     elif method.lower() == 'ne2001':
         return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host)
     else:
@@ -64,7 +65,7 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
         else:
             dist = dist.to('pc').value
     if method.lower() == 'ymw16':
-        return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode='gal')
+        return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode=mode)
     elif method.lower() == 'ne2001':
         dist_kpc = dist / 1000.0
         return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc)
