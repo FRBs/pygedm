@@ -181,7 +181,7 @@ def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
 
         print("\n---- Generating F2PY shared object for DMDSM ----")
         runcmd('f2py -m dmdsm -h sgnFile.pyf dmdsm.NE2001.f --overwrite-signature')
-        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f --L./ -lNE2001 -m dmdsm')
+        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f -L./ -lNE2001 -m dmdsm')
         runcmd('rm sgnFile.pyf')
 
         print("\n---- Generating F2PY shared object for density ----")
