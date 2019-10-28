@@ -14,7 +14,7 @@ from pkg_resources import resource_filename, get_distribution, DistributionNotFo
 
 try:
     __version__ = get_distribution('pygedm').version
-except DistributionNotFound:
+except DistributionNotFound: # pragma: no cover
     __version__ = '0.0.1 - manual install'
 
 

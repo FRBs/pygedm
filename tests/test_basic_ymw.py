@@ -2,7 +2,7 @@ import pygedm
 import numpy as np
 from astropy.coordinates import Angle
 from astropy.units import Unit, Quantity
-
+import astropy.units as u
 
 def test_dm_to_dist():
     """ Test that astropy units / angles work with dm_to_dist """
@@ -75,6 +75,10 @@ def test_igm():
 
     dm, tau = pygedm.dist_to_dm(204, -6.5, 5336.4, mode='igm')
     dm_total = dm.value + 252.05 + 100    # Add galactic and host contribution
+    assert np.isclose(dm_total, 2000, rtol=0.1)
+
+    dm, tau = pygedm.dist_to_dm(204, -6.5, 5336.4 * u.Mpc, mode='igm')
+    dm_total = dm.value + 252.05 + 100  # Add galactic and host contribution
     assert np.isclose(dm_total, 2000, rtol=0.1)
 
 

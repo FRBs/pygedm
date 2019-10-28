@@ -15,6 +15,8 @@ def test_raises():
          pygedm.calculate_electron_density_xyz(100, 10, 100, method='tc93')
     with pytest.raises(RuntimeError):
          pygedm.calculate_electron_density_lbr(100, 10, 100, method='ymwPaleolithic')
+    with pytest.raises(RuntimeError):
+         pygedm.dist_to_dm(100, 10, 100, mode='igm', method='ne2001')
 
 if __name__ == "__main__":
     test_raises()
