@@ -10,7 +10,7 @@ from astropy.units import Quantity, Unit
 import os
 from pkg_resources import resource_filename, get_distribution, DistributionNotFound
 
-DATAPATH = os.path.dirname(resource_filename("pyymw16", "spiral.txt"))
+DATAPATH = os.path.dirname(resource_filename("pygedm", "spiral.txt"))
 
 
 MODE_IDS = {'gal': 1,

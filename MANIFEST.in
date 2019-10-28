@@ -1,3 +1,9 @@
 include src/cn.hpp
-include pyymw16/spiral.txt
-include pyymw16/ymw16par.txt
+include pygedm/spiral.txt
+include pygedm/ymw16par.txt
+include pygedm/gal01.inp
+include pygedm/ne_arms_log_mod.inp
+include pygedm/ne_gc.inp
+include pygedm/nelism.inp
+include pygedm/neclumpN.NE2001.dat
+include pygedm/nevoidN.NE2001.dat

@@ -39,28 +39,28 @@ ext_modules = [
     Extension(
         'ymw16',
         sources=[
-            'src/main.cpp',
-            'src/dora.cpp',
-            'src/fermibubble.cpp',
-            'src/frb_d.cpp',
-            'src/galcen.cpp',
-            'src/gum.cpp',
-            'src/lmc.cpp',
-            'src/localbubble.cpp',
-            'src/ne_crd.cpp',
-            'src/nps.cpp',
-            'src/smc.cpp',
-            'src/spiral.cpp',
-            'src/thick.cpp',
-            'src/thin.cpp',
-            'src/ymw16par.cpp',
-            'src/dmdtau2.cpp',
+            'ymw16_src/main.cpp',
+            'ymw16_src/dora.cpp',
+            'ymw16_src/fermibubble.cpp',
+            'ymw16_src/frb_d.cpp',
+            'ymw16_src/galcen.cpp',
+            'ymw16_src/gum.cpp',
+            'ymw16_src/lmc.cpp',
+            'ymw16_src/localbubble.cpp',
+            'ymw16_src/ne_crd.cpp',
+            'ymw16_src/nps.cpp',
+            'ymw16_src/smc.cpp',
+            'ymw16_src/spiral.cpp',
+            'ymw16_src/thick.cpp',
+            'ymw16_src/thin.cpp',
+            'ymw16_src/ymw16par.cpp',
+            'ymw16_src/dmdtau2.cpp',
         ],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True),
-            os.path.join(__here__, 'src')
+            os.path.join(__here__, 'ymw16_src')
         ],
         extra_link_args=['-lm'],
         language='c++'
@@ -130,7 +130,6 @@ class BuildExt(build_ext):
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-
 # Compile NE2001
 NE_SRC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ne2001_src')
 FORTRAN_SRCS = ['dmdsm.NE2001.f', 'density.NE2001.f', 'neLISM.NE2001.f',
@@ -197,30 +196,35 @@ def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
 # COMPILE NE2001 FORTRAN
 ####
 
-compile_ne2001()
+
+do_fortran_compile = True
+
+if do_fortran_compile:
+    compile_ne2001()
+
 ne2001_shared_objs = list(glob.glob(NE_SRC_PATH + '/*.so'))
 for sobj in ne2001_shared_objs:
-    print("Copying {sobj} to pyymw16/".format(sobj=os.path.basename(sobj)))
-    os.system('cp {sobj} pyymw16/'.format(sobj=sobj))
+    print("Copying {sobj} to pygedm/".format(sobj=os.path.basename(sobj)))
+    os.system('cp {sobj} pygedm/'.format(sobj=sobj))
     data_files.append(os.path.basename(sobj))
 
 setup(
-    name='pyymw16',
+    name='pygedm',
     version=__version__,
     author='D. C. Price',
     author_email='dancpr [at] berkeley [dot] edu',
     description='Python/C++ version of YMW16 electron density model',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/telegraphic/pyymw16',
-    download_url='https://github.com/telegraphic/pyymw16/archive/%s.tar.gz' % __version__,
+    url='https://github.com/telegraphic/pygedm',
+    download_url='https://github.com/telegraphic/pygedm/archive/%s.tar.gz' % __version__,
     python_requires='>=2.7',
     install_requires=['pybind11>=2.2', astro],
     tests_require= ['pytest<3.7', astro, 'numpy'],
     setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
-    packages=['pyymw16'],
-    package_data={'pyymw16': data_files},
+    packages=['pygedm'],
+    package_data={'pygedm': data_files},
     include_package_data=True,
     zip_safe=False,
     cmdclass={'build_ext': BuildExt},

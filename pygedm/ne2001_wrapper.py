@@ -112,7 +112,7 @@ def dm_to_dist(l, b, dm):
     ndir = 1
     limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
 
-    return float(dist) * u.kpc, smtau * u.s
+    return (float(dist) * u.kpc).to('pc'), smtau * u.s
 
 @run_from_pkgdir
 def dist_to_dm(l, b, dist):
@@ -145,50 +145,6 @@ def calculate_electron_density_xyz(x, y, z):
     ne_out = density.density_2001(x, y, z)
     return np.sum(ne_out[:7]) / u.cm**3
 
-def test_dm():
-    """ Run test against known values 
-    ## Test data from https://www.nrl.navy.mil/rsd/RORF/ne2001_src/
-    """
-    test_data = {
-        'l':    [0,    2,      97.5,],
-        'b':    [0,    7.5,    85.2,],
-        'dm':   [10,   20,     11.1],
-        'dist': [0.461, 0.781, 0.907] 
-    }  
-    
-    for ii in range(len(test_data['l'])):
-        dist, smtau = dm_to_dist(test_data['l'][ii], test_data['b'][ii], test_data['dm'][ii])
-        assert np.allclose(dist, test_data['dist'][ii], atol=2)
-        
-        dm, smtau = dist_to_dm(test_data['l'][ii], test_data['b'][ii], test_data['dist'][ii])
-        assert np.allclose(dm, test_data['dm'][ii], atol=2)
 
-def test_density():
-    """ Test density model """
-    import pylab as plt
-    # Create 2D array 
-    Nx, Ny = 1000, 1000
-    ne_arr = np.zeros((Nx, Ny))
-    xvals = np.linspace(-30, 30, Nx)
-    yvals = np.linspace(-30, 30, Ny)
 
-    # Loop through x and y 
-    zz = 0
-    for ii, xx in enumerate(xvals):
-        for jj, yy in enumerate(yvals):  
-            #ne_out = density.density_2001(xx, yy, zz)
-            ne_arr[ii, jj] = density_xyz(xx, yy, zz)
 
-    # Plot ne2001_src density
-    plt.imshow(np.log(ne_arr), extent=(-30, 30, 30, -30), cmap='magma', clim=(-10, 0))
-    plt.xlabel("X [kpc]")
-    plt.ylabel("Y [kpc]")
-    plt.xlim(-20, 20)
-    plt.ylim(-20, 20)
-    plt.colorbar()
-    plt.savefig("density_ne2001.png")
-    plt.show()
-
-if __name__ == "__main__":
-    test_dm()
-    test_density()
