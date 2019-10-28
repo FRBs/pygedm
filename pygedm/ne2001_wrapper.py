@@ -140,7 +140,7 @@ def calculate_electron_density_xyz(x, y, z):
     with the axes parallel to (l, b) = (90, 0), (180, 0), and (0, 90) degrees
 
     Args:
-        x, y, z (float): Galactocentric coordinates.
+        x, y, z (float): Galactocentric coordinates in kpc (NOT pc!)
     """
     ne_out = density.density_2001(x, y, z)
     return np.sum(ne_out[:7]) / u.cm**3

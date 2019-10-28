@@ -95,7 +95,7 @@ def calculate_electron_density_xyz(x, y, z, method='ymw16'):
     if method.lower() == 'ymw16':
         return ymw16_wrapper.calculate_electron_density_xyz(x, y, z)
     elif method.lower() == 'ne2001':
-        return ne2001_wrapper.calculate_electron_density_xyz(x, y, z)
+        return ne2001_wrapper.calculate_electron_density_xyz(x/1e3, y/1e3, z/1e3)
     else:
         raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
