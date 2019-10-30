@@ -90,10 +90,14 @@ def run_from_pkgdir(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
         cwdpath = os.getcwd()
-        os.chdir(DATA_PATH)
-        r = f(*args, **kwargs)
-        os.chdir(cwdpath)
-        return r
+        try:
+            os.chdir(DATA_PATH)
+            r = f(*args, **kwargs)
+            return r
+        except:
+            raise
+        finally:
+            os.chdir(cwdpath)
     return wrapped
 
 @run_from_pkgdir
