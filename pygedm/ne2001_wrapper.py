@@ -94,7 +94,7 @@ def run_from_pkgdir(f):
             os.chdir(DATA_PATH)
             r = f(*args, **kwargs)
             return r
-        except:
+        except:   # pragma: no cover
             raise
         finally:
             os.chdir(cwdpath)
