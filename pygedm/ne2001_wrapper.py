@@ -114,7 +114,10 @@ def dm_to_dist(l, b, dm):
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
     ndir = 1
-    limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
+    if np.isclose(dm, 0):  # Catch infinite timeout bug
+        return 0.0 * u.pc, 0.0 * u.s
+    else:
+        limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
 
     return (float(dist) * u.kpc).to('pc'), smtau * u.s
 
@@ -132,7 +135,11 @@ def dist_to_dm(l, b, dist):
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
     ndir = -1
-    limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
+
+    if np.isclose(dist, 0):       # Catch infinite timeout bug
+        return 0.0 * u.pc / u.cm**3, 0.0 * u.s
+    else:
+        limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
     
     return float(dm) * u.pc / u.cm**3, smtau * u.s
 

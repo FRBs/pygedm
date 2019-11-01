@@ -1,4 +1,5 @@
-include src/cn.hpp
+include ymw16_src/cn.hpp
+include ne2001_src/*
 include pygedm/spiral.txt
 include pygedm/ymw16par.txt
 include pygedm/gal01.inp
@@ -7,3 +8,4 @@ include pygedm/ne_gc.inp
 include pygedm/nelism.inp
 include pygedm/neclumpN.NE2001.dat
 include pygedm/nevoidN.NE2001.dat
+

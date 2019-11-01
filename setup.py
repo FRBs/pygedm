@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.0.0'
+__version__ = '3.0.4'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
@@ -60,7 +60,7 @@ ext_modules = [
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True),
-            os.path.join(__here__, 'ymw16_src')
+            os.path.join(__here__, 'ymw16_src'),
         ],
         extra_link_args=['-lm'],
         language='c++'
@@ -212,7 +212,7 @@ setup(
     name='pygedm',
     version=__version__,
     author='D. C. Price',
-    author_email='dancpr [at] berkeley [dot] edu',
+    author_email='dancpr@berkeley.edu',
     description='Python/C++ version of YMW16 electron density model',
     long_description=long_description,
     long_description_content_type='text/markdown',

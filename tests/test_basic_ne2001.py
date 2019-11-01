@@ -80,6 +80,15 @@ def test_dm_wrapper():
         dm, smtau = pygedm.ne2001_wrapper.dist_to_dm(test_data['l'][ii], test_data['b'][ii], test_data['dist'][ii])
         assert np.allclose(dm.value, test_data['dm'][ii], atol=2)
 
+def test_zero_dm():
+    """ Check that zero DM doesn't cause timeout bug
+
+    Fortran code hangs if DM or D == 0
+    """
+    dist, smtau = pygedm.ne2001_wrapper.dm_to_dist(0, 0, 0)
+    dm, smtau   = pygedm.ne2001_wrapper.dist_to_dm(0, 0, 0)
+    assert dist.value == dm.value == 0
+
 if __name__ == "__main__":
     test_basic()
     test_dm_to_dist()
