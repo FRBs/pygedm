@@ -336,8 +336,8 @@ c	      write(6,*) (th1(k,j), r1(k,j), k=1,NNj(j))
 		 call cspline(th1(1,j),r1(1,j),NNj(j),th,r)
 		 arm(j,k,1)=-r*sin(th/rad)
 		 arm(j,k,2)= r*cos(th/rad)
-                 write(11,"(1x,i2,1x,i3,1x,2(f7.3,1x))") 
-     .              j,k,arm(j,k,1),arm(j,k,2)
+c                 write(11,"(1x,i2,1x,i3,1x,2(f7.3,1x))")
+c     .              j,k,arm(j,k,1),arm(j,k,2)
  10	      continue
  20	   continue
 	   kmax(j)=k
