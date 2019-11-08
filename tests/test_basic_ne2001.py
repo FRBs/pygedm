@@ -30,8 +30,9 @@ def test_calculate_electron_density_xyz():
     assert a == b == c == d
 
 def test_calculate_electron_density_lbr():
-    with pytest.raises(RuntimeError):
-        pygedm.calculate_electron_density_lbr(100, 10, 100, method='ne2001')
+    ed_gc = pygedm.calculate_electron_density_xyz(0, 0, 0, method='ne2001')
+    ed_gc_lbr = pygedm.calculate_electron_density_lbr(0, 0, 8500, method='ne2001')
+    assert ed_gc == ed_gc_lbr
 
 def test_basic():
     """ Basic tests of YMW16 model
