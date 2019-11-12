@@ -11,6 +11,11 @@ from astropy.units import Quantity, Unit
 import numpy as np
 from pkg_resources import resource_filename, get_distribution, DistributionNotFound
 
+try:
+    import healpy as hp
+    HAS_HEALPIX = True
+except ImportError:  # pragma: no cover
+    HAS_HEALPIX = False
 
 try:
     __version__ = get_distribution('pygedm').version
@@ -184,3 +189,28 @@ def convert_lbr_to_xyz(gl, gb, dist, method='ymw16'):
         return x, y, z
     else:
         raise RuntimeError("method must be astropy, ne2001, or ymw16")
+
+def generate_healpix_dm_map(dist, nside=64, method='ymw16'):
+    """ Generate an all-sky healpix map for a given distance.
+
+    Args:
+        dist (float or Quantity): Distance to integrate EDM out to. 30 kpc will go to edge
+        nside (int): The NSIDE parameter for the healpix map (power of 2, larger => higher resolution)
+        method (str): one of 'ymw16', 'ne2001'
+
+    Notes:
+        This method takes a fair amount of time to run -- tens of seconds for NSIDE=32
+
+    Returns:
+         healpix map as a numpy array (1D), which can be viewed using the healpy.mollview() method
+    """
+    if HAS_HEALPIX:
+        pix_id = np.arange(hp.nside2npix(nside))
+        gl, gb = hp.pix2ang(nside, pix_id, lonlat=True)
+        d = np.zeros_like(pix_id, dtype='float32')
+        for ii in pix_id:
+            dm, tau_sc = dist_to_dm(gl[ii], gb[ii], dist, method=method)
+            d[ii] = dm.value
+        return d
+    else:
+        raise RuntimeError("Healpy installation not found.")
