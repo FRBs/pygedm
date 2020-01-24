@@ -3,9 +3,9 @@
 [![Coverage Status](https://codecov.io/gh/telegraphic/pygedm/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pygedm)
 
 # PyGEDM
-_Python bindings for the YMW16 and NE2001 electron density models_
+_Python bindings for the YMW16, NE2001 and YT2020 electron density models_
 
-This package is a Python interface to the YMW16 and NE2001 electron density models.
+This package is a Python interface to the YMW16 and NE2001 electron density models, and YT2020 halo model.
 The Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
 [arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model, is written in C++, and the Cordes and Lazio 
 (2001, [arXiv:0207156](https://arxiv.org/abs/astro-ph/)) NE2001 model is written in FORTRAN. This package, PyGEDM, wraps these
@@ -19,7 +19,8 @@ Some usage examples can be found in the [examples directory](https://github.com/
 import pygedm
 
 # calculate DM at a given distance
-DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200)
+DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ne2001')
+DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ymw16')
 
 # calculate distance for a given sky position and DM
 dist, tau_sc = pygedm.dm_to_dist(123.4, 4.0, 200)
@@ -29,6 +30,9 @@ ne = pygedm.calculate_electron_density_xyz(1.0, 2.0, 3.0)
 
 # calculate N_e density at Galactic lat/long/distance coords
 ne = pygedm.calculate_electron_density_lbr(204.0, -6.5, 3000.0)
+
+# Calculate halo DM contribution
+dm_halo = pygedm.calculate_halo_dm(gl=0, gb=30)
 
 ```
 
@@ -70,6 +74,29 @@ python setup.py install
 To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings, 
 not the underlying C/FORTRAN source code (which is not supplied with unit tests).
 
+### References
+
+If using PyGEDM in a journal article, please remember to cite the underlying electron density models:
+
+[Cordes, J. M., & Lazio, T. J. W. (2002)](https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract),  
+_NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations_, 
+arXiv e-prints, astro-ph/0207156.
+
+[Cordes, J. M., & Lazio, T. J. W. (2003)](https://ui.adsabs.harvard.edu/abs/2003astro.ph..1598C/abstract),  
+_NE2001. II. Using Radio Propagation Data to Construct a Model for the Galactic Distribution of Free Electrons_, 
+arXiv e-prints, astro-ph/0301598.
+
+[Yao, J. M., Manchester, R. N., & Wang, N. (2017)](https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract),  
+_A New Electron-density Model for Estimation of Pulsar and FRB Distances_, 
+ApJ, 835, 29.
+
+[Yamasaki, S., & Totani, T. (2019)](https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract),  
+_The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts_, 
+arXiv e-prints, arXiv:1909.00849.
+
+These are available in bibtex format in [references.bib](https://github.com/telegraphic/pygedm/references.bib),
+and also as an [ADS library](https://ui.adsabs.harvard.edu/public-libraries/Ci6_0-TlSySPMLrHxTvhhw). 
+
 ## YMW16 C README
 
 YMW16 is a model for the distribution of free electrons in the Galaxy,
@@ -89,7 +116,8 @@ As well as the ymw16 dm-distance program, we also provide a program,
 ymw16_ne, which gives the electron density at any point in the Galaxy
 or Magellanic Clouds.
 
-A paper (Yao, Manchester and Wang, 2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
+A paper (Yao, Manchester and Wang, 2017,
+[Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
 [arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) describes the model and compares its predictions
 with those of earlier Galactic electron density models. YMW16 is the
 first electron-density model to estimate extragalactic pulsar
@@ -102,10 +130,10 @@ up to point at a directory containing ymw16par.txt and
 spiral.txt. Access to these files is needed at runtime.
 
 Websites allowing interactive access to the YMW16 distance model and
-download of the latest program version are available at
-http://www.xao.ac.cn/ymw16/,
-http://www.atnf.csiro.au/research/pulsar/ymw16/ and
-https://bitbucket.org/psrsoft/ymw16/.
+download of the latest program version are available at:
+* [http://www.xao.ac.cn/ymw16/](http://www.xao.ac.cn/ymw16/),
+* [http://www.atnf.csiro.au/research/pulsar/ymw16/](http://www.atnf.csiro.au/research/pulsar/ymw16/]) and
+* [https://bitbucket.org/psrsoft/ymw16/](https://bitbucket.org/psrsoft/ymw16/).
 
 Please report any issues or bugs at
 https://bitbucket.org/psrsoft/ymw16/issues/new/ or directly to the
@@ -130,7 +158,7 @@ Jumei Yao (yaojumei _@_ xao.ac.cn), Richard N Manchester
 (dick.manchester _@_ csiro.au), Na Wang (na.wang _@_ xao.ac.cn)
 ```
 
-### NE2001 README
+## NE2001 README
 
 07 July 2002
 To compile and execute the code,  see [code.pdf](https://github.com/telegraphic/pygedm/blob/master/ne2001_src/code.pdf).
