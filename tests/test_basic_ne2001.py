@@ -5,6 +5,7 @@ from astropy.units import Unit, Quantity
 import astropy.units as u
 import pytest
 
+
 def test_dm_to_dist():
     """ Test that astropy units / angles work with dm_to_dist """
     a = pygedm.dm_to_dist(204, -6.5, 200, method='ne2001')
@@ -12,6 +13,7 @@ def test_dm_to_dist():
     c = pygedm.dm_to_dist(204, -6.5, 200 * Unit('pc cm^-3'), method='ne2001')
     assert a[0] == b[0] == c[0]
     assert a[1] == b[1] == c[1]
+
 
 def test_dist_to_dm():
     """ Test that astropy units / angles work with dist_to_dm """
@@ -21,6 +23,7 @@ def test_dist_to_dm():
     assert a[0] == b[0] == c[0]
     assert a[1] == b[1] == c[1]
 
+
 def test_calculate_electron_density_xyz():
     pc = Unit('pc')
     a = pygedm.calculate_electron_density_xyz(1, 2, 3, method='ne2001')
@@ -29,10 +32,12 @@ def test_calculate_electron_density_xyz():
     d = pygedm.calculate_electron_density_xyz(1, 2, 3 * pc, method='ne2001')
     assert a == b == c == d
 
+
 def test_calculate_electron_density_lbr():
     ed_gc = pygedm.calculate_electron_density_xyz(0, 0, 0, method='ne2001')
     ed_gc_lbr = pygedm.calculate_electron_density_lbr(0, 0, 8500, method='ne2001')
     assert ed_gc == ed_gc_lbr
+
 
 def test_basic():
     """ Basic tests of YMW16 model
@@ -75,20 +80,39 @@ def test_dm_wrapper():
     }
 
     for ii in range(len(test_data['l'])):
-        dist, smtau = pygedm.ne2001_wrapper.dm_to_dist(test_data['l'][ii], test_data['b'][ii], test_data['dm'][ii])
+        dist, tau_sc = pygedm.ne2001_wrapper.dm_to_dist(test_data['l'][ii], test_data['b'][ii], test_data['dm'][ii])
         assert np.allclose(dist.to('kpc').value, test_data['dist'][ii], atol=2)
 
-        dm, smtau = pygedm.ne2001_wrapper.dist_to_dm(test_data['l'][ii], test_data['b'][ii], test_data['dist'][ii])
+        dm, tau_sc = pygedm.ne2001_wrapper.dist_to_dm(test_data['l'][ii], test_data['b'][ii], test_data['dist'][ii])
         assert np.allclose(dm.value, test_data['dm'][ii], atol=2)
+
 
 def test_zero_dm():
     """ Check that zero DM doesn't cause timeout bug
 
     Fortran code hangs if DM or D == 0
     """
-    dist, smtau = pygedm.ne2001_wrapper.dm_to_dist(0, 0, 0)
-    dm, smtau   = pygedm.ne2001_wrapper.dist_to_dm(0, 0, 0)
+    dist, tau_sc = pygedm.ne2001_wrapper.dm_to_dist(0, 0, 0)
+    dm, tau_sc   = pygedm.ne2001_wrapper.dist_to_dm(0, 0, 0)
     assert dist.value == dm.value == 0
+
+
+def test_dm_wrapper_b0353():
+    """ Test against NE2001 online values for PSR B0353+52
+
+    l, b, dm = 149.0993, -0.5223, 102.5
+    D = 2.746 kpc
+    log_sm = -2.25 kpc m-20/3
+    pulse broad = 6.57 us
+    """
+    l  = 149.0993
+    b  = -0.5223
+    dm = 102.50
+    dist, tau_sc = pygedm.ne2001_wrapper.dm_to_dist(l, b, dm)
+
+    assert np.isclose(dist.to('kpc').value, 2.746, atol=0.01, rtol=0)
+    assert np.isclose(tau_sc.to('us').value, 6.57, atol=0.01, rtol=0)
+
 
 if __name__ == "__main__":
     test_basic()
@@ -97,3 +121,4 @@ if __name__ == "__main__":
     test_calculate_electron_density_xyz()
     test_igm()
     test_dm_wrapper()
+    test_dm_wrapper_b0353()

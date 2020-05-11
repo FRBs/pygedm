@@ -17,6 +17,7 @@ MODE_IDS = {'gal': 1,
             'mc': 0,
             'igm': -1}
 
+
 def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     """ Convert a DM to a distance
 
@@ -45,6 +46,7 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     tau_sc = r['tau_sc'] * u.s
     return (dist, tau_sc)
 
+
 def dist_to_dm(gl, gb, dist, mode='gal'):
     """ Convert a distance to a DM
 
@@ -64,6 +66,7 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
     tau_sc = r['tau_sc'] * u.s
     return dm, tau_sc
 
+
 def calculate_electron_density_xyz(x, y, z):
     """ Calculate electron density at a point with galactocentric coords (x, y, z)
 
@@ -76,6 +79,7 @@ def calculate_electron_density_xyz(x, y, z):
     ndir, vbs, txt = 1, 0, ''
     ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
     return ne / u.cm**3
+
 
 def calculate_electron_density_lbr(gl, gb, dist):
     """ Calculate electron density at a point with Galactic coords (ga, gl)

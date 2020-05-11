@@ -2,8 +2,8 @@ import numpy as np
 import os
 from functools import wraps
 from astropy import units as u
-from . import dmdsm
-from . import density
+from . import dmdsm     # f2py FORTRAN object
+from . import density   # f2py FORTRAN object
 
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,10 +29,10 @@ DATA_PATH = os.path.dirname(os.path.abspath(__file__))
     Returns
     -------
     limit : string(len=1)
-    sm : float
-    smtau : float
-    smtheta : float
-    smiso : float
+    sm : float  (scattering measure, uniform weighting) (kpc/m^{20/3})
+    smtau : float  (scattering measure, weighting for pulse broadening)
+    smtheta : float  (scattering measure, weighting for angular broadening of galactic sources)
+    smiso : float (scattering measure appropriate for calculating the isoplanatic angle at the source's location)
 
 
     density f2py object
@@ -80,6 +80,7 @@ DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
 """
 
+
 def run_from_pkgdir(f):
     """ chdir() into package directory when running
 
@@ -100,6 +101,40 @@ def run_from_pkgdir(f):
             os.chdir(cwdpath)
     return wrapped
 
+
+def TAUISS(d, sm, nu):
+    """ Convert a scattering measure (SM) to scattering timescale at given frequency.
+
+    Direct port from FORTRAN code scattering98.f
+
+    Args:
+        d (float): Distance in kpc
+        sm (float): Scattering measure (kpc m^{-20/3})
+        nu (float): Radio frequency in GHz
+
+    Returns:
+        tauiss (float): pulse broadening time (ms)
+
+    Fortran equiv:
+          REAL FUNCTION TAUISS(d, sm, nu)
+    c
+    c calculates the pulse broadening time in ms
+    c from distance, scattering measure, and radio frequency
+    c
+    c input:      d = pulsar distance       (kpc)
+    c            sm = scattering measure    (kpc m^{-20/3})
+    c            nu = radio frequency       (GHz)
+    c output: tausis = pulse broadening time (ms)
+    c
+          implicit none
+          real d, sm,  nu
+          tauiss = 1000. * (sm / 292.)**1.2 * d * nu**(-4.4)
+          end
+    """
+    tauiss = 1. * (sm / 292.)**1.2 * d * nu**(-4.4)
+    return tauiss
+
+
 @run_from_pkgdir
 def dm_to_dist(l, b, dm):
     """ Convert DM to distance and compute scattering timescale
@@ -119,7 +154,9 @@ def dm_to_dist(l, b, dm):
     else:
         limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
 
-    return (float(dist) * u.kpc).to('pc'), smtau * u.s
+    tau_sc =TAUISS(float(dist), smtau, nu=1.0)
+    return (float(dist) * u.kpc).to('pc'), tau_sc * u.s
+
 
 @run_from_pkgdir
 def dist_to_dm(l, b, dist):
@@ -140,8 +177,10 @@ def dist_to_dm(l, b, dist):
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
         limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
-    
-    return float(dm) * u.pc / u.cm**3, smtau * u.s
+
+    tau_sc = TAUISS(float(dist), smtau, nu=1.0)
+    return float(dm) * u.pc / u.cm**3, tau_sc * u.s
+
 
 @run_from_pkgdir
 def calculate_electron_density_xyz(x, y, z):

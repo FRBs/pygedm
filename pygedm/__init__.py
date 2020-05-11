@@ -57,7 +57,7 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
     Returns:
         (dist, tau_sc) tuple
         dist: distance (pc, astropy.Quantity)
-        tau_sc: scattering time scale (s, astropy.Quantity)
+        tau_sc: scattering time scale at 1 GHz (s, astropy.Quantity)
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
     dm = _unit_convert(dm, 'pc cm^(-3)')
@@ -78,7 +78,12 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
     Args:
         gl: galactic longitude (deg)
         gb: galactic latitude (deg)
-        dist: distance to source (pc) or if in mode IGM (Mpc) 
+        dist: distance to source (pc) or if in mode IGM (Mpc)
+
+    Returns:
+        (dm, tau_sc) tuple
+        dm: dispersion measure (float or astropy.Quantity, , pc cm^-3)
+        tau_sc: scattering time scale at 1 GHz (s, astropy.Quantity)
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
 
