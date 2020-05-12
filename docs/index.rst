@@ -3,8 +3,6 @@ Welcome to PyGEDM's documentation!
 
 .. mdinclude:: ../README.md
 
-
-
 .. toctree::
     :maxdepth: 2
     :caption: API Index:
