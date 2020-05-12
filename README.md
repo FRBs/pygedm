@@ -34,7 +34,6 @@ ne = pygedm.calculate_electron_density_lbr(204.0, -6.5, 3000.0)
 
 # Calculate halo DM contribution
 dm_halo = pygedm.calculate_halo_dm(gl=0, gb=30)
-
 ```
 
 The methods return astropy [Quantities](http://docs.astropy.org/en/stable/units/quantity.html#quantity), which have units attached, and can accept astropy [Angles](http://docs.astropy.org/en/stable/coordinates/angles.html#working-with-angles) and Quantities as arguments:
