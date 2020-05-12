@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/telegraphic/pygedm.svg?branch=master)](https://travis-ci.org/telegraphic/pygedm)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Coverage Status](https://codecov.io/gh/telegraphic/pygedm/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pygedm)
+[![Documentation Status](https://readthedocs.org/projects/pygedm/badge/?version=latest)](https://pygedm.readthedocs.io/en/latest/?badge=latest)
 
 # PyGEDM
 _Python bindings for the YMW16, NE2001 and YT2020 electron density models_
