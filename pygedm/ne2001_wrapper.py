@@ -90,8 +90,20 @@ import numpy as np
 import os
 from functools import wraps
 from astropy import units as u
-from . import dmdsm     # f2py FORTRAN object
-from . import density   # f2py FORTRAN object
+
+# RTD has issues with compilation of Fortran shared objects. This allows code import in RTD env
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+if not on_rtd:
+    from . import dmdsm     # f2py FORTRAN object
+    from . import density   # f2py FORTRAN object
+else: # pragma: no cover
+    class Mock(object):
+        def dmdsm(self, *args, **kwargs):
+            return 0, 0, 0, 0, 0
+        def density_2001(self, *args, **kwargs):
+            return 0
+    density = Mock()
+    dmdsm   = Mock()
 
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 

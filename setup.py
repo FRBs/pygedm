@@ -220,7 +220,7 @@ setup(
     download_url='https://github.com/telegraphic/pygedm/archive/%s.tar.gz' % __version__,
     python_requires='>=2.7',
     install_requires=['pybind11>=2.2', astro],
-    tests_require= ['pytest<3.7', astro, 'numpy', 'healpy'],
+    tests_require= ['pytest', astro, 'numpy', 'healpy'],
     setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
     packages=['pygedm'],
