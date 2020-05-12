@@ -88,11 +88,11 @@ arXiv e-prints, astro-ph/0301598.
 
 [Yao, J. M., Manchester, R. N., & Wang, N. (2017)](https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract),  
 _A New Electron-density Model for Estimation of Pulsar and FRB Distances_, 
-ApJ, 835, 29.
+The Astrophysical Journal, Volume 888, Issue 2, id.105, Colume 835, id.29
 
-[Yamasaki, S., & Totani, T. (2019)](https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract),  
+[Yamasaki, S., & Totani, T. (2020)](https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract),  
 _The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts_, 
-arXiv e-prints, arXiv:1909.00849.
+The Astrophysical Journal, Volume 888, Issue 2, id.105
 
 These are available in bibtex format in [references.bib](https://github.com/telegraphic/pygedm/references.bib),
 and also as an [ADS library](https://ui.adsabs.harvard.edu/public-libraries/Ci6_0-TlSySPMLrHxTvhhw). 

@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 """
-# PyYMW16.py -- python/C++ port of YMW16 C code
+Python/C++ port of YMW16 C code
+
+References:
+    [1] `Yao, J. M., Manchester, R. N., & Wang, N. (2017) <https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract>`_,
+    *A New Electron-density Model for Estimation of Pulsar and FRB Distances*,
+    ApJ, 835, 29.
 """
 
 import ymw16
@@ -28,9 +33,7 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
         mode: Gal, MC, or IGM
 
     Returns:
-        (dist, tau_sc) tuple
-        dist: distance (pc, astropy.Quantity)
-        tau_sc: scattering time scale (s, astropy.Quantity)
+        dist (astropy.Quantity), tau_sc (astropy.Quantity): distance (pc) and scattering time scale (s)
     """
 
     mode_id = MODE_IDS.get(mode.lower().strip())
@@ -54,6 +57,9 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
         gl: galactic longitude (deg)
         gb: galactic latitude (deg)
         dist: distance to source (pc) or if in mode IGM (Mpc)
+
+    Returns:
+        dm (astropy.Quantity), tau_sc (astropy.Quantity): dispersion measure (pc/cm3) and scattering time scale (s)
     """
     mode_id = MODE_IDS.get(mode.lower().strip())
     ndir, dm_host, vbs, txt = 2, 0, 0, ''
@@ -74,7 +80,7 @@ def calculate_electron_density_xyz(x, y, z):
         (x, y, z): galactocentric coordinates in pc
 
     Returns:
-        N_e: electron density in cm^-3
+        N_e (astropy.Quantity): electron density in cm^-3
     """
     ndir, vbs, txt = 1, 0, ''
     ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
@@ -89,7 +95,7 @@ def calculate_electron_density_lbr(gl, gb, dist):
         (gl, gb, dist): Galactic lat/long in deg, dist in pc
 
     Returns:
-        N_e: electron density in cm^-3
+        N_e (astropy.Quantity): electron density in cm^-3
     """
     ndir, vbs, txt = 2, 0, ''
     ne = ymw16.ne_crd(0, 0, 0, gl, gb, dist, ndir, vbs, DATAPATH, txt)

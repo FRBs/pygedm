@@ -18,7 +18,7 @@ def test_healpix_map():
 
     # Check that error is raised if healpy isn't installed
     with pytest.raises(RuntimeError):
-        pygedm.HAS_HEALPIX = False
+        pygedm.pygedm.HAS_HEALPIX = False
         pygedm.generate_healpix_dm_map(dist=30000, nside=32)
 
 

@@ -1,14 +1,13 @@
 """
-# yt2020.py - Python implementation of Yamasaki & Totani DM Halo model
+Python implementation of Yamasaki & Totani DM Halo model
 
 References:
-    [1] Yamasaki S, Totani T,
-    'The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts'
-    https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract
-    2019, arXiv e-prints, arXiv:1909.00849
+    [1] `Yamasaki S, Totani T (2020), <https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract>`_
+    *The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts*
+    The Astrophysical Journal, Volume 888, Issue 2, id.105
 
 Notes:
-    Adapted from S. Yamasaki's DM_halo_yt2020_numerical.py command-line python code
+    Adapted from S. Yamasaki's ``DM_halo_yt2020_numerical.py`` command-line python code
 """
 import numpy as np
 from scipy import integrate
