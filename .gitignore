@@ -3,6 +3,7 @@ ymw16_ne
 ymw16.so
 *.o
 *.a
+*.so
 .DS_Store
 *.dSYM/
 .idea
