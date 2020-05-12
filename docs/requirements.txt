@@ -1,0 +1,5 @@
+pybind11
+astropy
+numpy
+recommonmark
+m2r
