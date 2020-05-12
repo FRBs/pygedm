@@ -3,4 +3,5 @@ astropy
 numpy
 recommonmark
 m2r
+scipy
 git+https://github.com/telegraphic/pygedm
