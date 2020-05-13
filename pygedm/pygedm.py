@@ -1,4 +1,5 @@
-""" Python API to YMW16, NE2001, and YT2020 Galactic electron density models
+"""
+Python API to YMW16, NE2001, and YT2020 Galactic electron density models
 
 References:
 

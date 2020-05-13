@@ -1,7 +1,5 @@
 """
-NE2001 wrapper
---------------
-
+Python wrapper for NE2001 FORTRAN code
 
 References:
 
