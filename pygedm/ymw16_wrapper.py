@@ -27,10 +27,10 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     """ Convert a DM to a distance
 
     Args:
-        gl: galactic longitude (float in deg or astropy.Angle)
-        gb: galactic latitude (float in deg or astropy.Angle)
-        dm: dispersion measure (float or astropy.Quantity, , pc cm^-3)
-        mode: Gal, MC, or IGM
+        gl (float in deg or astropy.Angle): galactic longitude
+        gb (float in deg or astropy.Angle): galactic latitude
+        dm (float in pc/cm3 or astropy.Quantity): dispersion measure (pc cm^-3)
+        mode (str): Gal, MC, or IGM (for YMW16 only)
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): distance (pc) and scattering time scale (s)
@@ -54,9 +54,10 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
     """ Convert a distance to a DM
 
     Args:
-        gl: galactic longitude (deg)
-        gb: galactic latitude (deg)
-        dist: distance to source (pc) or if in mode IGM (Mpc)
+        gl (float in deg or astropy.Angle): galactic longitude
+        gb (float in deg or astropy.Angle): galactic latitude
+        dist (float or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
+        mode (str): Gal, MC, or IGM (for YMW16 only)
 
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): dispersion measure (pc/cm3) and scattering time scale (s)
@@ -77,10 +78,12 @@ def calculate_electron_density_xyz(x, y, z):
     """ Calculate electron density at a point with galactocentric coords (x, y, z)
 
     Args:
-        (x, y, z): galactocentric coordinates in pc
+        x (float or Quantity): galactocentric X coordinate in pc
+        y (float or Quantity): galactocentric Y coordinate in pc
+        z (float or Quantity): galactocentric Z coordinate in pc
 
     Returns:
-        N_e (astropy.Quantity): electron density in cm^-3
+        N_e (astropy.quantity): electron density in cm^-3
     """
     ndir, vbs, txt = 1, 0, ''
     ne = ymw16.ne_crd(x, y, z, 0, 0, 0, ndir, vbs, DATAPATH, txt)
@@ -92,7 +95,9 @@ def calculate_electron_density_lbr(gl, gb, dist):
         at a given distance in pc
 
     Args:
-        (gl, gb, dist): Galactic lat/long in deg, dist in pc
+        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
+        dist (float or Quantity): Distance in pc
 
     Returns:
         N_e (astropy.Quantity): electron density in cm^-3

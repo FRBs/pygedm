@@ -1,3 +1,24 @@
+""" Python API to YMW16, NE2001, and YT2020 Galactic electron density models
+
+References:
+
+    [1] `Cordes, J. M., & Lazio, T. J. W. (2002), <https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract>`_
+    *NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations*,
+    arXiv e-prints, astro-ph/0207156.
+
+    [2] `Cordes, J. M., & Lazio, T. J. W. (2003), <https://ui.adsabs.harvard.edu/abs/2003astro.ph..1598C/abstract>`_
+    *NE2001. II. Using Radio Propagation Data to Construct a Model for the Galactic Distribution of Free Electrons*,
+    arXiv e-prints, astro-ph/0301598.
+
+    [3] `Yao, J. M., Manchester, R. N., & Wang, N. (2017) <https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract>`_,
+    *A New Electron-density Model for Estimation of Pulsar and FRB Distances*,
+    ApJ, 835, 29.
+
+    [4] `Yamasaki S, Totani T (2020), <https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract>`_
+    *The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts*
+    The Astrophysical Journal, Volume 888, Issue 2, id.105
+
+"""
 from . import ymw16_wrapper
 from . import ne2001_wrapper
 from . import yt2020
@@ -38,15 +59,14 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
     """ Convert a DM to a distance
 
     Args:
-        gl: galactic longitude (float in deg or astropy.Angle)
-        gb: galactic latitude (float in deg or astropy.Angle)
-        dm: dispersion measure (float or astropy.Quantity, , pc cm^-3)
-        mode: Gal, MC, or IGM
+        gl (float in deg or astropy.Angle): galactic longitude
+        gb (float in deg or astropy.Angle): galactic latitude
+        dm (float in pc/cm3 or astropy.Quantity): dispersion measure (pc cm^-3)
+        method (str): choose electron density model, either 'ymw16' or 'ne2001'
+        mode (str): Gal, MC, or IGM (for YMW16 only)
 
     Returns:
-        (dist, tau_sc) tuple
-        dist: distance (pc, astropy.Quantity)
-        tau_sc: scattering time scale at 1 GHz (s, astropy.Quantity)
+        dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
     dm = _unit_convert(dm, 'pc cm^(-3)')
@@ -65,14 +85,14 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
     """ Convert a distance to a DM
 
     Args:
-        gl: galactic longitude (deg)
-        gb: galactic latitude (deg)
-        dist: distance to source (pc) or if in mode IGM (Mpc)
+        gl (float in deg or astropy.Angle): galactic longitude
+        gb (float in deg or astropy.Angle): galactic latitude
+        dist (float or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
+        method (str): choose electron density model, either 'ymw16' or 'ne2001'
+        mode (str): Gal, MC, or IGM (for YMW16 only)
 
     Returns:
-        (dm, tau_sc) tuple
-        dm: dispersion measure (float or astropy.Quantity, , pc cm^-3)
-        tau_sc: scattering time scale at 1 GHz (s, astropy.Quantity)
+        dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
 
@@ -96,10 +116,12 @@ def calculate_electron_density_xyz(x, y, z, method='ymw16'):
     """ Calculate electron density at a point with galactocentric coords (x, y, z)
 
     Args:
-        (x, y, z): galactocentric coordinates in pc
+        x (float or Quantity): galactocentric X coordinate in pc
+        y (float or Quantity): galactocentric Y coordinate in pc
+        z (float or Quantity): galactocentric Z coordinate in pc
 
     Returns:
-        N_e: electron density in cm^-3
+        N_e (astropy.quantity): electron density in cm^-3
     """
     x = _unit_convert(x, 'pc')
     y = _unit_convert(y, 'pc')
@@ -114,14 +136,15 @@ def calculate_electron_density_xyz(x, y, z, method='ymw16'):
 
 
 def calculate_electron_density_lbr(gl, gb, dist, method='ymw16'):
-    """ Calculate electron density at a point with Galactic coords (ga, gl)
-        at a given distance in pc
+    """ Calculate electron density at a point with Galactic coords (ga, gl) at given distance
 
     Args:
-        (gl, gb, dist): Galactic lat/long in deg, dist in pc
+        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
+        dist (float or Quantity): Distance in pc
 
     Returns:
-        N_e: electron density in cm^-3
+        N_e (astropy.Quantity): electron density in cm^-3
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
     dist = _unit_convert(dist, 'pc')
@@ -139,9 +162,13 @@ def convert_lbr_to_xyz(gl, gb, dist, method='ymw16'):
     """ Convert Galactic (l,b,r) coords to Galactocentric (x,y,z) coords
 
     Args:
-        (gl, gb, dist): Galactic lat/long in deg, dist in pc.
-                        use of astropy Angle/Quantities also OK
+        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
+        dist (float or Quantity): Distance in pc
         method (str): one of 'ymw16', 'ne2001', or 'astropy'
+
+    Returns:
+        xyz (tuple): Galactocentric X, Y, Z coordinates
 
     Notes:
         For transform, the Sun is located at (x=0, y=R_sun, z=z_sun)
@@ -154,7 +181,8 @@ def convert_lbr_to_xyz(gl, gb, dist, method='ymw16'):
         This is the 'proper' coordinate system, but note that it is NOT COMPATIBLE
         WITH NE2001 OR YMW16! (!SEE EXAMPLE OUTPUT BELOW!)
 
-    Example output:
+    Example output::
+
         pygedm.convert_lbr_to_xyz(0, 0, 0, method='ymw16')
         (<Quantity 0. pc>, <Quantity 8300. pc>, <Quantity 6. pc>)
 
@@ -205,7 +233,7 @@ def generate_healpix_dm_map(dist=1, nside=64, method='ymw16'):
         YT2020 method is even slower, consider using yt2020_analytic
 
     Returns:
-         healpix map as a numpy array (1D), which can be viewed using the healpy.mollview() method
+         hmap (np.array): Healpix map as a numpy array (1D), which can be viewed using the healpy.mollview() method
     """
     if HAS_HEALPIX:
         pix_id = np.arange(hp.nside2npix(nside))
@@ -236,14 +264,15 @@ def generate_healpix_dm_map(dist=1, nside=64, method='ymw16'):
 
 def calculate_halo_dm(gl, gb, method='yt2020', component='both'):
     """ Compute halo DM
+
     Args:
-        (gl, gb): Galactic lat/long in degrees
-                        use of astropy Angle/Quantities also OK
+        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
         method (str): one of 'yt2020' (only YT2020 supported currently)
-        component (str): Compute 'spherical' component of halo,
-                         'disk' component, or 'both' components.
+        component (str): Compute 'spherical' component of halo, 'disk', or 'both' components.
+
     Returns:
-        DM (float): Dispersion measure in [pc/cm^3]
+        DM (float): Dispersion measure in (pc/cm3)
 
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')

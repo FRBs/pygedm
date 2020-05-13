@@ -169,11 +169,10 @@ def dm_to_dist(l, b, dm):
     Args:
         l (float): galactic latitude in degrees
         b (float): galactic longitude in degrees
-        dm (float or np.array): Dispersion measure
+        dm (floa): Dispersion measure
 
     Returns:
-        dist (astropy.Quantity): Distance in kpc
-        tau_sc (astropy.Quantity): scattering timescale at 1 GHz (seconds)
+        dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
     """
     dm    = np.array(dm, dtype='float32')
     dist  = np.zeros_like(dm)
@@ -183,7 +182,7 @@ def dm_to_dist(l, b, dm):
     if np.isclose(dm, 0):  # Catch infinite timeout bug
         return 0.0 * u.pc, 0.0 * u.s
     else:
-        limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
+        limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
 
     tau_sc =TAUISS(float(dist), smtau, nu=1.0)
     return (float(dist) * u.kpc).to('pc'), tau_sc * u.s
@@ -196,10 +195,10 @@ def dist_to_dm(l, b, dist):
     Args:
         l (float): galactic latitude in degrees
         b (float): galactic longitude in degrees
-        dm (float or np.array): Dispersion measure
+        dist (float): Distance in kpc
 
     Returns:
-        dist (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
+        dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
     """
     dist  = np.array(dist, dtype='float32')
     dm    = np.zeros_like(dist)
@@ -210,7 +209,7 @@ def dist_to_dm(l, b, dist):
     if np.isclose(dist, 0):       # Catch infinite timeout bug
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
-        limit,sm,smtau,smtheta,smiso = dmdsm.dmdsm(l_rad,b_rad,ndir,dm,dist)
+        limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
 
     tau_sc = TAUISS(float(dist), smtau, nu=1.0)
     return float(dm) * u.pc / u.cm**3, tau_sc * u.s

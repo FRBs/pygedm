@@ -71,6 +71,7 @@ def s_max(l, b): # maximum integration limit corresponsing to r = r_vir as funct
 
 def ne_sphe(l, b, s):
     """ Compute electron density for spherical component for (l, b) at distance s
+
     Args:
         l (float): Galactic longitude, in radians (-pi to +pi)
         b (float): Galactic latitude, in radians  (-pi/2 to pi/2)
@@ -88,6 +89,7 @@ def ne_sphe(l, b, s):
 
 def ne_disk(l, b, s):
     """ Compute electron density for spherical component for (l, b) at distance s
+
     Args:
         l (float): Galactic longitude, in radians (-pi to +pi)
         b (float): Galactic latitude, in radians  (-pi/2 to pi/2)
