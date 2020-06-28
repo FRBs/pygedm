@@ -1,6 +1,6 @@
 ## Healpix all-sky maps of DM_ISM estimates
 
-![](logdm-nh-hi4pi.jpg?raw=true)
+![](logdm-nh-hi4pi2016.jpg?raw=true)
 
 Estimates of DM_ISM from the HI4PI Hydrogen column density (HI4PI Collaboration et al., 2016), based on the He et al. (2013)  DM-NH relationship.  
 
