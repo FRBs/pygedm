@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.1.2'
+__version__ = '3.1.3'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
