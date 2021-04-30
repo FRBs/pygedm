@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Common Block Declarations */
@@ -41,8 +44,8 @@ static integer c__4 = 4;
     cllist cl__1;
 
     /* Builtin functions */
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen);
     double sin(doublereal), cos(doublereal);
     integer f_clos(cllist *);
     double exp(doublereal);
@@ -155,13 +158,13 @@ L5:
 	    goto L99;
 	}
 	if (clumpflag == 0) {
-	    slc = sin(lc[j - 1] / 57.29577951f);
-	    clc = cos(lc[j - 1] / 57.29577951f);
-	    sbc = sin(bc[j - 1] / 57.29577951f);
-	    cbc = cos(bc[j - 1] / 57.29577951f);
+	    slc = sin(lc[j - 1] / (float)57.29577951);
+	    clc = cos(lc[j - 1] / (float)57.29577951);
+	    sbc = sin(bc[j - 1] / (float)57.29577951);
+	    cbc = cos(bc[j - 1] / (float)57.29577951);
 	    rgalc = dc[j - 1] * cbc;
 	    xc[j - 1] = rgalc * slc;
-	    yc[j - 1] = 8.5f - rgalc * clc;
+	    yc[j - 1] = (float)8.5 - rgalc * clc;
 	    zc[j - 1] = dc[j - 1] * sbc;
 /* 	  write(6,"(a15,1x,8(f8.3,1x))") */
 /*    .           losname(j),lc(j),bc(j),dc(j), */
@@ -177,9 +180,9 @@ L99:
 	cl__1.csta = 0;
 	f_clos(&cl__1);
     }
-    *necn = 0.f;
+    *necn = (float)0.;
     *hitclump = 0;
-    *fcn = 0.f;
+    *fcn = (float)0.;
     i__1 = clumps_1.nclumps;
     for (j = 1; j <= i__1; ++j) {
 /* Computing 2nd power */
@@ -191,13 +194,13 @@ L99:
 /* Computing 2nd power */
 	r__4 = rc[j - 1];
 	arg = (r__1 * r__1 + r__2 * r__2 + r__3 * r__3) / (r__4 * r__4);
-	if (edge[j - 1] == 0 && arg < 5.f) {
+	if (edge[j - 1] == 0 && arg < (float)5.) {
 	    *necn += nec[j - 1] * exp(-arg);
 	    *fcn = fc[j - 1];
 	    *hitclump = j;
 	    clumps_1.hitclumpflag[j - 1] = 1;
 	}
-	if (edge[j - 1] == 1 && arg <= 1.f) {
+	if (edge[j - 1] == 1 && arg <= (float)1.) {
 /*    	    necN = necN + nec(j) * exp(-arg) */
 	    *necn += nec[j - 1];
 	    *fcn = fc[j - 1];
@@ -208,3 +211,6 @@ L99:
     return 0;
 } /* neclumpn_ */
 
+#ifdef __cplusplus
+	}
+#endif

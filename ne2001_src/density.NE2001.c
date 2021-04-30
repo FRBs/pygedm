@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Common Block Declarations */
@@ -48,7 +51,7 @@ struct {
 
 struct {
     real e_1;
-    } mw_ = { 8.5f };
+    } mw_ = { (float)8.5 };
 
 
 /* Table of constant values */
@@ -85,7 +88,7 @@ static integer c__9 = 9;
     extern /* Subroutine */ int neclumpn_(real *, real *, real *, real *, 
 	    real *, integer *);
     extern doublereal ne_gc__(real *, real *, real *, real *);
-    extern /* Subroutine */ int get_parameters__(void);
+    extern /* Subroutine */ int get_parameters__();
     extern doublereal ne_lism__(real *, real *, real *, real *, integer *, 
 	    integer *, integer *, integer *, integer *);
     extern /* Subroutine */ int nevoidn_(real *, real *, real *, real *, real 
@@ -141,18 +144,18 @@ static integer c__9 = 9;
 	first = FALSE_;
     }
 /* need to initiate values in case components are flagged out */
-    *ne1 = 0.f;
-    *ne2 = 0.f;
-    *nea = 0.f;
-    *negc = 0.f;
-    *nelism = 0.f;
-    *necn = 0.f;
-    *nevn = 0.f;
-    *wlism = 0.f;
-    *wldr = 0.f;
-    *wlhb = 0.f;
-    *wlsb = 0.f;
-    *wloopi = 0.f;
+    *ne1 = (float)0.;
+    *ne2 = (float)0.;
+    *nea = (float)0.;
+    *negc = (float)0.;
+    *nelism = (float)0.;
+    *necn = (float)0.;
+    *nevn = (float)0.;
+    *wlism = (float)0.;
+    *wldr = (float)0.;
+    *wlhb = (float)0.;
+    *wlsb = (float)0.;
+    *wloopi = (float)0.;
     *hitclump = 0;
     *hitvoid = 0;
     *wvoid = 0;
@@ -185,7 +188,7 @@ static integer c__9 = 9;
     return 0;
 } /* density_2001__ */
 
-/* Subroutine */ int get_parameters__(void)
+/* Subroutine */ int get_parameters__()
 {
     /* Format strings */
     static char fmt_1020[] = "(7x,f8.0)";
@@ -195,9 +198,9 @@ static integer c__9 = 9;
     cllist cl__1;
 
     /* Builtin functions */
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen), s_rsfe(cilist *), do_fio(integer *, 
-	    char *, ftnlen), e_rsfe(void), f_clos(cllist *);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen), s_rsfe(cilist *), do_fio(integer *, 
+	    char *, ftnlen), e_rsfe(), f_clos(cllist *);
 
     /* Fortran I/O blocks */
     static cilist io___2 = { 0, 11, 0, 0, 0 };
@@ -306,8 +309,8 @@ doublereal ne_arms_log_mod__(real *x, real *y, real *z__, integer *whicharm,
 
     /* Builtin functions */
     double sqrt(doublereal);
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen), f_clos(cllist *);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen), f_clos(cllist *);
     double exp(doublereal), cos(doublereal), sin(doublereal), atan2(
 	    doublereal, doublereal), pow_dd(doublereal *, doublereal *);
 
@@ -394,43 +397,43 @@ doublereal ne_arms_log_mod__(real *x, real *y, real *z__, integer *whicharm,
 	    i__1 = nnj[j - 1];
 	    for (n = 1; n <= i__1; ++n) {
 		th1[n + j * 20 - 21] = thmin[j - 1] + (n - 1) * extent[j - 1] 
-			/ (nnj[j - 1] - 1.f);
+			/ (nnj[j - 1] - (float)1.);
 /* ! rad */
 		r1[n + j * 20 - 21] = rmin[j - 1] * exp((th1[n + j * 20 - 21] 
 			- thmin[j - 1]) / aarm[j - 1]);
-		th1[n + j * 20 - 21] *= 57.2957795130823f;
+		th1[n + j * 20 - 21] *= (float)57.2957795130823;
 /* ! deg */
 /* *** begin sculpting spiral arm 2 == TC arm 3*** */
 		if (armmap[j - 1] == 3) {
-		    if (th1[n + j * 20 - 21] > 370.f && th1[n + j * 20 - 21] 
-			    <= 410.f) {
-			r1[n + j * 20 - 21] *= cos((th1[n + j * 20 - 21] - 
-				390.f) * 180.f / 2291.831180523292f) * .04f + 
-				1.f;
+		    if (th1[n + j * 20 - 21] > (float)370. && th1[n + j * 20 
+			    - 21] <= (float)410.) {
+			r1[n + j * 20 - 21] *= cos((th1[n + j * 20 - 21] - (
+				float)390.) * (float)180. / (float)
+				2291.831180523292) * (float).04 + (float)1.;
 /*    .           (1. + 0.01*cos((th1(n,j)-390.)*180./(40.*rad))) */
 		    }
-		    if (th1[n + j * 20 - 21] > 315.f && th1[n + j * 20 - 21] 
-			    <= 370.f) {
-			r1[n + j * 20 - 21] *= 1.f - cos((th1[n + j * 20 - 21]
-				 - 345.f) * 180.f / 3151.2678732195268f) * 
-				.07f;
+		    if (th1[n + j * 20 - 21] > (float)315. && th1[n + j * 20 
+			    - 21] <= (float)370.) {
+			r1[n + j * 20 - 21] *= (float)1. - cos((th1[n + j * 
+				20 - 21] - (float)345.) * (float)180. / (
+				float)3151.2678732195268) * (float).07;
 /*    .           (1.0 - 0.08*cos((th1(n,j)-345.)*180./(55.*rad))) */
 		    }
-		    if (th1[n + j * 20 - 21] > 180.f && th1[n + j * 20 - 21] 
-			    <= 315.f) {
-			r1[n + j * 20 - 21] *= cos((th1[n + j * 20 - 21] - 
-				260.f) * 180.f / 7734.9302342661103f) * .16f 
-				+ 1;
+		    if (th1[n + j * 20 - 21] > (float)180. && th1[n + j * 20 
+			    - 21] <= (float)315.) {
+			r1[n + j * 20 - 21] *= cos((th1[n + j * 20 - 21] - (
+				float)260.) * (float)180. / (float)
+				7734.9302342661103) * (float).16 + 1;
 /*    ,           (1 + 0.13*cos((th1(n,j)-260.)*180./(135.*rad))) */
 		    }
 		}
 /* *** begin sculpting spiral arm 4 == TC arm 2*** */
 		if (armmap[j - 1] == 2) {
-		    if (th1[n + j * 20 - 21] > 290.f && th1[n + j * 20 - 21] 
-			    <= 395.f) {
-			r1[n + j * 20 - 21] *= 1.f - cos((th1[n + j * 20 - 21]
-				 - 350.f) * 180.f / 6016.0568488736417f) * 
-				.11f;
+		    if (th1[n + j * 20 - 21] > (float)290. && th1[n + j * 20 
+			    - 21] <= (float)395.) {
+			r1[n + j * 20 - 21] *= (float)1. - cos((th1[n + j * 
+				20 - 21] - (float)350.) * (float)180. / (
+				float)6016.0568488736417) * (float).11;
 /*    .            1. */
 		    }
 		}
@@ -441,8 +444,8 @@ doublereal ne_arms_log_mod__(real *x, real *y, real *z__, integer *whicharm,
 /*        open(11,file='log_arms.out', status='unknown') */
 /*        write(11,*) 'arm  n   xa     ya' */
 	for (j = 1; j <= 5; ++j) {
-	    dth = 5.f / r1[j * 20 - 20];
-	    th = th1[j * 20 - 20] - dth * .999f;
+	    dth = (float)5. / r1[j * 20 - 20];
+	    th = th1[j * 20 - 20] - dth * (float).999;
 	    i__1 = -nnj[j - 1];
 	    cspline_(&th1[j * 20 - 20], &r1[j * 20 - 20], &i__1, &th, &r__);
 /* 	      write(6,*) 'doing arm ', j, ' with ', NNj(j), ' points', */
@@ -455,10 +458,10 @@ doublereal ne_arms_log_mod__(real *x, real *y, real *z__, integer *whicharm,
 		}
 		cspline_(&th1[j * 20 - 20], &r1[j * 20 - 20], &nnj[j - 1], &
 			th, &r__);
-		arm[j + (k + 500) * 5 - 2506] = -r__ * sin(th / 
-			57.2957795130823f);
-		arm[j + (k + 1000) * 5 - 2506] = r__ * cos(th / 
-			57.2957795130823f);
+		arm[j + (k + 500) * 5 - 2506] = -r__ * sin(th / (float)
+			57.2957795130823);
+		arm[j + (k + 1000) * 5 - 2506] = r__ * cos(th / (float)
+			57.2957795130823);
 /*                 write(11,"(1x,i2,1x,i3,1x,2(f7.3,1x))") */
 /*     .              j,k,arm(j,k,1),arm(j,k,2) */
 /* L10: */
@@ -480,21 +483,21 @@ L20:
 /* exceeded; linear interpolation beginning at line 41 finds the */
 /* minimum distance from line of sight to arm on a finer scale than gridding */
 /* of arms allows (TJL) */
-    nea = 0.f;
-    ga = 0.f;
+    nea = (float)0.;
+    ga = (float)0.;
     *whicharm = 0;
     whicharm_spiralmodel__ = 0;
-    sminmin = 1e10f;
-    thxy = atan2(-(*x), *y) * 57.2957795130823f;
+    sminmin = (float)1e10;
+    thxy = atan2(-(*x), *y) * (float)57.2957795130823;
 /* ! measured ccw from +y axis */
 /* ! (different from tc93 theta) */
-    if (thxy < 0.f) {
-	thxy += 360.f;
+    if (thxy < (float)0.) {
+	thxy += (float)360.;
     }
-    if ((r__1 = *z__ / galparams_1.ha, dabs(r__1)) < 10.f) {
+    if ((r__1 = *z__ / galparams_1.ha, dabs(r__1)) < (float)10.) {
 	for (j = 1; j <= 5; ++j) {
 	    jj = armmap[j - 1];
-	    sqmin = 1e10f;
+	    sqmin = (float)1e10;
 	    i__1 = kmax[j - 1] - ks;
 	    i__2 = (ks << 1) + 1;
 	    for (k = ks + 1; i__2 < 0 ? k >= i__1 : k <= i__1; k += i__2) {
@@ -553,10 +556,10 @@ L20:
 			500) * 5 - 2506];
 /* Computing 2nd power */
 		r__1 = emm;
-		exx = (*x + emm * *y - emm * ebb) / (r__1 * r__1 + 1.f);
+		exx = (*x + emm * *y - emm * ebb) / (r__1 * r__1 + (float)1.);
 		test = (exx - arm[j + (kk + 500) * 5 - 2506]) / (arm[j + (kl 
 			+ 500) * 5 - 2506] - arm[j + (kk + 500) * 5 - 2506]);
-		if (test < 0.f || test > 1.f) {
+		if (test < (float)0. || test > (float)1.) {
 		    exx = arm[j + (kk + 500) * 5 - 2506];
 		}
 		eyy = emm * exx + ebb;
@@ -585,27 +588,28 @@ L20:
 		}
 		if (rr > galparams_1.aa) {
 /* ! Galactocentric radial dependence of arms */
-		    r__1 = (rr - galparams_1.aa) / 2.f;
+		    r__1 = (rr - galparams_1.aa) / (float)2.;
 		    ga *= sech2_(&r__1);
 /* 		write(6,*) 'd99a: rr,Aa,sech2() = ', */
 /*                 rr, Aa, sech2((rr-Aa)/2.0) */
 		}
 /* arm3 reweighting: */
-		th3a = 320.f;
-		th3b = 390.f;
-		th3b = 370.f;
-		th3a = 290.f;
-		th3b = 363.f;
-		th3b = 363.f;
-		fac3min = 0.f;
+		th3a = (float)320.;
+		th3b = (float)390.;
+		th3b = (float)370.;
+		th3a = (float)290.;
+		th3b = (float)363.;
+		th3b = (float)363.;
+		fac3min = (float)0.;
 		test3 = thxy - th3a;
-		if (test3 < 0.f) {
-		    test3 += 360.f;
+		if (test3 < (float)0.) {
+		    test3 += (float)360.;
 		}
-		if (jj == 3 && 0.f <= test3 && test3 < th3b - th3a) {
-		    arg = (thxy - th3a) * 6.2831853f / (th3b - th3a);
+		if (jj == 3 && (float)0. <= test3 && test3 < th3b - th3a) {
+		    arg = (thxy - th3a) * (float)6.2831853 / (th3b - th3a);
 /* 		fac = (3.0 + cos(arg))/4.0 */
-		    fac = (fac3min + 1.f + (1.f - fac3min) * cos(arg)) / 2.f;
+		    fac = (fac3min + (float)1. + ((float)1. - fac3min) * cos(
+			    arg)) / (float)2.;
 		    d__1 = (doublereal) fac;
 		    fac = pow_dd(&d__1, &c_b73);
 /* 		write(90,*) x, y, thxy, th3a, th3b, test3, fac */
@@ -613,34 +617,35 @@ L20:
 		}
 /* arm2 reweighting: */
 /*    first: as in tc93 (note different definition of theta) */
-		th2a = 35.f;
-		th2b = 55.f;
+		th2a = (float)35.;
+		th2b = (float)55.;
 		test2 = thxy - th2a;
-		fac = 1.f;
-		if (jj == 2 && 0.f <= test2 && test2 < th2b - th2a) {
-		    fac = test2 / (th2b - th2a) + 1.f;
-		    fac = 1.f;
+		fac = (float)1.;
+		if (jj == 2 && (float)0. <= test2 && test2 < th2b - th2a) {
+		    fac = test2 / (th2b - th2a) + (float)1.;
+		    fac = (float)1.;
 /* !**** note turned off */
 		    ga *= fac;
 		}
 		if (jj == 2 && test2 > th2b - th2a) {
-		    fac = 2.f;
-		    fac = 1.f;
+		    fac = (float)2.;
+		    fac = (float)1.;
 /* !**** note turned off */
 		    ga *= fac;
 		}
 /*    second:  weaken the arm in a short range: */
-		th2a = 340.f;
-		th2b = 370.f;
+		th2a = (float)340.;
+		th2b = (float)370.;
 /* note fix does nothing if fac2min = 1.0 */
-		fac2min = .1f;
+		fac2min = (float).1;
 		test2 = thxy - th2a;
-		if (test2 < 0.f) {
-		    test2 += 360.f;
+		if (test2 < (float)0.) {
+		    test2 += (float)360.;
 		}
-		if (jj == 2 && 0.f <= test2 && test2 < th2b - th2a) {
-		    arg = (thxy - th2a) * 6.2831853f / (th2b - th2a);
-		    fac = (fac2min + 1.f + (1.f - fac2min) * cos(arg)) / 2.f;
+		if (jj == 2 && (float)0. <= test2 && test2 < th2b - th2a) {
+		    arg = (thxy - th2a) * (float)6.2831853 / (th2b - th2a);
+		    fac = (fac2min + (float)1. + ((float)1. - fac2min) * cos(
+			    arg)) / (float)2.;
 /* 		fac = fac**3.5 */
 /* 		write(90,*) x, y, thxy, th2a, th2b, test2, fac */
 		    ga *= fac;
@@ -654,7 +659,7 @@ L20:
 	}
     }
     ret_val = nea;
-    *farms = 0.f;
+    *farms = (float)0.;
     if (whicharm_spiralmodel__ == 0) {
 	*whicharm = 0;
     } else {
@@ -687,11 +692,11 @@ doublereal ne_outer__(real *x, real *y, real *z__, real *f_outer__)
 /* Computing 2nd power */
     r__2 = *y;
     rr = sqrt(r__1 * r__1 + r__2 * r__2);
-    suncos = cos(mw_1.rsun * 1.5707963267948966f / galparams_1.a1);
+    suncos = cos(mw_1.rsun * (float)1.5707963267948966 / galparams_1.a1);
     if (rr > galparams_1.a1) {
-	g1 = 0.f;
+	g1 = (float)0.;
     } else {
-	g1 = cos(rr * 1.5707963267948966f / galparams_1.a1) / suncos;
+	g1 = cos(rr * (float)1.5707963267948966 / galparams_1.a1) / suncos;
     }
     r__1 = *z__ / galparams_1.h1;
     ne1 = galparams_1.n1h1 / galparams_1.h1 * g1 * sech2_(&r__1);
@@ -716,16 +721,16 @@ doublereal ne_inner__(real *x, real *y, real *z__, real *f_inner__)
 /* ----------------------------------------------------------------------- */
 /* Thin disk (inner Galaxy) component: */
 /* (referred to as 'Galactic center component' in circa TC93 density.f) */
-    g2 = 0.f;
+    g2 = (float)0.;
 /* Computing 2nd power */
     r__1 = *x;
 /* Computing 2nd power */
     r__2 = *y;
     rr = sqrt(r__1 * r__1 + r__2 * r__2);
 /* Computing 2nd power */
-    r__1 = (rr - galparams_1.a2) / 1.8f;
+    r__1 = (rr - galparams_1.a2) / (float)1.8;
     rrarg = r__1 * r__1;
-    if (rrarg < 10.f) {
+    if (rrarg < (float)10.) {
 	g2 = exp(-rrarg);
     }
     r__1 = *z__ / galparams_1.h2;
@@ -747,8 +752,8 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
     cllist cl__1;
 
     /* Builtin functions */
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen), f_clos(cllist *);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen), f_clos(cllist *);
     double sqrt(doublereal);
 
     /* Local variables */
@@ -797,8 +802,8 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
 /*     parameter (xgc=-0.010, ygc=0., zgc=-0.020) */
 /*     parameter (rgc=0.145) */
 /*     parameter (hgc=0.026) */
-    ret_val = 0.f;
-    *f_gc__ = 0.f;
+    ret_val = (float)0.;
+    *f_gc__ = (float)0.;
     if (first) {
 	o__1.oerr = 0;
 	o__1.ounit = 11;
@@ -855,7 +860,7 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
 /* Computing 2nd power */
     r__2 = zz / hgc;
     arg = r__1 * r__1 + r__2 * r__2;
-    if (arg <= 1.f) {
+    if (arg <= (float)1.) {
 	ret_val = gcparms_1.negc0;
 	*f_gc__ = gcparms_1.fgc0;
 /*        write(21,*) 'ne_gc: rr,zz,arg,ne_gc,F_gc ', */
@@ -876,7 +881,7 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
 
     /* Builtin functions */
     integer s_wsle(cilist *), do_lio(integer *, integer *, char *, ftnlen), 
-	    e_wsle(void);
+	    e_wsle();
 
     /* Local variables */
     static real a, b, h__;
@@ -899,8 +904,8 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
     /* Function Body */
     if (*nn > 20) {
 	s_wsle(&io___82);
-	do_lio(&c__9, &c__1, " too many points to spline. Change parameter s"
-		"tatement", (ftnlen)54);
+	do_lio(&c__9, &c__1, " too many points to spline. Change parameter s\
+tatement", (ftnlen)54);
 	e_wsle();
 	s_wsle(&io___83);
 	do_lio(&c__9, &c__1, " in cspline", (ftnlen)11);
@@ -908,21 +913,21 @@ doublereal ne_gc__(real *x, real *y, real *z__, real *f_gc__)
     }
     n = abs(*nn);
     if (*nn < 0) {
-	y2[0] = 0.f;
-	u[0] = 0.f;
+	y2[0] = (float)0.;
+	u[0] = (float)0.;
 	i__1 = n - 1;
 	for (i__ = 2; i__ <= i__1; ++i__) {
 	    sig = (x[i__] - x[i__ - 1]) / (x[i__ + 1] - x[i__ - 1]);
-	    p = sig * y2[i__ - 2] + 2.f;
-	    y2[i__ - 1] = (sig - 1.f) / p;
+	    p = sig * y2[i__ - 2] + (float)2.;
+	    y2[i__ - 1] = (sig - (float)1.) / p;
 	    u[i__ - 1] = (((y[i__ + 1] - y[i__]) / (x[i__ + 1] - x[i__]) - (y[
-		    i__] - y[i__ - 1]) / (x[i__] - x[i__ - 1])) * 6.f / (x[
-		    i__ + 1] - x[i__ - 1]) - sig * u[i__ - 2]) / p;
+		    i__] - y[i__ - 1]) / (x[i__] - x[i__ - 1])) * (float)6. / 
+		    (x[i__ + 1] - x[i__ - 1]) - sig * u[i__ - 2]) / p;
 /* L10: */
 	}
-	qn = 0.f;
-	un = 0.f;
-	y2[n - 1] = (un - qn * u[n - 2]) / (qn * y2[n - 2] + 1.f);
+	qn = (float)0.;
+	un = (float)0.;
+	y2[n - 1] = (un - qn * u[n - 2]) / (qn * y2[n - 2] + (float)1.);
 	for (k = n - 1; k >= 1; --k) {
 /* L20: */
 	    y2[k - 1] = y2[k - 1] * y2[k] + u[k - 1];
@@ -941,7 +946,7 @@ L30:
 	goto L30;
     }
     h__ = x[khi] - x[klo];
-    if (h__ == 0.f) {
+    if (h__ == (float)0.) {
 	s_wsle(&io___96);
 	do_lio(&c__9, &c__1, "bad x input.", (ftnlen)12);
 	e_wsle();
@@ -955,8 +960,8 @@ L30:
 /* Computing 2nd power */
     r__3 = h__;
     *yout = a * y[klo] + b * y[khi] + ((r__1 * (r__1 * r__1) - a) * y2[klo - 
-	    1] + (r__2 * (r__2 * r__2) - b) * y2[khi - 1]) * (r__3 * r__3) / 
-	    6.f;
+	    1] + (r__2 * (r__2 * r__2) - b) * y2[khi - 1]) * (r__3 * r__3) / (
+	    float)6.;
     return 0;
 } /* cspline_ */
 
@@ -969,12 +974,15 @@ doublereal sech2_(real *z__)
     double exp(doublereal);
 
 /* ----------------------------------------------------------------------- */
-    ret_val = 0.f;
-    if (dabs(*z__) < 20.f) {
+    ret_val = (float)0.;
+    if (dabs(*z__) < (float)20.) {
 /* Computing 2nd power */
-	r__1 = 2.f / (exp(*z__) + exp(-(*z__)));
+	r__1 = (float)2. / (exp(*z__) + exp(-(*z__)));
 	ret_val = r__1 * r__1;
     }
     return ret_val;
 } /* sech2_ */
 
+#ifdef __cplusplus
+	}
+#endif

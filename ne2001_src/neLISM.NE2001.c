@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Common Block Declarations */
@@ -60,8 +63,8 @@ doublereal ne_lism__(real *x, real *y, real *z__, real *flism, integer *wlism,
     olist o__1;
 
     /* Builtin functions */
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen);
 
     /* Local variables */
     static real nelhbxyz, nelsbxyz, neldrq1xyz, neloopixyz, flhbr;
@@ -289,8 +292,8 @@ doublereal neldrq1_(real *x, real *y, real *z__, real *fldrq1r, integer *
     netrough = nelismparms_1.neldr0;
     ftrough = nelismparms_1.fldr;
     if (first) {
-	s = sin(theta / 57.29577951f);
-	c__ = cos(theta / 57.29577951f);
+	s = sin(theta / (float)57.29577951);
+	c__ = cos(theta / (float)57.29577951);
 /* Computing 2nd power */
 	r__1 = c__ / aa;
 /* Computing 2nd power */
@@ -303,18 +306,19 @@ doublereal neldrq1_(real *x, real *y, real *z__, real *fldrq1r, integer *
 	bp = r__1 * r__1 + r__2 * r__2;
 /* Computing 2nd power */
 	r__1 = cc;
-	cp = 1.f / (r__1 * r__1);
+	cp = (float)1. / (r__1 * r__1);
 /* Computing 2nd power */
 	r__1 = aa;
 /* Computing 2nd power */
 	r__2 = bb;
-	dp = c__ * 2.f * s * (1.f / (r__1 * r__1) - 1.f / (r__2 * r__2));
+	dp = c__ * (float)2. * s * ((float)1. / (r__1 * r__1) - (float)1. / (
+		r__2 * r__2));
 	first = FALSE_;
 /* 	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp */
     }
-    ret_val = 0.f;
+    ret_val = (float)0.;
     *wldrq1 = 0;
-    *fldrq1r = 0.f;
+    *fldrq1r = (float)0.;
 /* Computing 2nd power */
     r__1 = *x - nelismparms_1.xldr;
 /* Computing 2nd power */
@@ -323,7 +327,7 @@ doublereal neldrq1_(real *x, real *y, real *z__, real *fldrq1r, integer *
     r__3 = *z__ - nelismparms_1.zldr;
     q = r__1 * r__1 * ap + r__2 * r__2 * bp + r__3 * r__3 * cp + (*x - 
 	    nelismparms_1.xldr) * (*y - nelismparms_1.yldr) * dp;
-    if (q <= 1.f) {
+    if (q <= (float)1.) {
 /* inside */
 	ret_val = netrough;
 	*fldrq1r = ftrough;
@@ -381,8 +385,8 @@ doublereal nelsb_(real *x, real *y, real *z__, real *flsbr, integer *wlsb)
     netrough = nelismparms_1.nelsb0;
     ftrough = nelismparms_1.flsb;
     if (first) {
-	s = sin(theta / 57.29577951f);
-	c__ = cos(theta / 57.29577951f);
+	s = sin(theta / (float)57.29577951);
+	c__ = cos(theta / (float)57.29577951);
 /* Computing 2nd power */
 	r__1 = c__ / aa;
 /* Computing 2nd power */
@@ -395,18 +399,19 @@ doublereal nelsb_(real *x, real *y, real *z__, real *flsbr, integer *wlsb)
 	bp = r__1 * r__1 + r__2 * r__2;
 /* Computing 2nd power */
 	r__1 = cc;
-	cp = 1.f / (r__1 * r__1);
+	cp = (float)1. / (r__1 * r__1);
 /* Computing 2nd power */
 	r__1 = aa;
 /* Computing 2nd power */
 	r__2 = bb;
-	dp = c__ * 2.f * s * (1.f / (r__1 * r__1) - 1.f / (r__2 * r__2));
+	dp = c__ * (float)2. * s * ((float)1. / (r__1 * r__1) - (float)1. / (
+		r__2 * r__2));
 	first = FALSE_;
 /* 	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp */
     }
-    ret_val = 0.f;
+    ret_val = (float)0.;
     *wlsb = 0;
-    *flsbr = 0.f;
+    *flsbr = (float)0.;
 /* Computing 2nd power */
     r__1 = *x - nelismparms_1.xlsb;
 /* Computing 2nd power */
@@ -415,7 +420,7 @@ doublereal nelsb_(real *x, real *y, real *z__, real *flsbr, integer *wlsb)
     r__3 = *z__ - nelismparms_1.zlsb;
     q = r__1 * r__1 * ap + r__2 * r__2 * bp + r__3 * r__3 * cp + (*x - 
 	    nelismparms_1.xlsb) * (*y - nelismparms_1.ylsb) * dp;
-    if (q <= 1.f) {
+    if (q <= (float)1.) {
 /* inside */
 	ret_val = netrough;
 	*flsbr = ftrough;
@@ -473,8 +478,8 @@ doublereal nelhb_(real *x, real *y, real *z__, real *flhbr, integer *wlhb)
     netrough = nelismparms_1.nelhb0;
     ftrough = nelismparms_1.flhb;
     if (first) {
-	s = sin(theta / 57.29577951f);
-	c__ = cos(theta / 57.29577951f);
+	s = sin(theta / (float)57.29577951);
+	c__ = cos(theta / (float)57.29577951);
 /* Computing 2nd power */
 	r__1 = c__ / aa;
 /* Computing 2nd power */
@@ -487,18 +492,19 @@ doublereal nelhb_(real *x, real *y, real *z__, real *flhbr, integer *wlhb)
 	bp = r__1 * r__1 + r__2 * r__2;
 /* Computing 2nd power */
 	r__1 = cc;
-	cp = 1.f / (r__1 * r__1);
+	cp = (float)1. / (r__1 * r__1);
 /* Computing 2nd power */
 	r__1 = aa;
 /* Computing 2nd power */
 	r__2 = bb;
-	dp = c__ * 2.f * s * (1.f / (r__1 * r__1) - 1.f / (r__2 * r__2));
+	dp = c__ * (float)2. * s * ((float)1. / (r__1 * r__1) - (float)1. / (
+		r__2 * r__2));
 	first = FALSE_;
 /* 	  write(6,*) aa,bb,cc,theta,ap,bp,cp,dp */
     }
-    ret_val = 0.f;
+    ret_val = (float)0.;
     *wlhb = 0;
-    *flhbr = 0.f;
+    *flhbr = (float)0.;
 /* Computing 2nd power */
     r__1 = *x - nelismparms_1.xlhb;
 /* Computing 2nd power */
@@ -507,7 +513,7 @@ doublereal nelhb_(real *x, real *y, real *z__, real *flhbr, integer *wlhb)
     r__3 = *z__ - nelismparms_1.zlhb;
     q = r__1 * r__1 * ap + r__2 * r__2 * bp + r__3 * r__3 * cp + (*x - 
 	    nelismparms_1.xlhb) * (*y - nelismparms_1.ylhb) * dp;
-    if (q <= 1.f) {
+    if (q <= (float)1.) {
 /* inside */
 	ret_val = netrough;
 	*flhbr = ftrough;
@@ -562,19 +568,21 @@ doublereal nelhb2_(real *x, real *y, real *z__, real *flhbr, integer *wlhb)
     netrough = nelismparms_1.nelhb0;
     ftrough = nelismparms_1.flhb;
     if (first) {
-	yzslope = tan(theta / 57.29577951f);
+	yzslope = tan(theta / (float)57.29577951);
 	first = FALSE_;
     }
-    ret_val = 0.f;
+    ret_val = (float)0.;
     *wlhb = 0;
-    *flhbr = 0.f;
+    *flhbr = (float)0.;
     yaxis = nelismparms_1.ylhb + yzslope * *z__;
 /* cylinder has cross sectional area = constant for z>0 */
 /* area -> 0 for z<0 by letting aa->0 linearly for z<0: */
 /* (0.001 = 1 pc is to avoid divide by zero) */
-    if (*z__ <= 0.f && *z__ >= nelismparms_1.zlhb - nelismparms_1.clhb) {
-	aa = (nelismparms_1.alhb - .001f) * (1.f - 1.f / (nelismparms_1.zlhb 
-		- nelismparms_1.clhb) * *z__) + .001f;
+    if (*z__ <= (float)0. && *z__ >= nelismparms_1.zlhb - nelismparms_1.clhb) 
+	    {
+	aa = (nelismparms_1.alhb - (float).001) * ((float)1. - (float)1. / (
+		nelismparms_1.zlhb - nelismparms_1.clhb) * *z__) + (float)
+		.001;
     } else {
 	aa = nelismparms_1.alhb;
     }
@@ -585,7 +593,7 @@ doublereal nelhb2_(real *x, real *y, real *z__, real *flhbr, integer *wlhb)
     r__2 = (*y - yaxis) / bb;
     qxy = r__1 * r__1 + r__2 * r__2;
     qz = (r__1 = *z__ - nelismparms_1.zlhb, dabs(r__1)) / cc;
-    if (qxy <= 1.f && qz <= 1.f) {
+    if (qxy <= (float)1. && qz <= (float)1.) {
 /* inside */
 	ret_val = netrough;
 	*flhbr = ftrough;
@@ -628,9 +636,9 @@ doublereal neloopi_(real *x, real *y, real *z__, real *floopi, integer *
 	a2 = nelismparms_1.rlpi + nelismparms_1.drlpi;
 	first = FALSE_;
     }
-    if (*z__ < 0.f) {
-	ret_val = 0.f;
-	*floopi = 0.f;
+    if (*z__ < (float)0.) {
+	ret_val = (float)0.;
+	*floopi = (float)0.;
 	*wloopi = 0;
 	return ret_val;
     }
@@ -643,8 +651,8 @@ doublereal neloopi_(real *x, real *y, real *z__, real *floopi, integer *
     r__ = sqrt(r__1 * r__1 + r__2 * r__2 + r__3 * r__3);
     if (r__ > a2) {
 /* outside Loop I */
-	ret_val = 0.f;
-	*floopi = 0.f;
+	ret_val = (float)0.;
+	*floopi = (float)0.;
 	*wloopi = 0;
     } else if (r__ <= a1) {
 /* inside volume */
@@ -662,3 +670,6 @@ doublereal neloopi_(real *x, real *y, real *z__, real *floopi, integer *
     return ret_val;
 } /* neloopi_ */
 
+#ifdef __cplusplus
+	}
+#endif

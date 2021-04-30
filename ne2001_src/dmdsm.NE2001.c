@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Common Block Declarations */
@@ -60,10 +63,10 @@ static doublereal c_b6 = 1.66667;
 {
     /* Initialized data */
 
-    static real r0 = 8.5f;
-    static real rrmax = 50.f;
-    static real zmax = 25.f;
-    static real dmax__ = 50.f;
+    static real r0 = (float)8.5;
+    static real rrmax = (float)50.;
+    static real zmax = (float)25.;
+    static real dmax__ = (float)50.;
     static logical first = TRUE_;
 
     /* System generated locals */
@@ -149,9 +152,9 @@ static doublereal c_b6 = 1.66667;
     if (first) {
 /* initial call to density routine to set variable values */
 /* through read-in of parameter file: */
-	x = 0.f;
+	x = (float)0.;
 	y = r0;
-	z__ = 0.f;
+	z__ = (float)0.;
 	density_2001__(&x, &y, &z__, &ne1, &ne2, &nea, &negc, &nelism, &necn, 
 		&nevn, &f1val, &f2val, &faval, &fgc, &flism, &fcn, &fvn, &
 		whicharm, &wlism, &wldr, &wlhb, &wlsb, &wloopi, &hitclump, &
@@ -167,7 +170,7 @@ static doublereal c_b6 = 1.66667;
     *(unsigned char *)limit = ' ';
 /* 	dstep=0.02 */
 /*       dstep = min(h1, h2) / 10.       ! step size in terms of scale heights */
-    dstep = .01f;
+    dstep = (float).01;
     if (*ndir < 0) {
 	dtest = *dist;
     }
@@ -185,40 +188,40 @@ static doublereal c_b6 = 1.66667;
 /*  routine will work for n_e models with large n_e near the Sun. */
 /* make # steps >= 10 */
 L5:
-    dstep_pc__ = dstep * 1e3f;
-    dm = 0.f;
-    sm_sum1__ = 0.f;
-    sm_sum2__ = 0.f;
-    sm_sum3__ = 0.f;
-    sm_sum4__ = 0.f;
+    dstep_pc__ = dstep * (float)1e3;
+    dm = (float)0.;
+    sm_sum1__ = (float)0.;
+    sm_sum2__ = (float)0.;
+    sm_sum3__ = (float)0.;
+    sm_sum4__ = (float)0.;
     for (i__ = 1; i__ <= 6; ++i__) {
-	armpathlengths_1.armpaths[i__ - 1] = 0.f;
-	armpathlengths_1.armdistances[i__ - 1] = 0.f;
+	armpathlengths_1.armpaths[i__ - 1] = (float)0.;
+	armpathlengths_1.armdistances[i__ - 1] = (float)0.;
     }
-    dm1 = 0.f;
-    dm2 = 0.f;
-    dma = 0.f;
-    dmgc = 0.f;
-    dmlism = 0.f;
-    dmcn = 0.f;
-    dmvn = 0.f;
-    sm1 = 0.f;
-    sm2 = 0.f;
-    sma = 0.f;
-    smgc = 0.f;
-    smlism = 0.f;
-    smcn = 0.f;
-    smvn = 0.f;
-    ldr_path__ = 0.f;
-    lhb_path__ = 0.f;
-    lsb_path__ = 0.f;
-    loopi_path__ = 0.f;
-    ldr_dist__ = 0.f;
-    lhb_dist__ = 0.f;
-    lsb_dist__ = 0.f;
-    loopi_dist__ = 0.f;
+    dm1 = (float)0.;
+    dm2 = (float)0.;
+    dma = (float)0.;
+    dmgc = (float)0.;
+    dmlism = (float)0.;
+    dmcn = (float)0.;
+    dmvn = (float)0.;
+    sm1 = (float)0.;
+    sm2 = (float)0.;
+    sma = (float)0.;
+    smgc = (float)0.;
+    smlism = (float)0.;
+    smcn = (float)0.;
+    smvn = (float)0.;
+    ldr_path__ = (float)0.;
+    lhb_path__ = (float)0.;
+    lsb_path__ = (float)0.;
+    loopi_path__ = (float)0.;
+    ldr_dist__ = (float)0.;
+    lhb_dist__ = (float)0.;
+    lsb_dist__ = (float)0.;
+    loopi_dist__ = (float)0.;
     ncount = 0;
-    d__ = dstep * -.5f;
+    d__ = dstep * (float)-.5;
     for (i__ = 1; i__ <= 99999; ++i__) {
 	++ncount;
 	d__ += dstep;
@@ -251,8 +254,8 @@ L5:
 	}
 /* wlism = 1 causes the lism component to override smooth Galactic components */
 /* wvoid = 1 overrides everything except clumps */
-	ne = (1.f - modelflags_1.wglism * wlism) * (modelflags_1.wg1 * ne1 + 
-		modelflags_1.wg2 * ne2 + modelflags_1.wga * nea + 
+	ne = ((float)1. - modelflags_1.wglism * wlism) * (modelflags_1.wg1 * 
+		ne1 + modelflags_1.wg2 * ne2 + modelflags_1.wga * nea + 
 		modelflags_1.wggc * negc) + modelflags_1.wglism * wlism * 
 		nelism;
 	ne = (1 - modelflags_1.wgvn * wvoid) * ne + modelflags_1.wgvn * wvoid 
@@ -265,8 +268,8 @@ L5:
 	dm2 += wtotal * modelflags_1.wg2 * ne2;
 	dma += wtotal * modelflags_1.wga * nea;
 	dmgc += wtotal * modelflags_1.wggc * negc;
-	dmlism += (1.f - modelflags_1.wgvn * wvoid) * modelflags_1.wglism * 
-		wlism * nelism;
+	dmlism += ((float)1. - modelflags_1.wgvn * wvoid) * 
+		modelflags_1.wglism * wlism * nelism;
 	dmcn += modelflags_1.wgcn * necn;
 	dmvn += modelflags_1.wgvn * wvoid * nevn;
 /*         write(24,"('n:',7f10.6,1x))") */
@@ -299,8 +302,8 @@ L5:
 	dsmgc = wtotal * modelflags_1.wggc * (r__1 * r__1) * fgc;
 /* Computing 2nd power */
 	r__1 = nelism;
-	dsmlism = (1.f - modelflags_1.wgvn * wvoid) * modelflags_1.wglism * 
-		wlism * (r__1 * r__1) * flism;
+	dsmlism = ((float)1. - modelflags_1.wgvn * wvoid) * 
+		modelflags_1.wglism * wlism * (r__1 * r__1) * flism;
 /* Computing 2nd power */
 	r__1 = necn;
 	dsmcn = modelflags_1.wgcn * (r__1 * r__1) * fcn;
@@ -369,42 +372,42 @@ L5:
     s_stop("loop limit", (ftnlen)10);
 L20:
     *(unsigned char *)limit = '>';
-    *dist = d__ - dstep * .5f;
+    *dist = d__ - dstep * (float).5;
     goto L999;
 L30:
-    *dist = d__ + dstep * .5f - dstep * (dm - *dmpsr) / dmstep;
+    *dist = d__ + dstep * (float).5 - dstep * (dm - *dmpsr) / dmstep;
     if (ncount < 10) {
-	dstep /= 10.f;
+	dstep /= (float)10.;
 	goto L5;
     }
     goto L999;
 L40:
-    *dmpsr = dm - dmstep * (d__ + dstep * .5f - *dist) / dstep;
+    *dmpsr = dm - dmstep * (d__ + dstep * (float).5 - *dist) / dstep;
     if (ncount < 10) {
-	dstep /= 10.f;
+	dstep /= (float)10.;
 	goto L5;
     }
 L999:
 /* normalize the mean distances: */
-    if (ldr_path__ > 0.f) {
+    if (ldr_path__ > (float)0.) {
 	ldr_dist__ /= ldr_path__ / dstep;
     }
-    if (lhb_path__ > 0.f) {
+    if (lhb_path__ > (float)0.) {
 	lhb_dist__ /= lhb_path__ / dstep;
     }
-    if (lsb_path__ > 0.f) {
+    if (lsb_path__ > (float)0.) {
 	lsb_dist__ /= lsb_path__ / dstep;
     }
-    if (loopi_path__ > 0.f) {
+    if (loopi_path__ > (float)0.) {
 	loopi_dist__ /= loopi_path__ / dstep;
     }
-    dd = d__ + dstep * .5f - *dist;
+    dd = d__ + dstep * (float).5 - *dist;
 /* subtract dd from armpath for latest arm (or iterarm) at end of LOS */
 /*       armpaths(whicharm) = armpaths(whicharm)-dd */
     armpathlengths_1.armpaths[whicharm] -= dd;
     for (i__ = 1; i__ <= 6; ++i__) {
 /* Computing MAX */
-	r__1 = 1.f, r__2 = armpathlengths_1.armpaths[i__ - 1] / dstep;
+	r__1 = (float)1., r__2 = armpathlengths_1.armpaths[i__ - 1] / dstep;
 	armpathlengths_1.armdistances[i__ - 1] /= dmax(r__1,r__2);
     }
     dm1 *= dstep_pc__;
@@ -431,23 +434,26 @@ L999:
 /*       sm_sum2 = sm_sum2 - dsm * dist */
 /*       sm_sum3 = sm_sum3 - dsm * dist**2 */
 /*       sm_sum4 = sm_sum4 - dsm * dist**1.67 */
-    *sm = dstep * 1.8389599999999999f * sm_sum1__;
+    *sm = dstep * (float)1.8389599999999999 * sm_sum1__;
 /* Computing 2nd power */
     r__1 = *dist;
-    *smtau = dstep * 11.033759999999999f * (sm_sum2__ / *dist - sm_sum3__ / (
-	    r__1 * r__1));
+    *smtau = dstep * (float)11.033759999999999 * (sm_sum2__ / *dist - 
+	    sm_sum3__ / (r__1 * r__1));
 /* Computing 2nd power */
     r__1 = *dist;
-    *smtheta = dstep * 5.5168799999999996f * (sm_sum1__ + sm_sum3__ / (r__1 * 
-	    r__1) - sm_sum2__ * 2.f / *dist);
-    *smiso = dstep * 1.8389599999999999f * sm_sum4__;
-    sm1 = sm1 * 1.8389599999999999f * dstep;
-    sm2 = sm2 * 1.8389599999999999f * dstep;
-    sma = sma * 1.8389599999999999f * dstep;
-    smgc = smgc * 1.8389599999999999f * dstep;
-    smlism = smlism * 1.8389599999999999f * dstep;
-    smcn = smcn * 1.8389599999999999f * dstep;
-    smvn = smvn * 1.8389599999999999f * dstep;
+    *smtheta = dstep * (float)5.5168799999999996 * (sm_sum1__ + sm_sum3__ / (
+	    r__1 * r__1) - sm_sum2__ * (float)2. / *dist);
+    *smiso = dstep * (float)1.8389599999999999 * sm_sum4__;
+    sm1 = sm1 * (float)1.8389599999999999 * dstep;
+    sm2 = sm2 * (float)1.8389599999999999 * dstep;
+    sma = sma * (float)1.8389599999999999 * dstep;
+    smgc = smgc * (float)1.8389599999999999 * dstep;
+    smlism = smlism * (float)1.8389599999999999 * dstep;
+    smcn = smcn * (float)1.8389599999999999 * dstep;
+    smvn = smvn * (float)1.8389599999999999 * dstep;
     return 0;
 } /* dmdsm_ */
 
+#ifdef __cplusplus
+	}
+#endif

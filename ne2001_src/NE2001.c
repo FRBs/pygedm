@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Table of constant values */
@@ -23,22 +26,22 @@ static integer c__9 = 9;
 /* 	program NE2001 */
 /*  calls dmdsm to get pulsar distance as a function of l, b, and DM, */
 /*  or pulsar DM as a function of l, b, and distance. */
-/* Main program */ int MAIN__(void)
+/* Main program */ int MAIN__()
 {
     /* Initialized data */
 
-    static real nu = 1.f;
-    static real rad = 57.2957795f;
-    static real vperp = 100.f;
+    static real nu = (float)1.;
+    static real rad = (float)57.2957795;
+    static real vperp = (float)100.;
 
     /* System generated locals */
     real r__1, r__2;
 
     /* Builtin functions */
     integer s_rsli(icilist *), do_lio(integer *, integer *, char *, ftnlen), 
-	    e_rsli(void), s_wsle(cilist *), e_wsle(void);
+	    e_rsli(), s_wsle(cilist *), e_wsle();
     /* Subroutine */ int s_stop(char *, ftnlen);
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
+    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe();
     double sin(doublereal);
 
     /* Local variables */
@@ -51,7 +54,7 @@ static integer c__9 = 9;
     static real dmd, tau, sbw, bdeg, ldeg;
     static integer ndir;
     static real emsm, dist;
-    extern integer iargc_(void);
+    extern integer iargc_();
     static char inbuf[80];
     extern /* Subroutine */ int dmdsm_(real *, real *, integer *, real *, 
 	    real *, char *, real *, real *, real *, real *, ftnlen);
@@ -268,7 +271,7 @@ static integer c__9 = 9;
     do_fio(&c__1, "PulseBroadening @1GHz", (ftnlen)21);
     e_wsfe();
     s_wsfe(&io___51);
-    r__1 = sbw / 1e3f;
+    r__1 = sbw / (float)1e3;
     do_fio(&c__1, (char *)&r__1, (ftnlen)sizeof(real));
     do_fio(&c__1, "SBW", (ftnlen)3);
     do_fio(&c__1, "(MHz)", (ftnlen)5);
@@ -302,3 +305,6 @@ static integer c__9 = 9;
     return 0;
 } /* MAIN__ */
 
+#ifdef __cplusplus
+	}
+#endif

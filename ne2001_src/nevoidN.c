@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Common Block Declarations */
@@ -41,8 +44,8 @@ static integer c__4 = 4;
     cllist cl__1;
 
     /* Builtin functions */
-    integer f_open(olist *), s_rsle(cilist *), e_rsle(void), do_lio(integer *,
-	     integer *, char *, ftnlen);
+    integer f_open(olist *), s_rsle(cilist *), e_rsle(), do_lio(integer *, 
+	    integer *, char *, ftnlen);
     double sin(doublereal), cos(doublereal);
     integer f_clos(cllist *);
     double exp(doublereal);
@@ -178,20 +181,20 @@ L5:
 /* kpc,kpc,kpc,deg,d */
 /* 0 or 1 */
 	if (voidflag == 0) {
-	    slc = sin(lv[j - 1] / 57.29577951f);
-	    clc = cos(lv[j - 1] / 57.29577951f);
-	    sbc = sin(bv[j - 1] / 57.29577951f);
-	    cbc = cos(bv[j - 1] / 57.29577951f);
+	    slc = sin(lv[j - 1] / (float)57.29577951);
+	    clc = cos(lv[j - 1] / (float)57.29577951);
+	    sbc = sin(bv[j - 1] / (float)57.29577951);
+	    cbc = cos(bv[j - 1] / (float)57.29577951);
 	    rgalc = dv[j - 1] * cbc;
 	    xv[j - 1] = rgalc * slc;
-	    yv[j - 1] = 8.5f - rgalc * clc;
+	    yv[j - 1] = (float)8.5 - rgalc * clc;
 	    zv[j - 1] = dv[j - 1] * sbc;
 	    th1 = thvy[j - 1];
 	    th2 = thvz[j - 1];
-	    s1[j - 1] = sin(th1 / 57.29577951f);
-	    c1[j - 1] = cos(th1 / 57.29577951f);
-	    s2[j - 1] = sin(th2 / 57.29577951f);
-	    c2[j - 1] = cos(th2 / 57.29577951f);
+	    s1[j - 1] = sin(th1 / (float)57.29577951);
+	    c1[j - 1] = cos(th1 / (float)57.29577951);
+	    s2[j - 1] = sin(th2 / (float)57.29577951);
+	    c2[j - 1] = cos(th2 / (float)57.29577951);
 	    cc12[j - 1] = c1[j - 1] * c2[j - 1];
 	    ss12[j - 1] = s1[j - 1] * s2[j - 1];
 	    cs21[j - 1] = c2[j - 1] * s1[j - 1];
@@ -212,8 +215,8 @@ L99:
 	cl__1.csta = 0;
 	f_clos(&cl__1);
     }
-    *nevn = 0.f;
-    *fvn = 0.f;
+    *nevn = (float)0.;
+    *fvn = (float)0.;
     *hitvoid = 0;
     *wvoid = 0;
 /* note rotation matrix in the 'q = ' statement below */
@@ -251,13 +254,13 @@ L99:
 	r__6 = ccv[j - 1];
 	q = r__1 * r__1 / (r__2 * r__2) + r__3 * r__3 / (r__4 * r__4) + r__5 *
 		 r__5 / (r__6 * r__6);
-	if (edge[j - 1] == 0 && q < 3.f) {
+	if (edge[j - 1] == 0 && q < (float)3.) {
 	    *nevn = nev[j - 1] * exp(-q);
 	    *fvn = fv[j - 1];
 	    *hitvoid = j;
 	    voids_1.hitvoidflag[j - 1] = 1;
 	}
-	if (edge[j - 1] == 1 && q <= 1.f) {
+	if (edge[j - 1] == 1 && q <= (float)1.) {
 	    *nevn = nev[j - 1];
 	    *fvn = fv[j - 1];
 	    *hitvoid = j;
@@ -270,3 +273,6 @@ L99:
     return 0;
 } /* nevoidn_ */
 
+#ifdef __cplusplus
+	}
+#endif

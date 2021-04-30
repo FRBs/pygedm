@@ -10,6 +10,9 @@
 		http://www.netlib.org/f2c/libf2c.zip
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "f2c.h"
 
 /* Table of constant values */
@@ -50,9 +53,9 @@ doublereal tauiss_(real *d__, real *sm, real *nu)
 /*            nu = radio frequency       (GHz) */
 /* output: tauss = pulse broadening time (ms) */
 
-    d__1 = (doublereal) (*sm / 292.f);
+    d__1 = (doublereal) (*sm / (float)292.);
     d__2 = (doublereal) (*nu);
-    ret_val = pow_dd(&d__1, &c_b2) * 1e3f * *d__ * pow_dd(&d__2, &c_b3);
+    ret_val = pow_dd(&d__1, &c_b2) * (float)1e3 * *d__ * pow_dd(&d__2, &c_b3);
     return ret_val;
 } /* tauiss_ */
 
@@ -80,11 +83,11 @@ doublereal scintbw_(real *d__, real *sm, real *nu)
 /* output: scintbw = scintillation bandwidth (kHz) */
 
 /* for uniform, Kolmogorov medium */
-    d__1 = (doublereal) (*sm / 292.f);
+    d__1 = (doublereal) (*sm / (float)292.);
     d__2 = (doublereal) (*nu);
-    tauiss = pow_dd(&d__1, &c_b2) * 1e3f * *d__ * pow_dd(&d__2, &c_b3);
+    tauiss = pow_dd(&d__1, &c_b2) * (float)1e3 * *d__ * pow_dd(&d__2, &c_b3);
 /* ms */
-    ret_val = 1.16f / (tauiss * 6.2831799999999998f);
+    ret_val = (float)1.16 / (tauiss * (float)6.2831799999999998);
 /* kHz */
     return ret_val;
 } /* scintbw_ */
@@ -116,8 +119,8 @@ doublereal scintime_(real *sm, real *nu, real *vperp)
 /*     Cordes & Lazio (1991) */
     d__1 = (doublereal) (*nu);
     d__2 = (doublereal) (*sm);
-    ret_val = pow_dd(&d__1, &c_b2) * 3.3f * pow_dd(&d__2, &c_b9) * (100.f / *
-	    vperp);
+    ret_val = pow_dd(&d__1, &c_b2) * (float)3.3 * pow_dd(&d__2, &c_b9) * ((
+	    float)100. / *vperp);
     return ret_val;
 } /* scintime_ */
 
@@ -147,8 +150,8 @@ doublereal specbroad_(real *sm, real *nu, real *vperp)
 /* a new calculation consistent with Cordes & Rickett (1998) */
     d__1 = (doublereal) (*nu);
     d__2 = (doublereal) (*sm);
-    ret_val = pow_dd(&d__1, &c_b11) * .097f * pow_dd(&d__2, &c_b12) * (*vperp 
-	    / 100.f);
+    ret_val = pow_dd(&d__1, &c_b11) * (float).097 * pow_dd(&d__2, &c_b12) * (*
+	    vperp / (float)100.);
 /* Hz */
     return ret_val;
 } /* specbroad_ */
@@ -172,7 +175,7 @@ doublereal theta_xgal__(real *sm, real *nu)
 
     d__1 = (doublereal) (*sm);
     d__2 = (doublereal) (*nu);
-    ret_val = pow_dd(&d__1, &c_b12) * 128.f * pow_dd(&d__2, &c_b15);
+    ret_val = pow_dd(&d__1, &c_b12) * (float)128. * pow_dd(&d__2, &c_b15);
     return ret_val;
 } /* theta_xgal__ */
 
@@ -196,7 +199,7 @@ doublereal theta_gal__(real *sm, real *nu)
 
     d__1 = (doublereal) (*sm);
     d__2 = (doublereal) (*nu);
-    ret_val = pow_dd(&d__1, &c_b12) * 71.f * pow_dd(&d__2, &c_b15);
+    ret_val = pow_dd(&d__1, &c_b12) * (float)71. * pow_dd(&d__2, &c_b15);
     return ret_val;
 } /* theta_gal__ */
 
@@ -205,10 +208,10 @@ doublereal em_(real *sm)
 {
     /* Initialized data */
 
-    static real router = 1.f;
-    static real pc = 3.086e18f;
-    static real alpha = 3.6666667f;
-    static real pi = 3.14159f;
+    static real router = (float)1.;
+    static real pc = (float)3.086e18;
+    static real alpha = (float)3.6666667;
+    static real pi = (float)3.14159;
 
     /* System generated locals */
     real ret_val;
@@ -236,10 +239,10 @@ doublereal em_(real *sm)
 
 /* outer scale = 1 pc */
 
-    d__1 = (doublereal) (router * pc / 6.2831799999999998f);
-    d__2 = (doublereal) (alpha - 3.f);
-    ret_val = *sm * (4.f * pi * 1e3f / (alpha - 3.f)) * pow_dd(&d__1, &d__2) *
-	     pow_dd(&c_b20, &c_b21);
+    d__1 = (doublereal) (router * pc / (float)6.2831799999999998);
+    d__2 = (doublereal) (alpha - (float)3.);
+    ret_val = *sm * ((float)4. * pi * (float)1e3 / (alpha - (float)3.)) * 
+	    pow_dd(&d__1, &d__2) * pow_dd(&c_b20, &c_b21);
 
     return ret_val;
 } /* em_ */
@@ -279,13 +282,13 @@ doublereal theta_iso__(real *smiso, real *nu)
 /*     parameter(kpc = 3.086e21)			!cm */
 /*     real falpha */
 /*     parameter(falpha=88.3) */
-    theta_log_radian__ = r_lg10(nu) * 1.2f + 13.287f - 1.1676f - r_lg10(smiso)
-	     * .6f - 34.383f + 8.f;
+    theta_log_radian__ = r_lg10(nu) * (float)1.2 + (float)13.287 - (float)
+	    1.1676 - r_lg10(smiso) * (float).6 - (float)34.383 + (float)8.;
 /* 0.6*log10(30cm*r_e) */
 /* 0.6*log10(f_alpha) */
 /* 1.6 * alog10(kpc) */
 /* -(20/3)*log(100) */
-    theta_log_microarcsec__ = theta_log_radian__ + 11.314425f;
+    theta_log_microarcsec__ = theta_log_radian__ + (float)11.314425;
 /* 11.314425=alog10(microarsec/r */
     d__1 = (doublereal) theta_log_microarcsec__;
     ret_val = pow_dd(&c_b23, &d__1);
@@ -327,13 +330,13 @@ doublereal theta_iso_test__(real *smiso, real *nu)
 /*     parameter(kpc = 3.086e21)			!cm */
 /*     real falpha */
 /*     parameter(falpha=88.3) */
-    theta_log_radian__ = r_lg10(nu) * 1.2f + 13.287f - 1.1676f - r_lg10(smiso)
-	     * .6f - 34.383f + 8.f;
+    theta_log_radian__ = r_lg10(nu) * (float)1.2 + (float)13.287 - (float)
+	    1.1676 - r_lg10(smiso) * (float).6 - (float)34.383 + (float)8.;
 /* 0.6*log10(30cm*r_e) */
 /* 0.6*log10(f_alpha) */
 /* 1.6 * alog10(kpc) */
 /* -(20/3)*log(100) */
-    theta_log_microarcsec__ = theta_log_radian__ + 11.314425f;
+    theta_log_microarcsec__ = theta_log_radian__ + (float)11.314425;
 /* 11.314425=alog10(microarsec/r */
     d__1 = (doublereal) theta_log_microarcsec__;
     ret_val = pow_dd(&c_b23, &d__1);
@@ -378,11 +381,15 @@ doublereal transition_frequency__(real *sm, real *smtau, real *smtheta, real *
 
 /* (2.*pi)^{-1/2} = fresnel scale definitio */
 /* GHz; see NE2001 paper */
-    deff = *dintegrate * (*sm - *smtau / 6.f - *smtheta / 3.f) / *sm;
+    deff = *dintegrate * (*sm - *smtau / (float)6. - *smtheta / (float)3.) / *
+	    sm;
     d__1 = (doublereal) (*sm);
     d__2 = (doublereal) deff;
-    ret_val = pow_dd(&c_b27, &c_b28) * 318.f * pow_dd(&d__1, &c_b29) * pow_dd(
-	    &d__2, &c_b30);
+    ret_val = pow_dd(&c_b27, &c_b28) * (float)318. * pow_dd(&d__1, &c_b29) * 
+	    pow_dd(&d__2, &c_b30);
     return ret_val;
 } /* transition_frequency__ */
 
+#ifdef __cplusplus
+	}
+#endif
