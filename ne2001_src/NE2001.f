@@ -13,22 +13,22 @@ c  or pulsar DM as a function of l, b, and distance.
 	real tau, sbw, stime, theta_g, theta_x, transfreq, emsm 
 
 	real nu
-        data nu/1./
 
 	character*1 limit
 
 	real rad
-	data rad/57.2957795/
 
 	real vperp
-        data vperp/100./
-
 c functions:
 
-	integer iargc_
-	external iargc_
+	integer iargc
+	external iargc
         real em, tauiss, scintbw, scintime, theta_xgal, theta_gal
 	real transition_frequency
+
+        data nu/1./
+	data rad/57.2957795/
+        data vperp/100./
 
 	nargs = iargc()
 	if(nargs .ge. 1) then
