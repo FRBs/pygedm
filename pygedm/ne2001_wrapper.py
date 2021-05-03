@@ -92,16 +92,20 @@ from astropy import units as u
 # RTD has issues with compilation of Fortran shared objects. This allows code import in RTD env
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if not on_rtd:
-    from . import dmdsm     # f2py FORTRAN object
-    from . import density   # f2py FORTRAN object
+    import ne21c
+    #from . import dmdsm     # f2py FORTRAN object
+    #from . import density   # f2py FORTRAN object
 else: # pragma: no cover
     class Mock(object):
-        def dmdsm(self, *args, **kwargs):
-            return 0, 0, 0, 0, 0
-        def density_2001(self, *args, **kwargs):
-            return 0
-    density = Mock()
-    dmdsm   = Mock()
+        def dist_to_dm(self, *args, **kwargs):
+            return {}
+        def dm_to_dist(self, *args, **kwargs):
+            return {}
+        def density_xyz(self, *args, **kwargs):
+            return {}
+    #density = Mock()
+    #dmdsm   = Mock()
+    ne21c = Mock()
 
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -172,18 +176,19 @@ def dm_to_dist(l, b, dm):
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
     """
-    dm    = np.array(dm, dtype='float32')
-    dist  = np.zeros_like(dm)
+    #dm    = np.array(dm, dtype='float32')
+    #dist  = np.zeros_like(dm)
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
-    ndir = 1
+    #ndir = 1
     if np.isclose(dm, 0):  # Catch infinite timeout bug
         return 0.0 * u.pc, 0.0 * u.s
     else:
-        limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
-
-    tau_sc =TAUISS(float(dist), smtau, nu=1.0)
-    return (float(dist) * u.kpc).to('pc'), tau_sc * u.s
+        #limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
+        d = ne21c.dm_to_dist(l_rad, b_rad, dm)
+    
+    tau_sc =TAUISS(float(d['dist']), d['smtau'], nu=1.0)
+    return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
 
 
 @run_from_pkgdir
@@ -198,8 +203,8 @@ def dist_to_dm(l, b, dist):
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
     """
-    dist  = np.array(dist, dtype='float32')
-    dm    = np.zeros_like(dist)
+    #dist  = np.array(dist, dtype='float32')
+    #dm    = np.zeros_like(dist)
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
     ndir = -1
@@ -207,10 +212,11 @@ def dist_to_dm(l, b, dist):
     if np.isclose(dist, 0):       # Catch infinite timeout bug
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
-        limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
-
-    tau_sc = TAUISS(float(dist), smtau, nu=1.0)
-    return float(dm) * u.pc / u.cm**3, tau_sc * u.s
+        #limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
+        d = ne21c.dist_to_dm(l_rad, b_rad, dist)
+    
+    tau_sc = TAUISS(float(dist), d['smtau'], nu=1.0)
+    return float(d['dm']) * u.pc / u.cm**3, tau_sc * u.s
 
 
 @run_from_pkgdir
@@ -228,8 +234,9 @@ def calculate_electron_density_xyz(x, y, z):
     Returns:
         ne_out (astropy.Quantity): Electron density in cm-3
     """
-    ne_out = density.density_2001(x, y, z)
-    return np.sum(ne_out[:7]) / u.cm**3
+    #ne_out = density.density_2001(x, y, z)
+    ne_out = ne21c.density_xyz(x, y, z)
+    return ne_out['ne'] / u.cm**3
 
 
 

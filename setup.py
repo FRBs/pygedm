@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.1.3'
+__version__ = '3.2.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info.major == 3:
@@ -63,6 +63,20 @@ ext_modules = [
             os.path.join(__here__, 'ymw16_src'),
         ],
         extra_link_args=['-lm'],
+        language='c++'
+    ),
+    Extension(
+        'ne21c',
+        sources=[
+            'ne21c/main.cpp',
+        ],
+        include_dirs=[
+            # Path to pybind11 headers
+            get_pybind_include(),
+            get_pybind_include(user=True),
+            os.path.join(__here__, 'ne21c'),
+        ],
+        extra_link_args=['-lm', '-lf2c'],
         language='c++'
     ),
 ]
@@ -141,8 +155,9 @@ DATA_FILES   = ['gal01.inp', 'ne_arms_log_mod.inp', 'ne_gc.inp',
 def runcmd(cmd):
     """ Run a command with os.system, printing command to screen"""
     print("\n> " + cmd)
-    os.system(cmd)
-
+    retval = os.system(cmd)
+    if retval != 0:
+        raise RuntimeError("Error running: \n --- \n %s \n --- \n" % cmd)
 
 def list_data_files():
     return [os.path.join(NE_SRC_PATH, df) for df in DATA_FILES]
@@ -180,12 +195,12 @@ def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
 
         print("\n---- Generating F2PY shared object for DMDSM ----")
         runcmd('f2py -m dmdsm -h sgnFile.pyf dmdsm.NE2001.f --overwrite-signature')
-        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f -L./ -lNE2001 -m dmdsm')
+        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f -L/opt/conda/lib -L./ -lNE2001 -m dmdsm')
         runcmd('rm sgnFile.pyf')
 
         print("\n---- Generating F2PY shared object for density ----")
         runcmd('f2py -m density -h sgnFile.pyf density.NE2001.f --overwrite-signature')
-        runcmd('f2py -c sgnFile.pyf density.NE2001.f -L./ -lNE2001 -m density')
+        runcmd('f2py -c sgnFile.pyf density.NE2001.f  -L/opt/conda/lib -L./ -lNE2001 -m density')
         runcmd('rm sgnFile.pyf')
     except:
         raise
@@ -197,7 +212,7 @@ def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
 ####
 
 
-do_fortran_compile = True
+do_fortran_compile = False
 
 if do_fortran_compile:
     compile_ne2001()
