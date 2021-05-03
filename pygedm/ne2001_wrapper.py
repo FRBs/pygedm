@@ -1,5 +1,7 @@
 """
-Python wrapper for NE2001 FORTRAN code
+Python wrapper for NE2001 model code.
+
+
 
 References:
 
@@ -10,109 +12,21 @@ References:
     [2] `Cordes, J. M., & Lazio, T. J. W. (2003), <https://ui.adsabs.harvard.edu/abs/2003astro.ph..1598C/abstract>`_
     *NE2001. II. Using Radio Propagation Data to Construct a Model for the Galactic Distribution of Free Electrons*,
     arXiv e-prints, astro-ph/0301598.
-
-FORTRAN f2py objects
-********************
-
-Upon installation, ``pygedm`` will compile the fortran code to create f2py objects that can be accessed from
-python.
-
-**dmdsm f2py object**::
-
-    Call signature: dmdsm.dmdsm(*args, **kwargs)
-    Type:           fortran
-    String form:    <fortran object>
-    Docstring:
-    limit,sm,smtau,smtheta,smiso = dmdsm(l,b,ndir,dmpsr,dist)
-
-Wrapper for ``dmdsm``::
-
-    Parameters:
-        l : input float
-        b : input float
-        ndir : input int
-        dmpsr : in/output rank-0 array(float,'f')
-        dist : in/output rank-0 array(float,'f')
-
-    Returns:
-        limit : string(len=1)
-        sm : float  (scattering measure, uniform weighting) (kpc/m^{20/3})
-        smtau : float  (scattering measure, weighting for pulse broadening)
-        smtheta : float  (scattering measure, weighting for angular broadening of galactic sources)
-        smiso : float (scattering measure appropriate for calculating the isoplanatic angle at the source's location)
-
-
-**density f2py object**::
-
-    Call signature: density.density_2001(*args, **kwargs)
-    Type:           fortran
-    String form:    <fortran object>
-    Docstring:
-    ne1,ne2,nea,negc,nelism,necn,nevn,f1,f2,fa,fgc,flism,fcn,fvn,whicharm,wlism,wldr,
-    wlhb,wlsb,wloopi,hitclump,hitvoid,wvoid = density_2001(x,y,z)
-
-Wrapper for ``density_2001``::
-
-    Args:
-        x : input float
-        y : input float
-        z : input float
-
-    Returns:
-        ne1 : float
-        ne2 : float
-        nea : float
-        negc : float
-        nelism : float
-        necn : float
-        nevn : float
-        f1 : float
-        f2 : float
-        fa : float
-        fgc : float
-        flism : float
-        fcn : float
-        fvn : float
-        whicharm : int
-        wlism : int
-        wldr : int
-        wlhb : int
-        wlsb : int
-        wloopi : int
-        hitclump : int
-        hitvoid : int
-        wvoid : int
 """
 
 import numpy as np
 import os
 from functools import wraps
 from astropy import units as u
-
-# RTD has issues with compilation of Fortran shared objects. This allows code import in RTD env
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
-if not on_rtd:
-    import ne21c
-    #from . import dmdsm     # f2py FORTRAN object
-    #from . import density   # f2py FORTRAN object
-else: # pragma: no cover
-    class Mock(object):
-        def dist_to_dm(self, *args, **kwargs):
-            return {}
-        def dm_to_dist(self, *args, **kwargs):
-            return {}
-        def density_xyz(self, *args, **kwargs):
-            return {}
-    #density = Mock()
-    #dmdsm   = Mock()
-    ne21c = Mock()
+import ne21c
 
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
+
 
 def run_from_pkgdir(f):
     """ Decorator function to chdir() into package directory when running
 
-    Fortran code doesn't know the relative path to its data files.
+    NE2001 code doesn't know the relative path to its data files.
     This wraps the function call, changing into the right directory
     first, calling it, then changing back to original directory.
     """
@@ -176,18 +90,15 @@ def dm_to_dist(l, b, dm):
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
     """
-    #dm    = np.array(dm, dtype='float32')
-    #dist  = np.zeros_like(dm)
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
-    #ndir = 1
-    if np.isclose(dm, 0):  # Catch infinite timeout bug
+
+    if np.isclose(dm, 0):  # WAR Catch infinite timeout
         return 0.0 * u.pc, 0.0 * u.s
     else:
-        #limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
         d = ne21c.dm_to_dist(l_rad, b_rad, dm)
     
-    tau_sc =TAUISS(float(d['dist']), d['smtau'], nu=1.0)
+    tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=1.0)
     return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
 
 
@@ -203,16 +114,12 @@ def dist_to_dm(l, b, dist):
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
     """
-    #dist  = np.array(dist, dtype='float32')
-    #dm    = np.zeros_like(dist)
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
-    ndir = -1
 
     if np.isclose(dist, 0):       # Catch infinite timeout bug
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
-        #limit, sm, smtau, smtheta, smiso = dmdsm.dmdsm(l_rad, b_rad, ndir, dm, dist)
         d = ne21c.dist_to_dm(l_rad, b_rad, dist)
     
     tau_sc = TAUISS(float(dist), d['smtau'], nu=1.0)
@@ -234,7 +141,6 @@ def calculate_electron_density_xyz(x, y, z):
     Returns:
         ne_out (astropy.Quantity): Electron density in cm-3
     """
-    #ne_out = density.density_2001(x, y, z)
     ne_out = ne21c.density_xyz(x, y, z)
     return ne_out['ne'] / u.cm**3
 
