@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
@@ -40,7 +41,6 @@ std::map<std::string, float> dm_to_dist(float gl_rad, float gb_rad, float dm) {
     result.insert(std::make_pair("smiso", smiso));
     return result;
 }
-
 
 // Distance to dispersion measure
 std::map<std::string, float> dist_to_dm(float gl_rad, float gb_rad, float dist) {
