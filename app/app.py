@@ -1,40 +1,46 @@
 import dash
 import dash_labs as dl
-import numpy as np
 import dash_core_components as dcc
+import dash_html_components as html
+import dash_bootstrap_components as dbc
+
 import plotly.express as px
 import plotly.graph_objects as pgo
-import pygedm
+
+import numpy as np
 from astropy.coordinates import Angle, SkyCoord
 from astropy import units as u
-import dash_html_components as html
 import xarray as xr
+import h5py
 
+import pygedm
+
+# Load skymap data
+dskymap = h5py.File('data/skymap.h5', mode='r')
+skymap_dist = np.round(dskymap['dist'], decimals=1)
+
+skymap_data_ne = xr.DataArray(dskymap['ne2001'], dims=('distance_kpc', 'gb', 'gl'),
+                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
+                              attrs={'units': 'DM pc/cm3'})
+skymap_data_ymw = xr.DataArray(dskymap['ymw16'], dims=('distance_kpc', 'gb', 'gl'),
+                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
+                              attrs={'units': 'DM pc/cm3'})
+
+# APP SETUP
 app = dash.Dash(__name__, plugins=[dl.plugins.FlexibleCallbacks()])
+app.title = "PyGEDM"
+server = app.server 
 
 theme_name = "minty"
 css_url = f"https://bootswatch.com/4/{theme_name}/bootstrap.css"
 
 tpl = dl.templates.DbcSidebarTabs(
-    ["Plot", "Output", "Skymap"],
+    app,
+    tab_roles=["Plot", "Output", "Skymap"],
     title="PyGEDM: Galactic Electron Density Models",
-    theme=css_url, figure_template=True,  sidebar_columns=3
+    theme=css_url, figure_template=True,  sidebar_columns=3,
 )
 
-skymap_data_ne = np.load('data/datacube_ddm_ne2001.npy')
-skymap_data_ymw = np.load('data/datacube_ddm_ymw16.npy')
-skymap_gl = np.load('data/datadim_gl.npy')
-skymap_gb = np.load('data/datadim_gb.npy')
-skymap_dist = np.round(np.load('data/datadim_dist.npy'), decimals=1)
-
-skymap_data_ne = xr.DataArray(skymap_data_ne, dims=('distance_kpc', 'gb', 'gl'),
-                              coords={'distance_kpc': skymap_dist, 'gl': skymap_gl, 'gb': skymap_gb},
-                              attrs={'units': 'DM pc/cm3'})
-skymap_data_ymw = xr.DataArray(skymap_data_ymw, dims=('distance_kpc', 'gb', 'gl'),
-                              coords={'distance_kpc': skymap_dist, 'gl': skymap_gl, 'gb': skymap_gb},
-                              attrs={'units': 'DM pc/cm3'})
-
-dist = np.arange(1, 30, 1)
 @app.callback(
     args=dict(
         model=tpl.dropdown_input(["NE2001", "YMW16"], label="Model"),
@@ -48,7 +54,7 @@ dist = np.arange(1, 30, 1)
     ),
     output=[
         tpl.graph_output(role="Plot"),
-        tpl.markdown_output(role="Output"),
+        tpl.div_output(role="Output"),
         tpl.graph_output(role="Skymap")
     ],
     template=tpl,
@@ -61,25 +67,31 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
         dmord = float(dmord) * units
         xt = 'DM (pc / cm3)'
         yt = 'Distance (kpc)'
+        xl = 'Dispersion measure'
+        yl = 'Distance'
     else:
         f = pygedm.dist_to_dm
         units = 1.0 * u.kpc
         dmord = float(dmord) * units
-        print(f, dmord)
+        #print(f, dmord)
         yt = 'DM (pc / cm3)'
         xt = 'Distance (kpc)'
+        xl = 'Distance'
+        yl = 'Dispersion measure'
 
     if coords == "Galactic (gl, gb)":
         gl = Angle(x0, unit='degree')
         gb = Angle(x1, unit='degree')
         sc = SkyCoord(gl, gb, frame='galactic')
-        dout = f(gl, gb, dmord, method=model)
     else:
         ra = Angle(x0, unit='hourangle')
         dec = Angle(x1, unit='degree')
         sc = SkyCoord(ra, dec)
-        dout = f(sc.galactic.l, sc.galactic.b, dmord, method=model)
-        print(sc.galactic.l, sc.galactic.b, dmord, f)
+        
+    print(sc.galactic.l, sc.galactic.b, dmord, f)
+    dout     = f(sc.galactic.l, sc.galactic.b, dmord, method=model)
+    dout_ne  = f(sc.galactic.l, sc.galactic.b, dmord, method='ne2001')
+    dout_ymw = f(sc.galactic.l, sc.galactic.b, dmord, method='ymw16')
 
     # Make plots
     D = np.linspace(0.1, dmord.value)
@@ -103,40 +115,49 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
     fig.update_layout(xaxis_title=xt, yaxis_title=yt,
                       title=f'ICRS: {sc.icrs.ra:2.2f}  {sc.icrs.dec:2.2f} \t Galactic: {sc.galactic.l:2.2f} {sc.galactic.b:2.2f}')
 
+    # SKYMAP
     if model == 'NE2001':
         skymap_data = skymap_data_ne
     else:
         skymap_data = skymap_data_ymw
-    skymap = px.imshow(animation_frame=0, img=skymap_data, x=skymap_gl, y=skymap_gb)
+    
+    print(skymap_data.shape)
+    skymap = px.imshow(animation_frame=0, img=skymap_data,
+                        origin='upper', binary_string=True, binary_format='jpg'   )
     skymap["layout"].pop("updatemenus")
+
     skymap.update_layout(xaxis_title='Galactic longitude (deg)',
                          yaxis_title='Galactic latitude (Deg)',
-                         title=f'{model}: All-sky DM map')
+                         title=f'{model}: All-sky DM map'
+                         )
     skymap.add_shape(
         type='rect',
-        x0=gl.value-2, x1=gl.value+2, y0=gb.value-2, y1=gb.value+2,
+        x0=sc.galactic.l.value-2, x1=sc.galactic.l.value+2, y0=sc.galactic.b.value-2, y1=sc.galactic.b.value+2,
         xref='x', yref='y',
         line_color='cyan'
     )
-    print(skymap)
 
-    gedm_out = f"""# {method} \n
-### Input
+    ## TEXT OUTPUT
+    hdr = html.Div([html.H2(method),
+                    html.H4(f"Sky coordinates: {sc}")
+          ])
 
-* **Model**: {model}
-* **Sky coordinates:** {sc}
-* **DM:** {dmord}
+    table_header = [
+        html.Thead(html.Tr([html.Th(""), html.Th("YMW16"), html.Th("NE2001")]))
+    ]
+    row1 = html.Tr([html.Th(f"{xl}"), html.Td(f"{dmord}"), html.Td(f"{dmord}")])
+    row2 = html.Tr([html.Th(f"{yl}"), html.Td(f"{dout_ymw[0]:2.4f}"), html.Td(f"{dout_ne[0]:2.4f}")])
+    row3 = html.Tr([html.Th("Scattering timescale"), html.Td(f"{dout_ymw[1]:2.4e}"), html.Td(f"{dout_ne[1]:2.4e}")])
 
-### Output
-* **Distance:** {dout[0]:2.4f}
-* **Scattering timescale:** {dout[1]:2.4e}
-"""
+    table_body = [html.Tbody([row1, row2, row3])]
+
+    gedm_out = html.Div([hdr, dbc.Table(table_header + table_body, bordered=True)])
 
     return fig, gedm_out, skymap
 
 
-app.layout = tpl.layout(app)
+app.layout = dbc.Container(fluid=True, children=tpl.children)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0', debug=False)
