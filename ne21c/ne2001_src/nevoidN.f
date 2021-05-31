@@ -58,7 +58,6 @@ c                 1 => uniform and truncated at 1/e
 	parameter (rsun=8.5)
 
 	logical first
-	data first/.true./
 
 	real slc, clc, sbc, cbc
 	real rgalc
@@ -67,10 +66,11 @@ c                 1 => uniform and truncated at 1/e
 	real th1, th2
 
 	integer luvoid
-	data luvoid/11/
 	integer j
 	integer voidflag
 
+	data first/.true./
+	data luvoid/11/
 	save
 
 c first time through, calculate xc, yc, zc

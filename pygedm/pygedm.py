@@ -201,8 +201,8 @@ def convert_lbr_to_xyz(gl, gb, dist, method='ymw16'):
     dist = _unit_convert(dist, 'pc') # Unit conversion and strip quantity
     dist = dist * u.pc               # Make sure distance is in units of pc
     if method == 'astropy':
-        lbr = SkyCoord(gl, gb, distance=dist, frame='galactic', unit=('degree', 'degree', 'pc'))
-        xyz = lbr.transform_to(Galactocentric(galcen_distance=8.5 * u.kpc))
+        lbr = SkyCoord(gl, gb, distance=dist, frame='galactic', unit=('rad', 'rad', 'pc'))
+        xyz = lbr.transform_to(Galactocentric())
         return xyz.x, xyz.y, xyz.z
     elif method.lower() == 'ymw16':
         Rsun = 8300 * u.pc

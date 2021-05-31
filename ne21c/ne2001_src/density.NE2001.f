@@ -65,8 +65,6 @@ c----------------------------------------------------------------------------
 	common /modelflags/ wg1, wg2, wga, wggc, wglism, wgcN, wgvN
 
 	logical first
-	data first/.true./
-	save
 
 c functions:
 	real ne_inner
@@ -77,6 +75,9 @@ c functions:
 c subroutines needed:
 c	neclumpN
 c	nevoidN
+	data first/.true./
+	save
+
 
 	if(first) then
 c! get parameters first time through
@@ -124,7 +125,6 @@ c-----------------------------------------------------------------------
 	implicit none
 	real rsun
 	common /mw/ rsun
-	data rsun/8.5/
 	
 c control flags for turning components on and off:
 
@@ -152,6 +152,7 @@ c	farm:	factors that multiply n_e^2 when calculating SM
 
 	real negc0, Fgc0
         common /gcparms/ negc0, Fgc0
+	data rsun/8.5/
 
 	   open(11,file='gal01.inp',status='old')
 	   read(11,*)
@@ -216,11 +217,8 @@ c see get_parameters for definitions of narm, warm, harm.
         parameter(rad=57.2957795130823)
 
 	integer ks
-        data ks/3/
 
 	integer NN
-	data NN/7/
-
 	integer NNmax
 	parameter(NNmax=20)
 
@@ -230,13 +228,7 @@ c see get_parameters for definitions of narm, warm, harm.
 	real aarm(narms), rmin(narms), thmin(narms), extent(narms)
 
 	integer armmap(5)
-c! for remapping from Wainscoat
-	data armmap/1, 3, 4, 2, 5/
-c! order to TC93 order, which is
-c! from GC outwards toward Sun.
  	integer NNj(narms)
-	data NNj/20, 20, 20, 20, 20/
-
 	real th1(NNmax,narms),r1(NNmax,narms) 
 
 	real arm
@@ -246,9 +238,6 @@ c! from GC outwards toward Sun.
 
 	real nea
         integer j, k, n, jj
-
-	logical first
-	data first /.true./
 
 	real rr
  	real dth, th, r
@@ -266,6 +255,20 @@ c! from GC outwards toward Sun.
 c function:
 	real sech2
 	save
+
+
+	logical first
+        data ks/3/
+	data NN/7/
+
+c! for remapping from Wainscoat
+	data armmap/1, 3, 4, 2, 5/
+c! order to TC93 order, which is
+c! from GC outwards toward Sun.
+	data NNj/20, 20, 20, 20, 20/
+
+
+	data first /.true./
 
 	rr=sqrt(x**2 + y**2)
 	if(first) then

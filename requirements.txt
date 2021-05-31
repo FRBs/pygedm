@@ -2,3 +2,4 @@ pybind11
 astropy
 numpy
 scipy
+healpy

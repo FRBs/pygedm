@@ -1,5 +1,6 @@
 include ymw16_src/cn.hpp
-include ne2001_src/*
+include ne21c/main.cpp
+include ne21c/ne21.c
 include pygedm/spiral.txt
 include pygedm/ymw16par.txt
 include pygedm/gal01.inp
