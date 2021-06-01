@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/telegraphic/pygedm.svg?branch=master)](https://travis-ci.org/telegraphic/pygedm)
+[![Python application](https://github.com/FRBs/pygedm/actions/workflows/python-app.yml/badge.svg)](https://github.com/FRBs/pygedm/actions/workflows/python-app.yml)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Coverage Status](https://codecov.io/gh/telegraphic/pygedm/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pygedm)
 [![Documentation Status](https://readthedocs.org/projects/pygedm/badge/?version=latest)](https://pygedm.readthedocs.io/en/latest/?badge=latest)
