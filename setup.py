@@ -12,13 +12,8 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.1.3'
+__version__ = '3.2.0'
 __here__ = os.path.abspath(os.path.dirname(__file__))
-
-if sys.version_info.major == 3:
-    astro = "astropy"
-else:
-    astro = "astropy<3.0"
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path
@@ -63,6 +58,20 @@ ext_modules = [
             os.path.join(__here__, 'ymw16_src'),
         ],
         extra_link_args=['-lm'],
+        language='c++'
+    ),
+    Extension(
+        'ne21c',
+        sources=[
+            'ne21c/main.cpp',
+        ],
+        include_dirs=[
+            # Path to pybind11 headers
+            get_pybind_include(),
+            get_pybind_include(user=True),
+            os.path.join(__here__, 'ne21c'),
+        ],
+        extra_link_args=['-lm', '-lf2c'],
         language='c++'
     ),
 ]
@@ -130,97 +139,19 @@ class BuildExt(build_ext):
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-# Compile NE2001
-NE_SRC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ne2001_src')
-FORTRAN_SRCS = ['dmdsm.NE2001.f', 'density.NE2001.f', 'neLISM.NE2001.f',
-                'neclumpN.f', 'nevoidN.f', 'scattering98.f']
-DATA_FILES   = ['gal01.inp', 'ne_arms_log_mod.inp', 'ne_gc.inp',
-                'nelism.inp', 'neclumpN.NE2001.dat', 'nevoidN.NE2001.dat']
-
-
-def runcmd(cmd):
-    """ Run a command with os.system, printing command to screen"""
-    print("\n> " + cmd)
-    os.system(cmd)
-
-
-def list_data_files():
-    return [os.path.join(NE_SRC_PATH, df) for df in DATA_FILES]
-
-
-def cleanup():
-    """ """
-    print("---- Running cleanup ----")
-    runcmd('rm *.o')
-    if os.path.exists('sgnFile.pyf'):
-        runcmd('rm sgnFile.pyf')
-
-
-def compile_ne2001(fcomp='gfortran', ar_flags='rc'):
-    orig_cwd = os.getcwd()
-    try:
-        os.chdir(NE_SRC_PATH)
-
-        print("\n##########################")
-        print("#### Compiling NE2001 ####")
-        print("##########################\n")
-        print("Working directory: " + NE_SRC_PATH)
-        print("Fortran compiler: " + fcomp)
-
-        AR_CMD = 'ar {ar_flags} libNE2001.a '.format(ar_flags=ar_flags)
-        RANLIB_CMD = 'ranlib libNE2001.a'
-
-        for fsrc in FORTRAN_SRCS:
-            fobj = fsrc.replace('.f', '.o')
-            runcmd("{fcomp} -O -fPIC -std=gnu -c -o {fobj} {fsrc}".format(fcomp=fcomp, fobj=fobj, fsrc=fsrc))
-            AR_CMD += '{fobj} '.format(fobj=fobj)
-
-        runcmd(AR_CMD)
-        runcmd(RANLIB_CMD)
-
-        print("\n---- Generating F2PY shared object for DMDSM ----")
-        runcmd('f2py -m dmdsm -h sgnFile.pyf dmdsm.NE2001.f --overwrite-signature')
-        runcmd('f2py -c sgnFile.pyf dmdsm.NE2001.f -L./ -lNE2001 -m dmdsm')
-        runcmd('rm sgnFile.pyf')
-
-        print("\n---- Generating F2PY shared object for density ----")
-        runcmd('f2py -m density -h sgnFile.pyf density.NE2001.f --overwrite-signature')
-        runcmd('f2py -c sgnFile.pyf density.NE2001.f -L./ -lNE2001 -m density')
-        runcmd('rm sgnFile.pyf')
-    except:
-        raise
-    finally:
-        os.chdir(orig_cwd)
-
-####
-# COMPILE NE2001 FORTRAN
-####
-
-
-do_fortran_compile = True
-
-if do_fortran_compile:
-    compile_ne2001()
-
-ne2001_shared_objs = list(glob.glob(NE_SRC_PATH + '/*.so'))
-for sobj in ne2001_shared_objs:
-    print("Copying {sobj} to pygedm/".format(sobj=os.path.basename(sobj)))
-    os.system('cp {sobj} pygedm/'.format(sobj=sobj))
-    data_files.append(os.path.basename(sobj))
-
 setup(
     name='pygedm',
     version=__version__,
     author='D. C. Price',
     author_email='dancpr@berkeley.edu',
-    description='Python/C++ version of YMW16 electron density model',
+    description='Python/C++ version of NE2001, YMW16, and YT2020 electron density models',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/telegraphic/pygedm',
+    url='https://github.com/frbs/pygedm',
     download_url='https://github.com/telegraphic/pygedm/archive/%s.tar.gz' % __version__,
-    python_requires='>=2.7',
-    install_requires=['pybind11>=2.2', astro],
-    tests_require= ['pytest', astro, 'numpy', 'healpy'],
+    python_requires='>=3.6',
+    install_requires=['pybind11>=2.2', 'astropy'],
+    tests_require= ['pytest', 'astropy', 'numpy', 'healpy'],
     setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
     packages=['pygedm'],

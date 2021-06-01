@@ -106,20 +106,6 @@ c voids:
 c subroutines needed:
 c	density_2001 (and those that it calls) in density.NE2001.f
 c       scattering routines in scattering98.f
-
-	real R0, rrmax, zmax, dmax
-	data R0/8.5/
-c	data rrmax/30.0/		
-	data rrmax/50.0/		
-c	data zmax/1.76/			
-c	data zmax/5.00/			
-	data zmax/25.00/		
-        data dmax/50.0/     
-
-	logical first
-	data first/.true./
-	
-	save
                                                                         
 c other variables
 	real x, y, z, r, rr
@@ -141,6 +127,20 @@ c other variables
 	integer wtotal
 	real ne
 
+
+	logical first
+	real R0, rrmax, zmax, dmax
+	data R0/8.5/
+c	data rrmax/30.0/		
+	data rrmax/50.0/		
+c	data zmax/1.76/			
+c	data zmax/5.00/			
+	data zmax/25.00/		
+        data dmax/50.0/     
+
+	data first/.true./
+	
+	save
                                                                         
 	if(first) then
 c initial call to density routine to set variable values

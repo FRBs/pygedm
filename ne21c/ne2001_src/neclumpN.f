@@ -47,7 +47,6 @@ c                 1 => uniform and truncated at 1/e
 	parameter (rsun=8.5)
 
 	logical first
-	data first/.true./
 
 	real slc, clc, sbc, cbc
 	real rgalc
@@ -56,10 +55,11 @@ c                 1 => uniform and truncated at 1/e
 	real arg
 
 	integer luclump
-	data luclump/11/
 	integer j
 	integer clumpflag
 
+	data first/.true./
+	data luclump/11/
 	save
 
 c first time through, read input clump parameters and calculate

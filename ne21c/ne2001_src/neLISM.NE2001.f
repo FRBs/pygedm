@@ -37,7 +37,6 @@ c and Bhat et al. 1999
          
 
         logical first
-	data first /.true./
 	
 c functions:
 
@@ -51,6 +50,7 @@ c other variables:
 	real nelsbxyz, nelhbxyz, neldrq1xyz, neloopIxyz 
 	real FLDRQ1r, FLSBr, FLHBr, FLOOPIr		! 'r' for returned value
 	integer wLDR, wLSB, wLHB, wLOOPI
+	data first /.true./
 
 	if(first) then					! read parameters for LISM
 	  open(11,file='nelism.inp',status='unknown')
@@ -443,11 +443,11 @@ c	real xlhb, ylhb, zlhb		! center of ellipsoid
         parameter(radian = 57.29577951)
 
 	logical first
-	data first /.true./
 
 	real yzslope 
 
 	real yaxis
+	data first /.true./
 	save
 
 	aa=alhb
