@@ -1,7 +1,6 @@
 [![Python application](https://github.com/FRBs/pygedm/actions/workflows/python-app.yml/badge.svg)](https://github.com/FRBs/pygedm/actions/workflows/python-app.yml)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-[![Coverage Status](https://codecov.io/gh/telegraphic/pygedm/branch/master/graph/badge.svg)](https://codecov.io/gh/telegraphic/pygedm)
-[![Documentation Status](https://readthedocs.org/projects/pygedm/badge/?version=latest)](https://pygedm.readthedocs.io/en/latest/?badge=latest)
+[![Coverage](https://codecov.io/gh/FRBs/pygedm/branch/master/graph/badge.svg?token=TlBiPzD7DP)](https://codecov.io/gh/FRBs/pygedm)[![Documentation Status](https://readthedocs.org/projects/pygedm/badge/?version=latest)](https://pygedm.readthedocs.io/en/latest/?badge=latest)
 
 # PyGEDM
 _Python bindings for the YMW16, NE2001 and YT2020 electron density models_
@@ -10,7 +9,7 @@ This package is a Python interface to the YMW16 and NE2001 electron density mode
 The Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
 [arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model, is written in C++, and the Cordes and Lazio 
 (2001, [arXiv:0207156](https://arxiv.org/abs/astro-ph/)) NE2001 model is written in FORTRAN. This package, PyGEDM, wraps these
-two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) and [f2py](https://docs.scipy.org/doc/numpy/f2py/).
+two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) to make them usable from Python. Here, we have converted NE2001 to C++ using `f2c`.
 
 ### Usage
 
@@ -56,16 +55,21 @@ print(tau_sc.to('ns'))
 
 ### Installation
 
-Requires `pybind11`, `astropy`, and a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus a 
-fortran compiler (generally `gfortran`).
+Requires `pybind11`, `astropy`, `numpy`, `scipy`, and a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c` (`apt-get f2c` in Ubuntu).
 
 You should be able to install with:
+
+```
+pip install pygedm
+```
+
+or 
 
 ```
 pip install git+https://github.com/telegraphic/pygedm
 ```
 
-Or, download this repository and install via
+to install the latest version from github. Alternatively, download this repository and install via
 
 ```
 python setup.py install
