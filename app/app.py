@@ -17,12 +17,12 @@ import pygedm
 
 # Load skymap data
 dskymap = h5py.File('data/skymap.h5', mode='r')
-skymap_dist = np.round(dskymap['dist'], decimals=1)
+skymap_dist = dskymap['dist']
 
-skymap_data_ne = xr.DataArray(dskymap['ne2001'], dims=('distance_kpc', 'gb', 'gl'),
+skymap_data_ne = xr.DataArray(np.log(dskymap['ne2001/ddm'][:] + 1), dims=('distance_kpc', 'gb', 'gl'),
                               coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
                               attrs={'units': 'DM pc/cm3'})
-skymap_data_ymw = xr.DataArray(dskymap['ymw16'], dims=('distance_kpc', 'gb', 'gl'),
+skymap_data_ymw = xr.DataArray(dskymap['ymw16/ddm'], dims=('distance_kpc', 'gb', 'gl'),
                               coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
                               attrs={'units': 'DM pc/cm3'})
 
