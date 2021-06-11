@@ -36,26 +36,26 @@ css_url = f"https://bootswatch.com/4/{theme_name}/bootstrap.css"
 
 tpl = dl.templates.DbcSidebarTabs(
     app,
-    tab_roles=["Plot", "Output", "Skymap"],
+    tab_locations=["Plot", "Output", "Skymap"],
     title="PyGEDM: Galactic Electron Density Models",
     theme=css_url, figure_template=True,  sidebar_columns=3,
 )
 
 @app.callback(
     args=dict(
-        model=tpl.dropdown_input(["NE2001", "YMW16"], label="Model"),
-        method=tpl.dropdown_input(["DM (pc/cm3) to Distance", "Distance (kpc) to DM"], label="Method", kind=dl.State),
-        dmord=tpl.textbox_input(10, label=None, kind=dl.State),
-        coords=tpl.dropdown_input(["Galactic (gl, gb)", "Celestial (RA, DEC)"], label="Coordinates", kind=dl.State),
-        x0=tpl.textbox_input("00:00:00.00", label=None, kind=dl.State),
-        x1=tpl.textbox_input("00:00:00.00", label=None, kind=dl.State),
-        go=tpl.button_input("Calculate", label=None),
+        model=tpl.new_dropdown(["NE2001", "YMW16"], label="Model"),
+        method=tpl.new_dropdown(["DM (pc/cm3) to Distance", "Distance (kpc) to DM"], label="Method", kind=dl.State),
+        dmord=tpl.new_textbox(10, label=None, kind=dl.State),
+        coords=tpl.new_dropdown(["Galactic (gl, gb)", "Celestial (RA, DEC)"], label="Coordinates", kind=dl.State),
+        x0=tpl.new_textbox("00:00:00.00", label=None, kind=dl.State),
+        x1=tpl.new_textbox("00:00:00.00", label=None, kind=dl.State),
+        go=tpl.new_button("Calculate", label=None),
         tab=tpl.tab_input(),
     ),
     output=[
-        tpl.graph_output(role="Plot"),
-        tpl.div_output(role="Output"),
-        tpl.graph_output(role="Skymap")
+        tpl.new_graph(location="Plot"),
+        tpl.new_div(location="Output"),
+        tpl.new_graph(location="Skymap")
     ],
     template=tpl,
 )
