@@ -55,7 +55,7 @@ print(tau_sc.to('ns'))
 
 ### Installation
 
-Requires `pybind11`, `astropy`, `numpy`, `scipy`, and a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c` (`apt-get f2c` in Ubuntu).
+Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c` (`apt-get f2c` in Ubuntu, `conda install -c conda-forge f2c` if using conda).
 
 You should be able to install with:
 
