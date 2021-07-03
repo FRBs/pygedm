@@ -147,6 +147,7 @@ setup(
     description='Python/C++ version of NE2001, YMW16, and YT2020 electron density models',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    libraries=["f2c"],
     url='https://github.com/frbs/pygedm',
     download_url='https://github.com/telegraphic/pygedm/archive/%s.tar.gz' % __version__,
     python_requires='>=3.6',
