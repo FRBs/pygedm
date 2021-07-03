@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 class get_pybind_include(object):
