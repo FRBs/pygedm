@@ -55,7 +55,11 @@ print(tau_sc.to('ns'))
 
 ### Installation
 
-Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c` (`apt-get f2c` in Ubuntu, `conda install -c conda-forge f2c` if using conda).
+Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c`. 
+
+Pre-compiled wheels are generated for linux, meaning you can skip the `f2c` install step. Alternatively you can install via `apt-get f2c` in Ubuntu, or  via `conda install -c conda-forge f2c` if you use conda.
+
+For MacOS, you are best off using `conda` and getting `f2c` via `conda install -c conda-forge f2c`. Windows is not currently supported.
 
 You should be able to install with:
 
@@ -72,7 +76,7 @@ pip install git+https://github.com/telegraphic/pygedm
 to install the latest version from github. Alternatively, download this repository and install via
 
 ```
-python setup.py install
+pip install .
 ```
 
 To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings, 
