@@ -83,8 +83,8 @@ def dm_to_dist(l, b, dm):
     """ Convert DM to distance and compute scattering timescale
     
     Args:
-        l (float): galactic latitude in degrees
-        b (float): galactic longitude in degrees
+        l (float): galactic longitude in degrees
+        b (float): galactic latitude in degrees
         dm (floa): Dispersion measure
 
     Returns:
@@ -107,8 +107,8 @@ def dist_to_dm(l, b, dist):
     """ Convert distance to DM and compute scattering timescale
     
     Args:
-        l (float): galactic latitude in degrees
-        b (float): galactic longitude in degrees
+        l (float): galactic longitude in degrees
+        b (float): galactic latitude in degrees
         dist (float): Distance in kpc
 
     Returns:
