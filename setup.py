@@ -71,7 +71,7 @@ ext_modules = [
             get_pybind_include(user=True),
             os.path.join(__here__, 'ne21c'),
         ],
-        extra_link_args=['-lm', '-lf2c'],
+        extra_link_args=['-lm', '-l:libf2c.a'],
         language='c++',
     ),
 ]
