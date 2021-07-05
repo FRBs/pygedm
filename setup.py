@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '0.0.2    '
+__version__ = '0.0.3'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 class get_pybind_include(object):
@@ -71,7 +71,7 @@ ext_modules = [
             get_pybind_include(user=True),
             os.path.join(__here__, 'ne21c'),
         ],
-        extra_link_args=['-lm', '-l:libf2c.a'],
+        extra_link_args=['-lm', '-lf2c'],
         language='c++',
     ),
 ]

@@ -161,5 +161,7 @@ PYBIND11_MODULE(ne21c, m) {
     py::arg("y"),
     py::arg("z")
    );
+
+    m.def("_main", &MAIN__, "Test to include MAIN__ symbol");
 }
 
