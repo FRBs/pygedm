@@ -140,7 +140,7 @@ def calculate_electron_density_lbr(gl, gb, dist, method='ymw16'):
     """ Calculate electron density at a point with Galactic coords (ga, gl) at given distance
 
     Args:
-        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gl (float, Angle, or Quantity): Galatic longitude in degrees (or astropy Angle)
         gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
         dist (float or Quantity): Distance in pc
 
@@ -163,7 +163,7 @@ def convert_lbr_to_xyz(gl, gb, dist, method='ymw16'):
     """ Convert Galactic (l,b,r) coords to Galactocentric (x,y,z) coords
 
     Args:
-        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gl (float, Angle, or Quantity): Galatic longitude in degrees (or astropy Angle)
         gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
         dist (float or Quantity): Distance in pc
         method (str): one of 'ymw16', 'ne2001', or 'astropy'
