@@ -22,8 +22,7 @@ jobs:
       with:
         python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
         build-requirements: 'numpy'
-        system-packages: 'wget unzip'
-        pre-build-command: 'sh ne21c/get_and_compile_libf2c.sh'
+        system-packages: 'f2c'
     - name: Publish wheels to PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
