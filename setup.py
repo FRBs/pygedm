@@ -12,7 +12,7 @@ import os
 import glob
 import setuptools
 
-__version__ = '3.2.0'
+__version__ = '3.2.4'
 __here__ = os.path.abspath(os.path.dirname(__file__))
 
 class get_pybind_include(object):
@@ -57,6 +57,7 @@ ext_modules = [
             get_pybind_include(user=True),
             os.path.join(__here__, 'ymw16_src'),
         ],
+
         extra_link_args=['-lm'],
         language='c++'
     ),
@@ -71,8 +72,9 @@ ext_modules = [
             get_pybind_include(user=True),
             os.path.join(__here__, 'ne21c'),
         ],
+        extra_compile_args=['-Wno-write-strings'],
         extra_link_args=['-lm', '-lf2c'],
-        language='c++'
+        language='c++',
     ),
 ]
 
@@ -127,12 +129,13 @@ class BuildExt(build_ext):
         if ct == 'unix':
             opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
             opts.append(cpp_flag(self.compiler))
-            if has_flag(self.compiler, '-fvisibility=hidden'):
-                opts.append('-fvisibility=hidden')
+            # This seems to break libf2c :/
+            #if has_flag(self.compiler, '-fvisibility=hidden'):
+            #    opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
-            ext.extra_compile_args = opts
+            ext.extra_compile_args += opts
         build_ext.build_extensions(self)
 
 

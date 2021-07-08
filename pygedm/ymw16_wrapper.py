@@ -95,7 +95,7 @@ def calculate_electron_density_lbr(gl, gb, dist):
         at a given distance in pc
 
     Args:
-        gl (float, Angle, or Quantity): Galatic latitude in degrees (or astropy Angle)
+        gl (float, Angle, or Quantity): Galatic longitude in degrees (or astropy Angle)
         gb (float, Angle, or Quantity): Galactic latitude in degrees (or astropy Angle)
         dist (float or Quantity): Distance in pc
 

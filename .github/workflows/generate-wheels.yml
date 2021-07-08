@@ -1,4 +1,4 @@
-name: Python package build and publish
+name: Publish to PyPi
 
 on:
   release:
@@ -15,19 +15,19 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        sudo apt-get update -qq
-        sudo apt-get install gfortran
         python -m pip install --upgrade pip
-        pip install twine 
-        pip install -r requirements.txt
-    - name: Build manylinux Python wheels
-      uses: RalfG/python-wheels-manylinux-build@v0.3.3-manylinux2010_x86_64
-      with:
-        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
-        build-requirements: 'numpy'
-    - name: Publish wheels to PyPI
+        pip install twine flake8
+#    NOTE: This is a nightmare with f2c so disabled manylinux
+#    - name: Build manylinux Python wheels
+#      uses: RalfG/python-wheels-manylinux-build@v0.3.3-manylinux2010_x86_64
+#      with:
+#        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
+#        build-requirements: 'numpy'
+#        system-packages: 'f2c'
+    - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload dist/*-manylinux*.whl
+        python setup.py sdist bdist_wheel
+        twine upload dist/*
