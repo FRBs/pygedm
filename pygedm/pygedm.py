@@ -101,6 +101,11 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
         dist = _unit_convert(dist, 'Mpc')
     else:
         dist = _unit_convert(dist, 'pc')
+    
+    # Catch NE2001 crash if dist too large
+    if _unit_convert(dist, 'pc') >= 100000:
+        dist = 50000
+        print("Warning: distance too large, setting to 50 kpc.")
 
     if method.lower() == 'ymw16':
         return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode=mode)
