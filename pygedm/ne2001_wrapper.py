@@ -79,13 +79,14 @@ def TAUISS(d, sm, nu):
 
 
 @run_from_pkgdir
-def dm_to_dist(l, b, dm):
+def dm_to_dist(l, b, dm, nu=1.0):
     """ Convert DM to distance and compute scattering timescale
-    
+
     Args:
         l (float): galactic longitude in degrees
         b (float): galactic latitude in degrees
         dm (floa): Dispersion measure
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
@@ -97,19 +98,20 @@ def dm_to_dist(l, b, dm):
         return 0.0 * u.pc, 0.0 * u.s
     else:
         d = ne21c.dm_to_dist(l_rad, b_rad, dm)
-    
-    tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=1.0)
+
+    tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=nu)
     return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
 
 
 @run_from_pkgdir
-def dist_to_dm(l, b, dist):
+def dist_to_dm(l, b, dist, nu=1.0):
     """ Convert distance to DM and compute scattering timescale
-    
+
     Args:
         l (float): galactic longitude in degrees
         b (float): galactic latitude in degrees
         dist (float): Distance in kpc
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
@@ -121,14 +123,14 @@ def dist_to_dm(l, b, dist):
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
         d = ne21c.dist_to_dm(l_rad, b_rad, dist)
-    
-    tau_sc = TAUISS(float(dist), d['smtau'], nu=1.0)
+
+    tau_sc = TAUISS(float(dist), d['smtau'], nu=nu)
     return float(d['dm']) * u.pc / u.cm**3, tau_sc * u.s
 
 
 @run_from_pkgdir
 def calculate_electron_density_xyz(x, y, z):
-    """ Compute electron density at Galactocentric X, Y, Z coordinates 
+    """ Compute electron density at Galactocentric X, Y, Z coordinates
 
     x,y,z are Galactocentric Cartesian coordinates, measured in kpc (NOT pc!)
     with the axes parallel to (l, b) = (90, 0), (180, 0), and (0, 90) degrees
@@ -143,7 +145,3 @@ def calculate_electron_density_xyz(x, y, z):
     """
     ne_out = ne21c.density_xyz(x, y, z)
     return ne_out['ne'] / u.cm**3
-
-
-
-
