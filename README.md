@@ -11,6 +11,12 @@ The Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.
 (2001, [arXiv:0207156](https://arxiv.org/abs/astro-ph/)) NE2001 model is written in FORTRAN. This package, PyGEDM, wraps these
 two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) to make them usable from Python. Here, we have converted NE2001 to C++ using `f2c`.
 
+### Web app
+
+We provide a web app at https://apps.datacentral.org.au/pygedm/ 
+
+The pygedm web app is kindly hosted by [Data Central](https://datacentral.org.au/).
+
 ### Usage
 
 Some usage examples can be found in the [examples directory](https://github.com/telegraphic/pygedm/tree/master/examples). 
