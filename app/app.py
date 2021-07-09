@@ -36,7 +36,7 @@ css_url = f"https://bootswatch.com/4/{theme_name}/bootstrap.css"
 
 tpl = dl.templates.DbcSidebarTabs(
     app,
-    tab_locations=["Plot", "Output", "Skymap"],
+    tab_locations=["Plot", "Output", "Skymap", "Notes"],
     title="PyGEDM: Galactic Electron Density Models",
     theme=css_url, figure_template=True,  sidebar_columns=3,
 )
@@ -56,7 +56,8 @@ tpl = dl.templates.DbcSidebarTabs(
     output=[
         tpl.new_graph(location="Plot"),
         tpl.new_div(location="Output"),
-        tpl.new_graph(location="Skymap")
+        tpl.new_graph(location="Skymap"),
+        tpl.new_div(location="Notes")
     ],
     template=tpl,
 )
@@ -188,8 +189,26 @@ def callback(model, method, dmord, nu, coords, x0, x1, go, tab):
     table_body = [html.Tbody([row1, row2, row3])]
 
     gedm_out = html.Div([hdr, dbc.Table(table_header + table_body, bordered=True)])
+    
+    notes = html.Div([html.H2("PyGEDM"), html.P(f"Version: {pygedm.__version__}"),
+                      html.P(["Authors: Danny C. Price, Chris Flynn,  Adam Deller"]),
+                      html.P(["PyGEDM Documentation: ", html.A("https://pygedm.readthedocs.io", href='https://pygedm.readthedocs.io')]),
+                      html.P(["Github: ", html.A("https://github.com/FRBs/pygedm", href='https://github.com/FRBs/pygedm')]),
+                      html.P(["Journal article:  A comparison of Galactic electron density models using PyGEDM ", 
+                              html.A("ADS", href='https://ui.adsabs.harvard.edu/abs/2021arXiv210615816P/abstract'), " | ",
+                              html.A("arXiv", href='https://arxiv.org/abs/2106.15816')
+                              ]),
+                      html.H4("NE2001"),
+                      html.P("Cordes, J. M., & Lazio, T. J. W. (2002),"),
+                      html.P("NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations, arXiv e-prints, astro-ph/0207156."),
+                      
+                      html.H4("YMW16"),
+                      html.P("Yao, J. M., Manchester, R. N., & Wang, N. (2017),"),
+                      html.P("A New Electron-density Model for Estimation of Pulsar and FRB Distances, ApJ, Volume 888, Issue 2, id.105, Colume 835, id.29"),
+                      html.P(["Web app hosted by ", html.A("Data Central", href='https://datacentral.org.au/')]),
+                     ])
 
-    return fig, gedm_out, skymap
+    return fig, gedm_out, skymap, notes 
 
 
 app.layout = dbc.Container(fluid=True, children=tpl.children)
