@@ -23,7 +23,7 @@ MODE_IDS = {'gal': 1,
             'igm': -1}
 
 
-def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
+def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', nu=1.0):
     """ Convert a DM to a distance
 
     Args:
@@ -31,6 +31,7 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
         gb (float in deg or astropy.Angle): galactic latitude
         dm (float in pc/cm3 or astropy.Quantity): dispersion measure (pc cm^-3)
         mode (str): Gal, MC, or IGM (for YMW16 only)
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): distance (pc) and scattering time scale (s)
@@ -46,11 +47,11 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal'):
     else:
         r['dist'] *= u.pc
     dist = r['dist']
-    tau_sc = r['tau_sc'] * u.s
+    tau_sc = r['tau_sc'] * nu ** -4 * u.s
     return (dist, tau_sc)
 
 
-def dist_to_dm(gl, gb, dist, mode='gal'):
+def dist_to_dm(gl, gb, dist, mode='gal', nu=1.0):
     """ Convert a distance to a DM
 
     Args:
@@ -58,6 +59,7 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
         gb (float in deg or astropy.Angle): galactic latitude
         dist (float or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
         mode (str): Gal, MC, or IGM (for YMW16 only)
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): dispersion measure (pc/cm3) and scattering time scale (s)
@@ -70,7 +72,7 @@ def dist_to_dm(gl, gb, dist, mode='gal'):
         r['DM'] = r['DM_IGM']
         r['tau_sc'] = r['tau_FRB']
     dm = r['DM'] * u.pc / u.cm**3
-    tau_sc = r['tau_sc'] * u.s
+    tau_sc = r['tau_sc'] * nu ** -4 * u.s
     return dm, tau_sc
 
 

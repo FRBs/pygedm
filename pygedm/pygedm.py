@@ -56,7 +56,7 @@ def _unit_convert(q, unit):
     return q
 
 
-def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
+def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16', nu=1.0):
     """ Convert a DM to a distance
 
     Args:
@@ -65,24 +65,26 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode='gal', method='ymw16'):
         dm (float in pc/cm3 or astropy.Quantity): dispersion measure (pc cm^-3)
         method (str): choose electron density model, either 'ymw16' or 'ne2001'
         mode (str): Gal, MC, or IGM (for YMW16 only)
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
     """
     gl, gb = _gl_gb_convert(gl, gb, 'deg')
     dm = _unit_convert(dm, 'pc cm^(-3)')
+    nu = _unit_convert(nu, 'GHz')
 
     if method.lower() == 'ymw16':
-        return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode=mode)
+        return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode=mode, nu=nu)
     elif method.lower() == 'ne2001':
         if mode != 'gal':
             raise RuntimeError('NE2001 only supports Galactic (gal) mode.')
-        return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host)
+        return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu)
     else:
         raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
 
-def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
+def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16', nu=1.0):
     """ Convert a distance to a DM
 
     Args:
@@ -91,6 +93,7 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
         dist (float or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
         method (str): choose electron density model, either 'ymw16' or 'ne2001'
         mode (str): Gal, MC, or IGM (for YMW16 only)
+        nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
@@ -107,13 +110,15 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16'):
         dist = 50000
         print("Warning: distance too large, setting to 50 kpc.")
 
+    nu = _unit_convert(nu, 'GHz')
+
     if method.lower() == 'ymw16':
-        return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode=mode)
+        return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode=mode, nu=nu)
     elif method.lower() == 'ne2001':
         if mode != 'gal':
             raise RuntimeError('NE2001 only supports Galactic (gal) mode.')
         dist_kpc = dist / 1000.0
-        return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc)
+        return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu)
     else:
         raise RuntimeError("Only ymw16 and ne2001 models supported.")
 
