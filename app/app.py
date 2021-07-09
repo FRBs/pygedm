@@ -46,6 +46,7 @@ tpl = dl.templates.DbcSidebarTabs(
         model=tpl.new_dropdown(["NE2001", "YMW16"], label="Model"),
         method=tpl.new_dropdown(["DM (pc/cm3) to Distance", "Distance (kpc) to DM"], label="Method", kind=dl.State),
         dmord=tpl.new_textbox(10, label=None, kind=dl.State),
+        nu=tpl.new_textbox(1.0, label='Frequency (GHz)', kind=dl.State),
         coords=tpl.new_dropdown(["Galactic (gl, gb)", "Celestial (RA, DEC)"], label="Coordinates", kind=dl.State),
         x0=tpl.new_textbox("00:00:00.00", label=None, kind=dl.State),
         x1=tpl.new_textbox("00:00:00.00", label=None, kind=dl.State),
@@ -59,12 +60,28 @@ tpl = dl.templates.DbcSidebarTabs(
     ],
     template=tpl,
 )
-def callback(model, method, dmord, coords, x0, x1, go, tab):
+def callback(model, method, dmord, nu, coords, x0, x1, go, tab):
     print(f"{tab}")
+    
+    # Setup some error handling
+    coord_error = False
+    freq_error  = False
+    dmord_error = False
+    
+    try:
+        nu = float(nu)
+    except ValueError:
+        nu = 1.0
+        freq_error = True
+        
     if method == "DM (pc/cm3) to Distance":
         f = pygedm.dm_to_dist
         units = 1.0 * u.pc / (u.cm**3)
-        dmord = float(dmord) * units
+        try:
+            dmord = float(dmord) * units
+        except ValueError:
+            dmord = 10 * units
+            dmord_error = True
         xt = 'DM (pc / cm3)'
         yt = 'Distance (kpc)'
         xl = 'Dispersion measure'
@@ -72,7 +89,11 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
     else:
         f = pygedm.dist_to_dm
         units = 1.0 * u.kpc
-        dmord = float(dmord) * units
+        try:
+            dmord = float(dmord) * units
+        except ValueError:
+            dmord = 10 * units
+            dmord_error = True
         #print(f, dmord)
         yt = 'DM (pc / cm3)'
         xt = 'Distance (kpc)'
@@ -80,18 +101,26 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
         yl = 'Dispersion measure'
 
     if coords == "Galactic (gl, gb)":
-        gl = Angle(x0, unit='degree')
-        gb = Angle(x1, unit='degree')
-        sc = SkyCoord(gl, gb, frame='galactic')
+        try:
+            gl = Angle(x0, unit='degree')
+            gb = Angle(x1, unit='degree')
+            sc = SkyCoord(gl, gb, frame='galactic')
+        except ValueError:
+            sc = SkyCoord(0*u.deg, 0*u.deg, frame='galactic')
+            coord_error = True
     else:
-        ra = Angle(x0, unit='hourangle')
-        dec = Angle(x1, unit='degree')
-        sc = SkyCoord(ra, dec)
-        
+        try:
+            ra = Angle(x0, unit='hourangle')
+            dec = Angle(x1, unit='degree')
+            sc = SkyCoord(ra, dec)
+        except:
+            sc = SkyCoord(0*u.deg, 0*u.deg, frame='galactic')
+            coord_error = True
+            
     print(sc.galactic.l, sc.galactic.b, dmord, f)
-    dout     = f(sc.galactic.l, sc.galactic.b, dmord, method=model)
-    dout_ne  = f(sc.galactic.l, sc.galactic.b, dmord, method='ne2001')
-    dout_ymw = f(sc.galactic.l, sc.galactic.b, dmord, method='ymw16')
+    dout     = f(sc.galactic.l, sc.galactic.b, dmord, method=model, nu=nu)
+    dout_ne  = f(sc.galactic.l, sc.galactic.b, dmord, method='ne2001', nu=nu)
+    dout_ymw = f(sc.galactic.l, sc.galactic.b, dmord, method='ymw16', nu=nu)
 
     # Make plots
     D = np.linspace(0.1, dmord.value)
@@ -99,8 +128,8 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
     y_ymw  = np.zeros_like(D)
 
     for ii, d in enumerate(D):
-        d_ne21 = f(sc.galactic.l, sc.galactic.b, d * units, method='ne2001')
-        d_ymw  = f(sc.galactic.l, sc.galactic.b, d * units, method='ymw16')
+        d_ne21 = f(sc.galactic.l, sc.galactic.b, d * units, method='ne2001', nu=nu)
+        d_ymw  = f(sc.galactic.l, sc.galactic.b, d * units, method='ymw16', nu=nu)
         if method == "DM (pc/cm3) to Distance":
             y_ne21[ii] = d_ne21[0].to('kpc').value
             y_ymw[ii]  = d_ymw[0].to('kpc').value
@@ -140,16 +169,21 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
     )
 
     ## TEXT OUTPUT
-    hdr = html.Div([html.H2(method),
-                    html.H4(f"Sky coordinates: {sc}")
-          ])
+    hdr = [html.H2(method), html.H4(f"Sky coordinates: {sc}")]
+    if coord_error:
+        hdr.append(dbc.Alert('Input coordinates invalid, please check', color='danger'))
+    if freq_error:
+        hdr.append(dbc.Alert('Could not parse frequency input, please check.', color='danger'))
+    if dmord_error:
+        hdr.append(dbc.Alert('Could not parse DM/distance input, please check.', color='danger'))        
+    hdr = html.Div(hdr)
 
     table_header = [
         html.Thead(html.Tr([html.Th(""), html.Th("YMW16"), html.Th("NE2001")]))
     ]
     row1 = html.Tr([html.Th(f"{xl}"), html.Td(f"{dmord}"), html.Td(f"{dmord}")])
     row2 = html.Tr([html.Th(f"{yl}"), html.Td(f"{dout_ymw[0]:2.4f}"), html.Td(f"{dout_ne[0]:2.4f}")])
-    row3 = html.Tr([html.Th("Scattering timescale"), html.Td(f"{dout_ymw[1]:2.4e}"), html.Td(f"{dout_ne[1]:2.4e}")])
+    row3 = html.Tr([html.Th(f"Scattering timescale @ {nu} GHz"), html.Td(f"{dout_ymw[1]:2.4e}"), html.Td(f"{dout_ne[1]:2.4e}")])
 
     table_body = [html.Tbody([row1, row2, row3])]
 
