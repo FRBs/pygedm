@@ -29,6 +29,7 @@ from astropy import units as u
 from astropy.coordinates import Angle, SkyCoord, Galactocentric
 from astropy.units import Quantity, Unit
 import numpy as np
+import warnings
 
 HAS_HEALPIX = healpix_utils.check_for_healpix_install()
 if HAS_HEALPIX:
@@ -108,7 +109,7 @@ def dist_to_dm(gl, gb, dist, mode='gal', method='ymw16', nu=1.0):
     # Catch NE2001 crash if dist too large
     if _unit_convert(dist, 'pc') >= 100000:
         dist = 50000
-        print("Warning: distance too large, setting to 50 kpc.")
+        warnings.warn("Distance too large, setting to 50 kpc.", UserWarning)
 
     nu = _unit_convert(nu, 'GHz')
 
