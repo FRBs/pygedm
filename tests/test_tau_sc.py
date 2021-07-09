@@ -11,7 +11,6 @@ def test_tau_sc_nu():
     assert dm == dm_
     assert tau_sc == tau_sc_
 
-
     dm, tau_sc = pygedm.dist_to_dm(0, 0, 100, method='ne2001', nu=1)
     dm_, tau_sc_ = pygedm.dist_to_dm(0, 0, 100, method='ne2001', nu=1000*u.MHz)
     assert dm == dm_
@@ -26,7 +25,6 @@ def test_tau_sc_nu():
     dist_, tau_sc_ = pygedm.dist_to_dm(0, 0, 100, method='ne2001', nu=1000*u.MHz)
     assert dist == dist_
     assert tau_sc == tau_sc_     
-    
     
     dm, tau_sc_1GHz = pygedm.dm_to_dist(0, 0, 1000, method='ymw16', nu=1.0)
     dm, tau_sc_100MHz = pygedm.dm_to_dist(0, 0, 1000, method='ymw16', nu=0.1)
