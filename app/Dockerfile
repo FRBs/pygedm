@@ -13,7 +13,7 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 
 # DASH APP
-RUN wget 'https://zenodo.org/record/4708481/files/skymap.h5?download=1' -O /app/data/skymap.h5
+RUN wget 'https://zenodo.org/record/5084269/files/skymap.h5?download=1' -O /app/data/skymap.h5
 EXPOSE 8050/tcp
 CMD gunicorn -w 8 -b 0.0.0.0:8050 app:server
 
