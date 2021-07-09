@@ -19,11 +19,11 @@ import pygedm
 dskymap = h5py.File('data/skymap.h5', mode='r')
 skymap_dist = dskymap['dist']
 
-skymap_data_ne = xr.DataArray(np.log(dskymap['ne2001/ddm'][:] + 1), dims=('distance_kpc', 'gb', 'gl'),
-                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
+skymap_data_ne = xr.DataArray(dskymap['ne2001/ddm'][:, ::2, ::2], dims=('distance_kpc', 'gb', 'gl'),
+                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'][::2], 'gb': dskymap['gb'][::2]},
                               attrs={'units': 'DM pc/cm3'})
-skymap_data_ymw = xr.DataArray(dskymap['ymw16/ddm'], dims=('distance_kpc', 'gb', 'gl'),
-                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'], 'gb': dskymap['gb']},
+skymap_data_ymw = xr.DataArray(dskymap['ymw16/ddm'][:, ::2, ::2], dims=('distance_kpc', 'gb', 'gl'),
+                              coords={'distance_kpc': skymap_dist, 'gl': dskymap['gl'][::2], 'gb': dskymap['gb'][::2]},
                               attrs={'units': 'DM pc/cm3'})
 
 # APP SETUP
@@ -122,17 +122,19 @@ def callback(model, method, dmord, coords, x0, x1, go, tab):
         skymap_data = skymap_data_ymw
     
     print(skymap_data.shape)
-    skymap = px.imshow(animation_frame=0, img=skymap_data,
-                        origin='upper', binary_string=True, binary_format='jpg'   )
+    skymap = px.imshow(animation_frame=0, img=skymap_data, origin='upper' )
     skymap["layout"].pop("updatemenus")
 
     skymap.update_layout(xaxis_title='Galactic longitude (deg)',
                          yaxis_title='Galactic latitude (Deg)',
                          title=f'{model}: All-sky DM map'
                          )
+                         
+    l_wrapped = sc.galactic.l.wrap_at(Angle(180, unit='deg')).value
+    
     skymap.add_shape(
         type='rect',
-        x0=sc.galactic.l.value-2, x1=sc.galactic.l.value+2, y0=sc.galactic.b.value-2, y1=sc.galactic.b.value+2,
+        x0=l_wrapped-2, x1=l_wrapped+2, y0=sc.galactic.b.value-2, y1=sc.galactic.b.value+2,
         xref='x', yref='y',
         line_color='cyan'
     )
