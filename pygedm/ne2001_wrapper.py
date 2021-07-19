@@ -99,11 +99,12 @@ def dm_to_dist(l, b, dm, nu=1.0, full_output=False):
         return 0.0 * u.pc, 0.0 * u.s
     else:
         d = ne21c.dm_to_dist(l_rad, b_rad, dm)
+    tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=nu)
 
     if not full_output:
-        tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=nu)
         return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
     else:
+        d['tau_sc'] = tau_sc
         return d
 
 
@@ -128,11 +129,12 @@ def dist_to_dm(l, b, dist, nu=1.0, full_output=False):
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s
     else:
         d = ne21c.dist_to_dm(l_rad, b_rad, dist)
+    tau_sc = TAUISS(float(dist), d['smtau'], nu=nu)
 
     if not full_output:
-        tau_sc = TAUISS(float(dist), d['smtau'], nu=nu)
         return float(d['dm']) * u.pc / u.cm**3, tau_sc * u.s
     else:
+        d['tau_sc'] = tau_sc
         return d
 
 @run_from_pkgdir

@@ -113,7 +113,7 @@ def test_dm_wrapper_b0353():
     assert np.isclose(dist.to('kpc').value, 2.746, atol=0.01, rtol=0)
     assert np.isclose(tau_sc.to('us').value, 6.57, atol=0.01, rtol=0)
 
-test_full_output():
+def test_full_output():
     """ Make sure full_output arg works """
     a = pygedm.ne2001_wrapper.dist_to_dm(0, 0, 0.1, full_output=True)
     b = pygedm.ne2001_wrapper.dm_to_dist(0, 0, 10, full_output=True)
@@ -128,3 +128,4 @@ if __name__ == "__main__":
     test_igm()
     test_dm_wrapper()
     test_dm_wrapper_b0353()
+    test_full_output()
