@@ -79,7 +79,7 @@ def TAUISS(d, sm, nu):
 
 
 @run_from_pkgdir
-def dm_to_dist(l, b, dm, nu=1.0):
+def dm_to_dist(l, b, dm, nu=1.0, full_output=False):
     """ Convert DM to distance and compute scattering timescale
 
     Args:
@@ -87,6 +87,7 @@ def dm_to_dist(l, b, dm, nu=1.0):
         b (float): galactic latitude in degrees
         dm (floa): Dispersion measure
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
+        full_output (bool): Return full raw output (dict) from NE2001 if set to True
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): Distance (pc), scattering timescale at 1 GHz (s)
@@ -99,12 +100,15 @@ def dm_to_dist(l, b, dm, nu=1.0):
     else:
         d = ne21c.dm_to_dist(l_rad, b_rad, dm)
 
-    tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=nu)
-    return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
+    if not full_output:
+        tau_sc = TAUISS(float(d['dist']), d['smtau'], nu=nu)
+        return (float(d['dist']) * u.kpc).to('pc'), tau_sc * u.s
+    else:
+        return d
 
 
 @run_from_pkgdir
-def dist_to_dm(l, b, dist, nu=1.0):
+def dist_to_dm(l, b, dist, nu=1.0, full_output=False):
     """ Convert distance to DM and compute scattering timescale
 
     Args:
@@ -112,6 +116,7 @@ def dist_to_dm(l, b, dist, nu=1.0):
         b (float): galactic latitude in degrees
         dist (float): Distance in kpc
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
+        full_output (bool): Return full raw output (dict) from NE2001 if set to True
 
     Returns:
         dm (astropy.Quantity), tau_sc (astropy.Quantity): Dispersion measure (pc / cm3), scattering timescale at 1 GHz (s)
@@ -124,9 +129,11 @@ def dist_to_dm(l, b, dist, nu=1.0):
     else:
         d = ne21c.dist_to_dm(l_rad, b_rad, dist)
 
-    tau_sc = TAUISS(float(dist), d['smtau'], nu=nu)
-    return float(d['dm']) * u.pc / u.cm**3, tau_sc * u.s
-
+    if not full_output:
+        tau_sc = TAUISS(float(dist), d['smtau'], nu=nu)
+        return float(d['dm']) * u.pc / u.cm**3, tau_sc * u.s
+    else:
+        return d
 
 @run_from_pkgdir
 def calculate_electron_density_xyz(x, y, z):
