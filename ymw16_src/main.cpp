@@ -27,7 +27,9 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 #include "cn.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include <map>
+#include <algorithm>
 #include <string>
 
 namespace py = pybind11;
@@ -43,6 +45,55 @@ extern std::map<std::string, float> dmdtau2(double gl, double gb, double dordm,
 
 extern std::map<std::string, float> frb_d(double DDM, double DM_Gal, double DM_MC,
        double DM_Host, int uu, int vbs, char* text);
+
+// Numpy array version
+// Returns single array (Nx2) in size, (DM, tau_sc)
+py::array dmdtau_np(py::array_t<double> gl, py::array_t<double> gb, py::array_t<double> dordm, double DM_Host, int ndir, int np, int vbs, char *dirname, char *text)
+{
+    // Input arrays
+    py::buffer_info gl_buf = gl.request();
+    py::buffer_info gb_buf = gb.request();
+    py::buffer_info dordm_buf = dordm.request();
+    double *gl_data = (double *)gl_buf.ptr;
+    double *gb_data = (double *)gb_buf.ptr;
+    double *dordm_data = (double *)dordm_buf.ptr;
+
+    // Create output array
+    auto dordm_out = py::array_t<double>(dordm_buf.size * 2);
+    py::buffer_info dordm_out_buf = dordm_out.request();
+    double *dordm_out_data = (double *)dordm_out_buf.ptr;
+
+    // Setup output maps
+    std::map<std::string, float> dmout;
+    std::map<std::string, float>::iterator it;
+    std::string key;
+
+    // Loop across all data
+    for (int idx = 0; idx < dordm_buf.size; idx++) {
+        dmout = dmdtau2(gl_data[idx], gb_data[idx], dordm_data[idx], DM_Host, ndir, np, vbs, dirname, text);
+
+        if (ndir == 1) {
+            key = "dist";
+        } else {
+            key = "DM";
+        }
+
+        it = dmout.find(key);
+        if (it != dmout.end()) {
+            //std::cout << it->first << "->" << it->second << std::endl;
+            dordm_out_data[2*idx] = it->second;
+        }
+        key = "tau_sc";
+        it = dmout.find(key);
+        if (it != dmout.end()) {
+            //std::cout << it->first << "->" << it->second << std::endl;
+            dordm_out_data[2*idx+1] = it->second;
+        }
+
+    }
+
+    return dordm_out;
+}
 
 
 PYBIND11_MODULE(ymw16, m) {
@@ -82,6 +133,37 @@ py::arg("text")
 
 
 m.def("dmdtau", &dmdtau2, R"pbdoc(
+    Args:
+      gl: Galactic longitude (deg.)
+      gb: Galactic latitude (deg.)
+      dordm: One of DM (cm−3 pc) or distance, depending
+             on ndir. Distance has units of pc for modes Gal and MC
+              and Mpc for mode IGM
+      DM_Host: Dispersion measure of the FRB host galaxy in
+               the observer frame (default 100 cm−3 pc). (Note: if
+               present, DM_Host is ignored for Gal and MC modes.)
+      ndir: ndir=1 converts from DM to distance and
+            ndir=2 converts from distance to DM.
+      np: -1 for IGM, 0 for Mag clouds, 1 for galaxy
+      vbs: Verbostiy level, 0, 1, or 2
+      dirname: directory where data files are stored
+      text: Text to prepend in print statement.
+    Returns:
+      Python dictionary with computed values.
+      tsc has units of seconds.
+    )pbdoc",
+py::arg("gl"),
+py::arg("gb"),
+py::arg("dordm"),
+py::arg("DM_Host"),
+py::arg("ndir"),
+py::arg("np"),
+py::arg("vbs"),
+py::arg("dirname"),
+py::arg("text")
+);
+
+m.def("dmdtau_np", &dmdtau_np, R"pbdoc(
     Args:
       gl: Galactic longitude (deg.)
       gb: Galactic latitude (deg.)
