@@ -11,6 +11,13 @@ The Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.
 (2001, [arXiv:0207156](https://arxiv.org/abs/astro-ph/)) NE2001 model is written in FORTRAN. This package, PyGEDM, wraps these
 two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) to make them usable from Python. Here, we have converted NE2001 to C++ using `f2c`.
 
+### PyGEDM paper
+PyGEDM is detailed in [Price, D. C., Flynn, C., and Deller, A.](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/exportcitation) (2021):
+
+Price, D. C., Flynn, C., and Deller, A., “A comparison of Galactic electron density models using PyGEDM”, _Publications of the Astronomical Society of Australia_, vol. 38, 2021. doi:[10.1017/pasa.2021.33](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/exportcitation).
+
+If you use PyGEDM, be sure to [reference](https://github.com/FRBs/pygedm#references) the NE2001 and YMW16 codes. 
+
 ### Web app
 
 We provide a web app at https://apps.datacentral.org.au/pygedm/ 
