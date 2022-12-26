@@ -70,11 +70,8 @@ print(tau_sc.to('ns'))
 
 Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c`. 
 
-Pre-compiled wheels are generated for linux, meaning you can skip the `f2c` install step. Alternatively you can install via `apt-get f2c` in Ubuntu, or  via `conda install -c conda-forge f2c` if you use conda.
 
-For MacOS, you are best off using `conda` and getting `f2c` via `conda install -c conda-forge f2c`. Windows is not currently supported.
-
-You should be able to install with:
+Basic installation is via `pip`:
 
 ```
 pip install pygedm
@@ -91,6 +88,25 @@ to install the latest version from github. Alternatively, download this reposito
 ```
 pip install .
 ```
+
+#### Linux
+
+`f2c` can be installed  via `apt-get f2c` in Ubuntu, or  via `conda install -c conda-forge f2c` if you use conda.
+
+#### Mac OSX
+For MacOS, you are best off using `conda` and getting `f2c` via `conda install -c conda-forge f2c`. 
+
+Some users have had success using `f2c` in macports, which installs into `/opt/local/include` and `/opt/local/lib`. If using macports, the install command is:
+
+```
+pip install --global-option=build_ext --global-option="-I/opt/local/include" pygedm
+```
+
+#### Windows
+
+Windows is not currently supported.
+
+#### Unit tests
 
 To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings, 
 not the underlying C/FORTRAN source code (which is not supplied with unit tests).
