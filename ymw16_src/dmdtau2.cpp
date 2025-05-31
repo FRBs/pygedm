@@ -133,7 +133,7 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
     nstep=dtest/dstep;
     if(nstep<200) dstep=dtest/200;
     if(vbs>=1){
-      printf("\ndtest=%lf, nstep=%lf, dstep=%lf\n", dtest, nstep, dstep);
+      // printf("\ndtest=%lf, nstep=%lf, dstep=%lf\n", dtest, nstep, dstep);
     }
   }
   if(ndir==2){
@@ -142,7 +142,7 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
     nstep=dtest/dstep;
     if(nstep<200) dstep=dtest/200;
     if(vbs>=1){
-      printf("\ndtest=%lf, nstep=%lf, dstep=%lf\n", dtest, nstep, dstep);
+      // printf("\ndtest=%lf, nstep=%lf, dstep=%lf\n", dtest, nstep, dstep);
     }
   }
 
@@ -153,7 +153,7 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
   for(i=1;i<=nk;i++){
     ncount++;
     if(vbs>=2){
-      printf("ncount=%d, dstep=%lf\n", ncount,dstep);
+      // printf("ncount=%d, dstep=%lf\n", ncount,dstep);
     }
     dd+=dstep;
     r=dd*cb;     /* r is different from rr */
@@ -173,8 +173,8 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
 
     if(vbs>=2)
     {
-      printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr);
-      printf("theta_warp=%lf, z_warp=%lf, zz_w=%lf\n",theta_warp,z_warp,zz_w);
+      // printf("dd=%lf, xx=%lf, yy=%lf, zz=%lf, rr=%lf\n", dd, xx, yy, zz, rr);
+      // printf("theta_warp=%lf, z_warp=%lf, zz_w=%lf\n",theta_warp,z_warp,zz_w);
     }
     R_g=sqrt(xx*xx+yy*yy+zz*zz);
 
@@ -237,12 +237,12 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
 	ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4+ne8+ne9+ne10)+WLI*ne7)+WGN*ne5)+WLB*ne6;
 
 	if(vbs>=2){
-	  printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
+	  // printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
 	}
 	dmstep=ne*dstep;
 	if(dmstep<=0.000001)dmstep=0;
 	if(vbs>=2){
-	  printf("dmstep=%lf, dstep=%lf\n", dmstep, dstep);
+	  // printf("dmstep=%lf, dstep=%lf\n", dmstep, dstep);
 	}
 	dmm+=dmstep;
 	dist=dd;
@@ -279,7 +279,7 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
     }
 	}
         if(vbs>=2){
-	  printf("dmm=%lf\n", dmm);
+	  // printf("dmm=%lf\n", dmm);
 	}
       }
       else{
@@ -290,14 +290,14 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
             DM_MC=0;
             DM_Gal=dm;
             tau_MC_sc=tsc(dm);
-            printf(" DM_Gal:%8.2f ", DM_Gal);
+            // printf(" DM_Gal:%8.2f ", DM_Gal);
             result.insert(std::make_pair("DM_Gal", DM_Gal));
           }
           else{
 	    tau_MC=0.5*tsc(DM_MC);
             tau_MC_sc=MAX(tau_MC, tau_Gal);
           }
-          printf(" DM_MC:%8.2f", DM_MC);
+          // printf(" DM_MC:%8.2f", DM_MC);
           result.insert(std::make_pair("DM_MC", DM_MC));
         }
 	if(np==0){
@@ -373,7 +373,7 @@ std::map<std::string, float> dmdtau2(double gl, double gb ,double dordm, double 
         ne=(1-WLB)*((1-WGN)*((1-WLI)*(ne0+ne4+ne8+ne9+ne10)+WLI*ne7)+WGN*ne5)+WLB*ne6;
 
 	if(vbs>=2){
-          printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
+          // printf("ne=%lf, ne1=%lf, ne2=%lf, ne3=%lf, ne4=%lf, ne5=%lf, ne6=%lf, ne7=%lf, ne8=%lf, ne9=%lf, ne10=%lf\n", ne, ne1, ne2, ne3, ne4, ne5, ne6, ne7, ne8, ne9, ne10);
         }
 	dmstep=ne*dstep;
 	if(dmstep<=0.000001)dmstep=0;

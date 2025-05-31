@@ -153,8 +153,8 @@ c through read-in of parameter file:
      .        F1val, F2val, Faval, Fgc, Flism, FcN, FvN,
      .        whicharm, wlism, wldr, wlhb, wlsb, wloopI,
      .        hitclump, hitvoid, wvoid)
-c       write(6,*) 'ne1,ne2,negc,nelism,necN,nevN = ',
-c    .              ne1,ne2,negc,nelism,necN,nevN
+c c       write(6,*) 'ne1,ne2,negc,nelism,necN,nevN = ',
+c c    .              ne1,ne2,negc,nelism,necN,nevN
 	first=.false.
         endif
 
@@ -353,7 +353,7 @@ c    .     sm_sum1_last, sm_sum2_last, sm_sum3_last
 	sm_sum4_last = sm_sum4
     
 10	continue
-	stop 'loop limit'
+c	stop 'loop limit'
 
 20	limit='>'			
 	dist=d-0.5*dstep

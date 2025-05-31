@@ -153,7 +153,7 @@ setup(
     url='https://github.com/frbs/pygedm',
     download_url='https://github.com/telegraphic/pygedm/archive/%s.tar.gz' % __version__,
     python_requires='>=3.6',
-    install_requires=['pybind11>=2.2', 'astropy'],
+    install_requires=['pybind11>=2.2', 'astropy', 'scipy<1.12', 'numpy<1.27'],
     tests_require= ['pytest', 'astropy', 'numpy', 'healpy'],
     setup_requires= ['pytest-runner', 'pytest-cov', 'pybind11>=2.2'],
     ext_modules=ext_modules,
