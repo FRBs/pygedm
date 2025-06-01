@@ -1,4 +1,0 @@
-pybind11>=2.2
-astropy
-scipy<1.12
-numpy<1.27

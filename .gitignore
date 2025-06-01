@@ -1,15 +1,38 @@
+# Original entries from pygedm .gitignore
 ymw16
 ymw16_ne
-ymw16.so
-*.o
+# ymw16.so # Covered by *.so
 *.a
-*.so
 .DS_Store
 *.dSYM/
-.idea
-*.pyc
-.coverage
 .eggs
+pyymw16.egg-info/ # Kept specific, though *.egg-info/ is broader
+
+# Python build artifacts
 build/
 dist/
-pyymw16.egg-info/
+*.egg-info/
+*.so
+*.o
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+py312_env/
+.venv/
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
