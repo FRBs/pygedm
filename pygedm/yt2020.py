@@ -48,7 +48,7 @@ Upsilon = 4*np.pi*10*U_G*U_Msun/U_pc*U_mp/U_eV*r_s**2*rho_s*mu/T    # Upsilon ap
 # integrated function excluding n_0^{sphe} (left-hand side of eq.[4])
 y_sphe  = 4.0*np.pi*r_array**2*mu_e*m_p/c_scaling*np.exp(-Upsilon*(1-np.log(1+r_array/r_s)*r_s/r_array))
 
-I_sphe   = integrate.simps(y_sphe,r_array)      # integration
+I_sphe   = integrate.simpson(y_sphe,r_array)      # integration
 n_0_sphe = M_b/Z_halo/I_sphe                    # central electron number density for spherical comp. [cm^{-3}]
 #print('Upsilon = %f' % Upsilon)
 #print('n_0_sphe = %f [cm^{-3}]' % n_0_sphe)
