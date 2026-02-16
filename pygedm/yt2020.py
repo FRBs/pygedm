@@ -65,12 +65,11 @@ y_sphe = (
     * np.exp(-Upsilon * (1 - np.log(1 + r_array / r_s) * r_s / r_array))
 )
 
-I_sphe = integrate.simps(y_sphe, r_array)  # integration
-n_0_sphe = (
-    M_b / Z_halo / I_sphe
-)  # central electron number density for spherical comp. [cm^{-3}]
-# print('Upsilon = %f' % Upsilon)
-# print('n_0_sphe = %f [cm^{-3}]' % n_0_sphe)
+
+I_sphe   = integrate.simpson(y_sphe,r_array)      # integration
+n_0_sphe = M_b/Z_halo/I_sphe                    # central electron number density for spherical comp. [cm^{-3}]
+#print('Upsilon = %f' % Upsilon)
+#print('n_0_sphe = %f [cm^{-3}]' % n_0_sphe)
 
 ### key functions ###
 
