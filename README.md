@@ -3,30 +3,30 @@
 [![Coverage](https://codecov.io/gh/FRBs/pygedm/branch/master/graph/badge.svg?token=TlBiPzD7DP)](https://codecov.io/gh/FRBs/pygedm)[![Documentation Status](https://readthedocs.org/projects/pygedm/badge/?version=latest)](https://pygedm.readthedocs.io/en/latest/?badge=latest)
 
 # PyGEDM
-_Python bindings for the YMW16, NE2001 and YT2020 electron density models_
+_Python bindings for the YMW16, NE2001, NE2025 and YT2020 electron density models_
 
-This package is a Python interface to the YMW16 and NE2001 electron density models, and YT2020 halo model.
+This package is a Python interface to the YMW16, NE2001, NE2025 electron density models, and YT2020 halo model.
 The Yao, Manchester and Wang (2017, [Astrophys. J., 835, 29](https://iopscience.iop.org/article/10.3847/1538-4357/835/1/29/meta);
-[arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model, is written in C++, and the Cordes and Lazio 
+[arXiv:1610.09448](https://arxiv.org/abs/1610.09448)) YMW16 electron density model, is written in C++, and the Cordes and Lazio
 (2001, [arXiv:0207156](https://arxiv.org/abs/astro-ph/)) NE2001 model is written in FORTRAN. This package, PyGEDM, wraps these
-two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) to make them usable from Python. Here, we have converted NE2001 to C++ using `f2c`.
+two codes using [pybind11](https://pybind11.readthedocs.io/en/stable/intro.html) to make them usable from Python. Here, we have converted NE2001 to C++ using `f2c`. This package also provides an interface to the NE2025 package [arxiv:2602.11838](https://arxiv.org/abs/2602.11838)
 
 ### PyGEDM paper
 PyGEDM is detailed in [Price, D. C., Flynn, C., and Deller, A.](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/exportcitation) (2021):
 
 Price, D. C., Flynn, C., and Deller, A., “A comparison of Galactic electron density models using PyGEDM”, _Publications of the Astronomical Society of Australia_, vol. 38, 2021. doi:[10.1017/pasa.2021.33](https://ui.adsabs.harvard.edu/abs/2021PASA...38...38P/exportcitation).
 
-If you use PyGEDM, be sure to [reference](https://github.com/FRBs/pygedm#references) the NE2001 and YMW16 codes. 
+If you use PyGEDM, be sure to [reference](https://github.com/FRBs/pygedm#references) the underlying NE2001, NE2025, YMW16 and YT2020 codes.
 
 ### Web app
 
-We provide a web app at https://apps.datacentral.org.au/pygedm/ 
+We provide a web app at https://apps.datacentral.org.au/pygedm/
 
 The pygedm web app is kindly hosted by [Data Central](https://datacentral.org.au/).
 
 ### Usage
 
-Some usage examples can be found in the [examples directory](https://github.com/telegraphic/pygedm/tree/master/examples). 
+Some usage examples can be found in the [examples directory](https://github.com/telegraphic/pygedm/tree/master/examples).
 
 ```python
 import pygedm
@@ -68,7 +68,7 @@ print(tau_sc.to('ns'))
 
 ### Installation
 
-Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c`. 
+Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c`.
 
 
 Basic installation is via `pip`:
@@ -77,7 +77,7 @@ Basic installation is via `pip`:
 pip install pygedm
 ```
 
-or 
+or
 
 ```
 pip install git+https://github.com/telegraphic/pygedm
@@ -94,7 +94,7 @@ pip install .
 `f2c` can be installed  via `apt-get f2c` in Ubuntu, or  via `conda install -c conda-forge f2c` if you use conda.
 
 #### Mac OSX
-For MacOS, you are best off using `conda` and getting `f2c` via `conda install -c conda-forge f2c`. 
+For MacOS, you are best off using `conda` and getting `f2c` via `conda install -c conda-forge f2c`.
 
 Some users have had success using `f2c` in macports, which installs into `/opt/local/include` and `/opt/local/lib`. If using macports, the install command is:
 
@@ -108,31 +108,35 @@ Windows is not currently supported.
 
 #### Unit tests
 
-To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings, 
+To run unit tests, run `python setup.py test`. Note that these tests only check the Python bindings,
 not the underlying C/FORTRAN source code (which is not supplied with unit tests).
 
 ### References
 
 If using PyGEDM in a journal article, please remember to cite the underlying electron density models:
 
-[Cordes, J. M., & Lazio, T. J. W. (2002)](https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract),  
-_NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations_, 
+[Cordes, J. M., & Lazio, T. J. W. (2002)](https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract),
+_NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations_,
 arXiv e-prints, astro-ph/0207156.
 
-[Cordes, J. M., & Lazio, T. J. W. (2003)](https://ui.adsabs.harvard.edu/abs/2003astro.ph..1598C/abstract),  
-_NE2001. II. Using Radio Propagation Data to Construct a Model for the Galactic Distribution of Free Electrons_, 
+[Cordes, J. M., & Lazio, T. J. W. (2003)](https://ui.adsabs.harvard.edu/abs/2003astro.ph..1598C/abstract),
+_NE2001. II. Using Radio Propagation Data to Construct a Model for the Galactic Distribution of Free Electrons_,
 arXiv e-prints, astro-ph/0301598.
 
-[Yao, J. M., Manchester, R. N., & Wang, N. (2017)](https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract),  
-_A New Electron-density Model for Estimation of Pulsar and FRB Distances_, 
+[Yao, J. M., Manchester, R. N., & Wang, N. (2017)](https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract),
+_A New Electron-density Model for Estimation of Pulsar and FRB Distances_,
 The Astrophysical Journal, Volume 888, Issue 2, id.105, Colume 835, id.29
 
-[Yamasaki, S., & Totani, T. (2020)](https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract),  
-_The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts_, 
+[Yamasaki, S., & Totani, T. (2020)](https://ui.adsabs.harvard.edu/abs/2019arXiv190900849Y/abstract),
+_The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast Radio Bursts_,
 The Astrophysical Journal, Volume 888, Issue 2, id.105
 
+[S.K. Ocker, J.M. Cordes (2026)](https://ui.adsabs.harvard.edu/abs/2026arXiv260211838O/abstract),
+_ NE2025: An Updated Electron Density Model for the Galactic Interstellar Medium_
+arXiv e-prints, astro-ph/2602.11838
+
 These are available in bibtex format in [references.bib](https://github.com/telegraphic/pygedm/references.bib),
-and also as an [ADS library](https://ui.adsabs.harvard.edu/public-libraries/Ci6_0-TlSySPMLrHxTvhhw). 
+and also as an [ADS library](https://ui.adsabs.harvard.edu/public-libraries/Ci6_0-TlSySPMLrHxTvhhw).
 
 ## YMW16 C README
 
@@ -199,5 +203,3 @@ Jumei Yao (yaojumei _@_ xao.ac.cn), Richard N Manchester
 
 07 July 2002
 To compile and execute the code,  see [code.pdf](https://github.com/telegraphic/pygedm/blob/master/ne2001_src/code.pdf).
-
-
