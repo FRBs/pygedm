@@ -161,9 +161,9 @@ def calculate_halo_dm(l, b, component="both"):
     y_DM_disk = vfunc_disk(l_FRB, b_FRB, xx)
 
     if component == "spherical" or component == "both":
-        DM_sphe = 1000 * integrate.simps(y_DM_sphe, xx) * u.pc / u.cm**3  # [pc/cm^3]
+        DM_sphe = 1000 * integrate.simpson(y_DM_sphe, xx) * u.pc / u.cm**3  # [pc/cm^3]
     if component == "disk" or component == "both":
-        DM_disk = 1000 * integrate.simps(y_DM_disk, xx) * u.pc / u.cm**3  # [pc/cm^3]
+        DM_disk = 1000 * integrate.simpson(y_DM_disk, xx) * u.pc / u.cm**3  # [pc/cm^3]
 
     if component == "both":
         return DM_sphe + DM_disk
