@@ -29,6 +29,7 @@ class get_pybind_include(object):
 
         return pybind11.get_include(self.user)
 
+
 prefix = os.environ.get("CONDA_PREFIX")
 
 
@@ -72,36 +73,21 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
             os.path.join(__here__, "ne21c"),
-            f"{prefix}/include"
+            f"{prefix}/include" if prefix else "/usr/include",
         ],
-        library_dirs=[f"{prefix}/lib"],
+        library_dirs=[f"{prefix}/lib"] if prefix else [],
         extra_compile_args=["-Wno-write-strings"],
         extra_link_args=["-lm", "-lf2c"],
         language="c++",
     ),
 ]
 
-ymw16_data_files = ["spiral.txt", "ymw16par.txt"]
-# C++ extensions
+
 def has_flag(compiler, flagname):
     """Return a boolean indicating whether a flag name is supported on
     the specified compiler.
     """
-    import tempfile
-
-    with tempfile.NamedTemporaryFile("w", suffix=".cpp") as f:
-        f.write("int main (int argc, char **argv) { return 0; }")
-        try:
-            compiler.compile([f.name], extra_postargs=[flagname])
-  C++ extensionsr:
-            return False
-    return True
-
-
-def cpp_flag(compiler):
-    """Return the -std=c++[11/14] compiler flag.
-
-    The c++14 is prefered over c++11 (when it is availa, delete=False) as f:
+    with tempfile.NamedTemporaryFile("w", suffix=".cpp", delete=False) as f:
         f.write("int main (int argc, char **argv) { return 0; }")
         fname = f.name
     try:
@@ -111,14 +97,26 @@ def cpp_flag(compiler):
         return False
     finally:
         try:
-            os.unlink(fname)4/17] compiler flag.
+            os.unlink(fname)
+        except Exception:
+            pass
 
-    C++17 is preferred, then C++14, then C++11.
+
+def cpp_flag(compiler):
+    """Return the -std=c++[11/14/17] compiler flag.
+
+    The c++17 is preferred, then C++14, then C++11.
     """
     for flag in ["-std=c++17", "-std=c++14", "-std=c++11"]:
         if has_flag(compiler, flag):
             return flag
-    raise RuntimeError("Unsupported compiler -- at least C++11 support is needed!"ts = {
+    raise RuntimeError("Unsupported compiler -- at least C++11 support is needed!")
+
+
+class BuildExt(build_ext):
+    """A custom build extension for adding compiler-specific options."""
+
+    c_opts = {
         "msvc": ["/EHsc"],
         "unix": [],
     }
@@ -130,6 +128,8 @@ def cpp_flag(compiler):
         ct = self.compiler.compiler_type
         opts = self.c_opts.get(ct, [])
         if ct == "unix":
+            opts.append("-DVERSION_INFO=%s" % self.distribution.get_version())
+            opts.append(cpp_flag(self.compiler))
         elif ct == "msvc":
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
@@ -139,8 +139,6 @@ def cpp_flag(compiler):
 
 # Run setup with configuration from pyproject.toml
 setup(
-    ext_modules=ext_modules"pygedm": data_files},
-    include_package_data=True,
-    zip_safe=False,
+    ext_modules=ext_modules,
     cmdclass={"build_ext": BuildExt},
 )
