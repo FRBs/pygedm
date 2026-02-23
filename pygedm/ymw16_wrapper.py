@@ -14,9 +14,13 @@ import ymw16
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
-from pkg_resources import DistributionNotFound, get_distribution, resource_filename
 
-DATAPATH = os.path.dirname(resource_filename("pygedm", "spiral.txt"))
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
+DATAPATH = str(files("pygedm"))
 
 
 MODE_IDS = {"gal": 1, "mc": 0, "igm": -1}
