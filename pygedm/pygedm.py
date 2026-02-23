@@ -77,18 +77,19 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode="gal", method="ymw16", nu=1.0):
     dm = _unit_convert(dm, "pc cm^(-3)")
     nu = _unit_convert(nu, "GHz")
 
-    if method.lower() == "ne2025":
+    if method.lower() in ("ne2001", "ne2001p", "ne2025"):
         if mode != "gal":
             raise RuntimeError("NE2001 only supports Galactic (gal) mode.")
-        return ne2025_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu)
+        if method.lower() == 'ne2025':
+            return ne2025_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu, model='ne2025')
+        elif method.lower() == 'ne2001p':
+            return ne2025_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu, model='ne2001p')
+        else:
+            return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu)
     elif method.lower() == "ymw16":
         return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode=mode, nu=nu)
-    elif method.lower() == "ne2001":
-        if mode != "gal":
-            raise RuntimeError("NE2001 only supports Galactic (gal) mode.")
-        return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu)
     else:
-        raise RuntimeError("Only ymw16, ne2001 and ne2025 models supported.")
+        raise RuntimeError("Only ymw16, ne2001, ne2001p and ne2025 models supported.")
 
 
 def dist_to_dm(gl, gb, dist, mode="gal", method="ymw16", nu=1.0):
@@ -121,18 +122,18 @@ def dist_to_dm(gl, gb, dist, mode="gal", method="ymw16", nu=1.0):
 
     if method.lower() == "ymw16":
         return ymw16_wrapper.dist_to_dm(gl, gb, dist, mode=mode, nu=nu)
-    elif method.lower() == "ne2001":
+    elif method.lower() in ("ne2001", "ne2001p", "ne2025"):
         if mode != "gal":
             raise RuntimeError("NE2001 only supports Galactic (gal) mode.")
         dist_kpc = dist / 1000.0
-        return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu)
-    elif method.lower() == "ne2025":
-        if mode != "gal":
-            raise RuntimeError("NE2025 only supports Galactic (gal) mode.")
-        dist_kpc = dist / 1000.0
-        return ne2025_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu)
+        if method.lower() == 'ne2001':
+            return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu)
+        elif method.lower() == "ne2001p":
+            return ne2025_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu, model='ne2001p')
+        else:
+            return ne2025_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu, model='ne2025')
     else:
-        raise RuntimeError("Only ymw16, ne2001 and ne2025 models supported.")
+        raise RuntimeError("Only ymw16, ne2001, ne2001p and ne2025 models supported.")
 
 
 def calculate_electron_density_xyz(x, y, z, method="ymw16"):
@@ -157,7 +158,7 @@ def calculate_electron_density_xyz(x, y, z, method="ymw16"):
     elif method.lower() == "ne2025":
         return ne2025_wrapper.calculate_electron_density_xyz(x / 1e3, y / 1e3, z / 1e3)
     else:
-        raise RuntimeError("Only ymw16, ne2001 and ne2025 models supported.")
+        raise RuntimeError("Only ymw16, ne2001, and ne2025 models supported.")
 
 
 def calculate_electron_density_lbr(gl, gb, dist, method="ymw16"):
