@@ -1,9 +1,20 @@
-from pkg_resources import resource_filename, get_distribution, DistributionNotFound
+try:
+    from importlib.metadata import version, PackageNotFoundError
+except ImportError:
+    from importlib_metadata import version, PackageNotFoundError
 
 try:
-    __version__ = get_distribution('pygedm').version
-except DistributionNotFound: # pragma: no cover
-    __version__ = '0.0.1 - manual install'
+    __version__ = version("pygedm")
+except PackageNotFoundError:  # pragma: no cover
+    # Package is not installed, use a fallback version
+    __version__ = "4.0.0"
 
-from .pygedm import dm_to_dist, dist_to_dm, calculate_electron_density_lbr, calculate_electron_density_xyz, \
-    calculate_halo_dm, generate_healpix_dm_map, convert_lbr_to_xyz
+from .pygedm import (
+    calculate_electron_density_lbr,
+    calculate_electron_density_xyz,
+    calculate_halo_dm,
+    convert_lbr_to_xyz,
+    dist_to_dm,
+    dm_to_dist,
+    generate_healpix_dm_map,
+)
