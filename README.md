@@ -32,6 +32,8 @@ Some usage examples can be found in the [examples directory](https://github.com/
 import pygedm
 
 # calculate DM at a given distance
+DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ne2025')
+DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ne2001p')
 DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ne2001')
 DM, tau_sc = pygedm.dist_to_dm(204.0, -6.5, 200, method='ymw16')
 
@@ -54,6 +56,7 @@ The methods return astropy [Quantities](http://docs.astropy.org/en/stable/units/
 import pygedm
 import astropy.units as u
 import astropy.coordinates as c
+
 DM = u.Quantity(10.0, unit='pc cm^-3')
 ra, dec = c.Angle(23.0, unit='hourangle'), c.Angle('-43:00:02', unit='degree')
 sky_coords = c.SkyCoord(ra, dec, frame='icrs')
@@ -132,7 +135,7 @@ _The Galactic Halo Contribution to the Dispersion Measure of Extragalactic Fast 
 The Astrophysical Journal, Volume 888, Issue 2, id.105
 
 [S.K. Ocker, J.M. Cordes (2026)](https://ui.adsabs.harvard.edu/abs/2026arXiv260211838O/abstract),
-_ NE2025: An Updated Electron Density Model for the Galactic Interstellar Medium_
+_NE2025: An Updated Electron Density Model for the Galactic Interstellar Medium_
 arXiv e-prints, astro-ph/2602.11838
 
 These are available in bibtex format in [references.bib](https://github.com/telegraphic/pygedm/references.bib),
