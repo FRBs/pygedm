@@ -3,14 +3,14 @@ ipython
 scipy
 astropy
 git+https://github.com/FRBs/pygedm
-dash
+dash>=2.0
 dash-bootstrap-components
 pandas
 xarray
-spectra
 tinycss2
 gunicorn
 Pillow
 requests
-h5py --no-binary=h5py
-dash-labs
+h5py
+numba
+git+https://github.com/telegraphic/mwprop
