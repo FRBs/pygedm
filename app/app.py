@@ -46,10 +46,11 @@ server = app.server
     Output("plot-output", "figure"),
     Output("table-output", "children"),
     Output("skymap-output", "figure"),
-    Output("notes-output", "children"),
     Output("dm-min-input", "value"),
     Output("dm-max-input", "value"),
     Output("skymap-slider-store", "data"),
+    Output("about-info", "children"),
+    Output("about-refs", "children"),
     Input("calculate-button", "n_clicks"),
     Input("skymap-apply-button", "n_clicks"),
     Input("skymap-output", "relayoutData"),
@@ -261,17 +262,21 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
         dm_max_val = _to_float(dm_max)
 
     # Determine effective range for color scale (use active frame if one bound is missing)
-    active_idx_for_range = current_frame_idx
+    dist_vals_for_range = np.asarray(skymap_data["distance_kpc"].values, dtype=float)
     if slider_store is not None:
         try:
             if isinstance(slider_store, (int, np.integer)):
                 active_idx_for_range = int(slider_store)
             else:
-                dist_vals = np.asarray(skymap_data["distance_kpc"].values, dtype=float)
                 active_val = float(slider_store)
-                active_idx_for_range = int(np.argmin(np.abs(dist_vals - active_val)))
+                active_idx_for_range = int(np.argmin(np.abs(dist_vals_for_range - active_val)))
         except (TypeError, ValueError):
-            pass
+            active_idx_for_range = int(np.argmin(np.abs(dist_vals_for_range - 8.5)))
+    elif reset_dm_range:
+        active_idx_for_range = current_frame_idx
+    else:
+        # Default to 8.5 kpc on initial load
+        active_idx_for_range = int(np.argmin(np.abs(dist_vals_for_range - 8.5)))
 
     if dm_min_val is None or dm_max_val is None:
         frame_data = skymap_data.values[active_idx_for_range, :, :]
@@ -299,21 +304,27 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
 
         if slider_store is not None and update_skymap:
             try:
-                # If stored value is an index
                 if isinstance(slider_store, (int, np.integer)):
                     active_idx = int(slider_store)
                 else:
-                    # Try to parse stored distance value
                     active_val = float(slider_store)
                     active_idx = int(np.argmin(np.abs(dist_vals - active_val)))
                 skymap["layout"]["sliders"][0]["active"] = active_idx
             except (ValueError, TypeError):
-                pass
+                active_idx = 0
         elif update_skymap:
             default_slider_idx = int(np.argmin(np.abs(dist_vals - 8.5)))
-            skymap["layout"]["sliders"][0]["active"] = default_slider_idx
+            active_idx = default_slider_idx
+            skymap["layout"]["sliders"][0]["active"] = active_idx
             if slider_store is None and slider_store_out is no_update:
-                slider_store_out = default_slider_idx
+                slider_store_out = active_idx
+        else:
+            active_idx = 0
+
+        # Swap fig.data with the correct frame's data so the rendered image
+        # matches the slider position (px.imshow always renders frame 0 by default)
+        if active_idx > 0 and active_idx < len(skymap.frames):
+            skymap.data[0].update(skymap.frames[active_idx].data[0])
 
     if initial_load and slider_store is None and slider_store_out is no_update and default_slider_idx is not None:
         slider_store_out = default_slider_idx
@@ -397,23 +408,20 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
 
     gedm_out = html.Div([hdr, dbc.Table(table_header + table_body, bordered=True)])
 
-    notes = html.Div([
-        html.H2("About"),
+    about_info = [
         html.P([html.B("Version: "), f"{pygedm.__version__}"]),
-        html.P([html.B("Authors: "), "Danny C. Price, Chris Flynn,  Adam Deller"]),
+        html.P([html.B("Authors: "), "Danny C. Price, Chris Flynn, Adam Deller"]),
         html.P([
-            html.B("PyGEDM Documentation: "),
-            html.A(
-                "https://pygedm.readthedocs.io", href="https://pygedm.readthedocs.io"
-            ),
+            html.B("Documentation: "),
+            html.A("pygedm.readthedocs.io", href="https://pygedm.readthedocs.io"),
         ]),
         html.P([
             html.B("Github: "),
-            html.A(
-                "https://github.com/FRBs/pygedm", href="https://github.com/FRBs/pygedm"
-            ),
+            html.A("FRBs/pygedm", href="https://github.com/FRBs/pygedm"),
         ]),
-        html.H2("References"),
+    ]
+
+    about_refs = [
         html.H4("PyGEDM"),
         html.P("Price, D. C., Flynn, C., and Deller, A."),
         html.P([
@@ -423,7 +431,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             )
         ]),
         html.H4("NE2001"),
-        html.P("Cordes, J. M., & Lazio, T. J. W. (2002),"),
+        html.P("Cordes, J. M., & Lazio, T. J. W. (2002)"),
         html.P([
             html.A(
                 "NE2001.I. A New Model for the Galactic Distribution of Free Electrons and its Fluctuations, arXiv e-prints, astro-ph/0207156.",
@@ -431,7 +439,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             )
         ]),
         html.H4("NE2025"),
-        html.P("Ocker, S.K. and Cordes, J.M. (2026),"),
+        html.P("Ocker, S.K. and Cordes, J.M. (2026)"),
         html.P([
             html.A(
                 "NE2025: An Updated Electron Density Model for the Galactic Interstellar Medium, arXiv e-prints, astro-ph/2602.11838.",
@@ -439,28 +447,28 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             )
         ]),
         html.H4("YMW16"),
-        html.P("Yao, J. M., Manchester, R. N., & Wang, N. (2017),"),
+        html.P("Yao, J. M., Manchester, R. N., & Wang, N. (2017)"),
         html.P([
-            html.A("A New Electron-density Model for Estimation of Pulsar and FRB Distances, ApJ, Volume 888, Issue 2, id.105, Col 835, id.29",
-                   href="https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract"
+            html.A(
+                "A New Electron-density Model for Estimation of Pulsar and FRB Distances, ApJ, Volume 888, Issue 2, id.105, Col 835, id.29",
+                href="https://ui.adsabs.harvard.edu/abs/2017ApJ...835...29Y/abstract"
             )
-        ])
-    ])
+        ]),
+    ]
 
     # Handle different update scenarios
     if is_zoom_or_pan:
         # Don't regenerate anything on zoom/pan, just let the figure handle it
-        return no_update, no_update, no_update, no_update, no_update, no_update, slider_store_out
+        return no_update, no_update, no_update, no_update, no_update, slider_store_out, no_update, no_update
 
     plot_out = fig if update_plot else no_update
     table_out = gedm_out if update_plot else no_update
-    notes_out = notes if update_plot else no_update
 
     skymap_out = skymap if update_skymap else no_update
     dm_min_out = dm_min_val if (update_skymap and reset_dm_range) else no_update
     dm_max_out = dm_max_val if (update_skymap and reset_dm_range) else no_update
 
-    return plot_out, table_out, skymap_out, notes_out, dm_min_out, dm_max_out, slider_store_out
+    return plot_out, table_out, skymap_out, dm_min_out, dm_max_out, slider_store_out, about_info, about_refs
 
 
 # APP LAYOUT
@@ -469,100 +477,103 @@ app.layout = dbc.Container(
     children=[
         dcc.Store(id="skymap-slider-store"),
         html.H1("PyGEDM: Galactic Electron Density Models", className="my-4"),
-        dbc.Row([
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardBody([
-                        html.H5("Settings", className="card-title"),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("Method"),
-                                dcc.Dropdown(
-                                    id="method-dropdown",
-                                    options=[
-                                        {"label": "DM (pc/cm3) to Distance", "value": "DM (pc/cm3) to Distance"},
-                                        {"label": "Distance (kpc) to DM", "value": "Distance (kpc) to DM"},
-                                    ],
-                                    value="DM (pc/cm3) to Distance",
-                                    searchable=False,
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("DM / Distance Value"),
-                                dbc.Input(
-                                    id="dmord-input",
-                                    type="number",
-                                    value=10,
-                                    placeholder="Enter value",
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("Frequency (GHz)"),
-                                dbc.Input(
-                                    id="nu-input",
-                                    type="number",
-                                    value=1.0,
-                                    placeholder="1.0",
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("Coordinates"),
-                                dcc.Dropdown(
-                                    id="coords-dropdown",
-                                    options=[
-                                        {"label": "Galactic (gl, gb)", "value": "Galactic (gl, gb)"},
-                                        {"label": "Celestial (RA, DEC)", "value": "Celestial (RA, DEC)"},
-                                    ],
-                                    value="Galactic (gl, gb)",
-                                    searchable=False,
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("X (gl or RA)"),
-                                dbc.Input(
-                                    id="x0-input",
-                                    type="text",
-                                    value="00:00:00.00",
-                                    placeholder="00:00:00.00",
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("Y (gb or DEC)"),
-                                dbc.Input(
-                                    id="x1-input",
-                                    type="text",
-                                    value="00:00:00.00",
-                                    placeholder="00:00:00.00",
-                                ),
-                            ], width=12, className="mt-2"),
-                        ]),
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Button(
-                                    "Calculate",
-                                    id="calculate-button",
-                                    color="primary",
-                                    className="w-100 mt-3",
-                                    n_clicks=0,
-                                ),
-                            ], width=12),
-                        ]),
-                    ])
-                ])
-            ], width=3),
-            dbc.Col([
-                dbc.Tabs([
-                    dbc.Tab(label="Output", children=[
+        dbc.Tabs([
+            # ── OUTPUT TAB ──────────────────────────────────────────────────
+            dbc.Tab(label="Output", children=[
+                dbc.Row([
+                    # Sidebar
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.H5("Settings", className="card-title"),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Method"),
+                                        dcc.Dropdown(
+                                            id="method-dropdown",
+                                            options=[
+                                                {"label": "DM (pc/cm3) to Distance", "value": "DM (pc/cm3) to Distance"},
+                                                {"label": "Distance (kpc) to DM", "value": "Distance (kpc) to DM"},
+                                            ],
+                                            value="DM (pc/cm3) to Distance",
+                                            searchable=False,
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("DM / Distance Value"),
+                                        dbc.Input(
+                                            id="dmord-input",
+                                            type="number",
+                                            value=10,
+                                            placeholder="Enter value",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Frequency (GHz)"),
+                                        dbc.Input(
+                                            id="nu-input",
+                                            type="number",
+                                            value=1.0,
+                                            placeholder="1.0",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Coordinates"),
+                                        dcc.Dropdown(
+                                            id="coords-dropdown",
+                                            options=[
+                                                {"label": "Galactic (gl, gb)", "value": "Galactic (gl, gb)"},
+                                                {"label": "Celestial (RA, DEC)", "value": "Celestial (RA, DEC)"},
+                                            ],
+                                            value="Galactic (gl, gb)",
+                                            searchable=False,
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("X (gl or RA)"),
+                                        dbc.Input(
+                                            id="x0-input",
+                                            type="text",
+                                            value="00:00:00.00",
+                                            placeholder="00:00:00.00",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Y (gb or DEC)"),
+                                        dbc.Input(
+                                            id="x1-input",
+                                            type="text",
+                                            value="00:00:00.00",
+                                            placeholder="00:00:00.00",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Button(
+                                            "Calculate",
+                                            id="calculate-button",
+                                            color="primary",
+                                            className="w-100 mt-3",
+                                            n_clicks=0,
+                                        ),
+                                    ], width=12),
+                                ]),
+                            ])
+                        ])
+                    ], width=3),
+                    # Main content
+                    dbc.Col([
                         dcc.Loading(
                             id="loading",
                             type="default",
@@ -571,71 +582,88 @@ app.layout = dbc.Container(
                                 html.Div(id="table-output"),
                             ],
                         ),
-                    ]),
-                    dbc.Tab(label="Skymap", children=[
-                        dbc.Row([
-                            dbc.Col([
-                                dbc.Label("Model"),
-                                dcc.Dropdown(
-                                    id="model-dropdown",
-                                    options=[
-                                        {"label": "NE2001", "value": "NE2001"},
-                                        {"label": "NE2025", "value": "NE2025"},
-                                        {"label": "YMW16", "value": "YMW16"},
-                                    ],
-                                    value="YMW16",
-                                    searchable=False,
-                                    style={"maxWidth": "200px"},
-                                ),
-                            ], width=3),
-                            dbc.Col([
-                                dbc.Label("Color Scale"),
-                                dcc.Dropdown(
-                                    id="colorscale-dropdown",
-                                    options=[
-                                        {"label": "Viridis", "value": "Viridis"},
-                                        {"label": "Plasma", "value": "Plasma"},
-                                        {"label": "Inferno", "value": "Inferno"},
-                                        {"label": "Magma", "value": "Magma"},
-                                        {"label": "Cividis", "value": "Cividis"},
-                                        {"label": "Hot", "value": "Hot"},
-                                        {"label": "Blues", "value": "Blues"},
-                                        {"label": "Greys", "value": "Greys"},
-                                    ],
-                                    value="Viridis",
-                                    searchable=False,
-                                    style={"maxWidth": "200px"},
-                                ),
-                            ], width=3),
-                            dbc.Col([
-                                dbc.Label("DM Min"),
-                                dbc.Input(
-                                    id="dm-min-input",
-                                    type="number",
-                                    placeholder="Auto",
-                                    style={"maxWidth": "150px"},
-                                ),
-                            ], width=3),
-                            dbc.Col([
-                                dbc.Label("DM Max"),
-                                dbc.Input(
-                                    id="dm-max-input",
-                                    type="number",
-                                    placeholder="Auto",
-                                    style={"maxWidth": "150px"},
-                                ),
-                            ], width=2),
-                            dbc.Col([
-                                dbc.Label(" "),  # Empty label for alignment
-                                dbc.Button(
-                                    "Apply",
-                                    id="skymap-apply-button",
-                                    color="primary",
-                                    className="w-100",
-                                    n_clicks=0,
-                                ),
-                            ], width=1),
-                        ], style={"marginBottom": "1rem"}, align="center"),
+                    ], width=9),
+                ], className="mt-3"),
+            ]),
+            # ── SKYMAP TAB ──────────────────────────────────────────────────
+            dbc.Tab(label="Skymap", children=[
+                dbc.Row([
+                    # Sidebar
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.H5("Settings", className="card-title"),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Model"),
+                                        dcc.Dropdown(
+                                            id="model-dropdown",
+                                            options=[
+                                                {"label": "NE2001", "value": "NE2001"},
+                                                {"label": "NE2025", "value": "NE2025"},
+                                                {"label": "YMW16", "value": "YMW16"},
+                                            ],
+                                            value="YMW16",
+                                            searchable=False,
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Color Scale"),
+                                        dcc.Dropdown(
+                                            id="colorscale-dropdown",
+                                            options=[
+                                                {"label": "Viridis", "value": "Viridis"},
+                                                {"label": "Plasma", "value": "Plasma"},
+                                                {"label": "Inferno", "value": "Inferno"},
+                                                {"label": "Magma", "value": "Magma"},
+                                                {"label": "Cividis", "value": "Cividis"},
+                                                {"label": "Hot", "value": "Hot"},
+                                                {"label": "Blues", "value": "Blues"},
+                                                {"label": "Greys", "value": "Greys"},
+                                            ],
+                                            value="Viridis",
+                                            searchable=False,
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Colorscale Min (pc/cm3)"),
+                                        dbc.Input(
+                                            id="dm-min-input",
+                                            type="number",
+                                            placeholder="Auto",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Label("Colorscale Max (pc/cm3)"),
+                                        dbc.Input(
+                                            id="dm-max-input",
+                                            type="number",
+                                            placeholder="Auto",
+                                        ),
+                                    ], width=12, className="mt-2"),
+                                ]),
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Button(
+                                            "Apply",
+                                            id="skymap-apply-button",
+                                            color="primary",
+                                            className="w-100 mt-3",
+                                            n_clicks=0,
+                                        ),
+                                    ], width=12),
+                                ]),
+                            ])
+                        ])
+                    ], width=3),
+                    # Main content
+                    dbc.Col([
                         dcc.Loading(
                             id="loading-skymap",
                             type="default",
@@ -643,12 +671,26 @@ app.layout = dbc.Container(
                                 dcc.Graph(id="skymap-output"),
                             ],
                         ),
-                    ]),
-                    dbc.Tab(label="About", children=[
-                        html.Div(style={"marginTop": "2rem"}, children=html.Div(id="notes-output")),
-                    ]),
-                ]),
-            ], width=9),
+                    ], width=9),
+                ], className="mt-3"),
+            ]),
+            # ── ABOUT TAB ───────────────────────────────────────────────────
+            dbc.Tab(label="About", children=[
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.H5("PyGEDM", className="card-title"),
+                                html.Div(id="about-info"),
+                            ])
+                        ])
+                    ], width=3),
+                    dbc.Col([
+                        html.H5("References", className="mt-2"),
+                        html.Div(id="about-refs"),
+                    ], width=9),
+                ], className="mt-3"),
+            ]),
         ]),
         html.Hr(style={"marginTop": "3rem"}),
         html.Footer(
