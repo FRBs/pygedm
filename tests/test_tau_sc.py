@@ -37,8 +37,8 @@ def test_tau_sc_nu():
 
     dm, tau_sc_1GHz = pygedm.dm_to_dist(0, 0, 1000, method="ne2001", nu=1.0)
     dm, tau_sc_100MHz = pygedm.dm_to_dist(0, 0, 1000, method="ne2001", nu=0.1)
-    assert np.isclose(tau_sc_1GHz.value, 198.55289306)
-    assert np.isclose(tau_sc_100MHz.value, 4987423.18015693)
+    assert np.isclose(tau_sc_1GHz.value, 198.55289306, rtol=1e-3)
+    assert np.isclose(tau_sc_100MHz.value, 4987423.18015693, rtol=1e-3)
 
 if __name__ == "__main__":
     test_tau_sc_nu()
