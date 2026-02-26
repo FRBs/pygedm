@@ -1,7 +1,7 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output, State, ctx, no_update
-import h5py
+import hickle as hkl
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as pgo
@@ -12,11 +12,21 @@ from astropy.coordinates import Angle, SkyCoord
 import pygedm
 
 # Load skymap data
-dskymap = h5py.File("data/skymap.h5", mode="r")
+dskymap = hkl.load('data/gedm_dist_maps.hkl')
 skymap_dist = dskymap["dist"]
 
 skymap_data_ne = xr.DataArray(
-    dskymap["ne2001/ddm"][:, ::2, ::2],
+    dskymap["ne2001"][:, ::2, ::2],
+    dims=("distance_kpc", "gb", "gl"),
+    coords={
+        "distance_kpc": skymap_dist,
+        "gl": dskymap["gl"][::2],
+        "gb": dskymap["gb"][::2],
+    },
+    attrs={"units": "DM pc/cm3"},
+)
+skymap_data_ne25 = xr.DataArray(
+    dskymap["ne2025"][:, ::2, ::2],
     dims=("distance_kpc", "gb", "gl"),
     coords={
         "distance_kpc": skymap_dist,
@@ -26,7 +36,7 @@ skymap_data_ne = xr.DataArray(
     attrs={"units": "DM pc/cm3"},
 )
 skymap_data_ymw = xr.DataArray(
-    dskymap["ymw16/ddm"][:, ::2, ::2],
+    dskymap["ymw16"][:, ::2, ::2],
     dims=("distance_kpc", "gb", "gl"),
     coords={
         "distance_kpc": skymap_dist,
@@ -233,10 +243,12 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     )
 
     # SKYMAP
-    # NE2025 uses NE2001 data for now (NE2025 skymap not yet available)
-    if model == "NE2001" or model == "NE2025":
+    if model == "NE2001":
         skymap_data = skymap_data_ne
-        skymap_model_label = "NE2001" if model == "NE2001" else "NE2001 (NE2025 skymap not yet available)"
+        skymap_model_label = "NE2001"
+    elif model == "NE2025":
+        skymap_data = skymap_data_ne25
+        skymap_model_label = "NE2025"
     else:
         skymap_data = skymap_data_ymw
         skymap_model_label = model
@@ -476,7 +488,14 @@ app.layout = dbc.Container(
     fluid=True,
     children=[
         dcc.Store(id="skymap-slider-store"),
-        html.H1("PyGEDM: Galactic Electron Density Models", className="my-4"),
+        dbc.Row([
+            dbc.Col([
+                html.Img(src="assets/logo-256px.png", style={"height": "80px"})
+            ], width="auto"),
+            dbc.Col([
+                html.H1("PyGEDM: Galactic Electron Density Models", className="my-4")
+            ], width="auto"),
+        ], align="center", className="mb-3"),
         dbc.Tabs([
             # ── OUTPUT TAB ──────────────────────────────────────────────────
             dbc.Tab(label="Output", children=[
@@ -599,11 +618,11 @@ app.layout = dbc.Container(
                                         dcc.Dropdown(
                                             id="model-dropdown",
                                             options=[
-                                                {"label": "NE2001", "value": "NE2001"},
                                                 {"label": "NE2025", "value": "NE2025"},
                                                 {"label": "YMW16", "value": "YMW16"},
+                                                {"label": "NE2001", "value": "NE2001"},
                                             ],
-                                            value="YMW16",
+                                            value="NE2025",
                                             searchable=False,
                                         ),
                                     ], width=12, className="mt-2"),
@@ -695,8 +714,8 @@ app.layout = dbc.Container(
         html.Hr(style={"marginTop": "3rem"}),
         html.Footer(
             html.P(
-                ["Web app hosted by ", html.A("Data Central", href="https://datacentral.org.au/")],
-                style={"textAlign": "center", "color": "#666", "fontSize": "0.9rem", "marginBottom": "1rem"}
+                ["Web app hosted by ", html.Img(src="assets/datacentral_logo.png", style={"height": "1.2rem", "marginRight": "0.5rem"}), html.A("Data Central", href="https://datacentral.org.au/")],
+                style={"textAlign": "center", "color": "#666", "fontSize": "0.9rem", "marginBottom": "1rem", "display": "flex", "alignItems": "center", "justifyContent": "center"}
             )
         ),
     ],

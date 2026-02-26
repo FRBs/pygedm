@@ -13,10 +13,9 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 
 # DASH APP
-# Copy local skymap.h5 if it exists, otherwise download it
+# Copy local gedm_dist_maps.hkl if it exists in app/data/
 RUN --mount=type=bind,source=.,target=/tmp/build \
-    if [ -f /tmp/build/skymap.h5 ]; then cp /tmp/build/skymap.h5 /app/data/skymap.h5; fi || true
-RUN if [ ! -f /app/data/skymap.h5 ]; then wget 'https://zenodo.org/record/5084269/files/skymap.h5?download=1' -O /app/data/skymap.h5; fi
+    if [ -f /tmp/build/data/gedm_dist_maps.hkl ]; then cp /tmp/build/data/gedm_dist_maps.hkl /app/data/gedm_dist_maps.hkl; else wget -O /app/data/gedm_dist_maps.hkl "https://zenodo.org/records/18779007/files/gedm_dist_maps.hkl?download=1"; fi || true
 
 EXPOSE 8050/tcp
 CMD ["gunicorn", "-w", "8", "-b", "0.0.0.0:8050", "app:server"]
