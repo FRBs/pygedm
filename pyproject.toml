@@ -34,7 +34,8 @@ dependencies = [
     "scipy",
     "tqdm",
     "importlib-metadata>=1.0; python_version < '3.8'",
-    "importlib-resources>=1.3; python_version < '3.9'"
+    "importlib-resources>=1.3; python_version < '3.9'",
+    "mwprop @ git+https://github.com/telegraphic/mwprop"
 ]
 
 [project.optional-dependencies]
