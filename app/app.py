@@ -489,7 +489,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     ]
 
     about_refs = [
-        html.H4("PyGEDM"),
+        html.H5("PyGEDM"),
         html.P("Price, D. C., Flynn, C., and Deller, A."),
         html.P([
             html.A(
@@ -497,7 +497,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://scixplorer.org/abs/2021PASA...38...38P/abstract",
             )
         ]),
-        html.H4("NE2001"),
+        html.H5("NE2001"),
         html.P("Cordes, J. M., & Lazio, T. J. W. (2002)"),
         html.P([
             html.A(
@@ -505,7 +505,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract"
             )
         ]),
-        html.H4("NE2025"),
+        html.H5("NE2025"),
         html.P("Ocker, S.K. and Cordes, J.M. (2026)"),
         html.P([
             html.A(
@@ -513,7 +513,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://ui.adsabs.harvard.edu/abs/2026arXiv260211838O/abstract"
             )
         ]),
-        html.H4("YMW16"),
+        html.H5("YMW16"),
         html.P("Yao, J. M., Manchester, R. N., & Wang, N. (2017)"),
         html.P([
             html.A(
@@ -760,8 +760,12 @@ app.layout = dbc.Container(
                         ])
                     ], width=3),
                     dbc.Col([
-                        html.H5("References", className="mt-2"),
-                        html.Div(id="about-refs"),
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.H4("References", className="card-title"),
+                                html.Div(id="about-refs"),
+                            ])
+                        ])
                     ], width=9),
                 ], className="mt-3"),
             ]),
