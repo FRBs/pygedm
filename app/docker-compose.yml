@@ -1,0 +1,26 @@
+services:
+  pygedm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pygedm-app
+    container_name: pygedm
+    ports:
+      - "8050:8050"
+    # Mount the data directory so the HKL file can be updated without
+    # rebuilding the image. Remove this volume if you prefer the file
+    # to be baked in at build time.
+    volumes:
+      - ./data:/app/data:ro
+    restart: unless-stopped
+    # Limit memory to prevent the container from consuming excessive RAM
+    # on the host. Adjust based on available resources.
+    mem_limit: 512m
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8050')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64.0", "wheel", "pybind11>=2.2"]
+requires = ["setuptools>=77.0", "wheel", "pybind11>=2.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "4.0.0"
 description = "Python/C++ version of NE2001, YMW16, and YT2020 electron density models"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "D. C. Price", email = "dan@thetelegraphic.com"}
 ]
@@ -16,7 +16,6 @@ keywords = ["astronomy", "radio", "pulsars", "dispersion measure"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",

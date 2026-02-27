@@ -12,6 +12,5 @@ gunicorn
 Pillow
 requests
 h5py
-hickle
 numba
 git+https://github.com/telegraphic/mwprop

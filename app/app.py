@@ -1,7 +1,20 @@
+import logging
+import sys
+import time
+
+# ── Logging setup (before any other imports so all startup is captured) ──────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    stream=sys.stdout,
+)
+logger = logging.getLogger("pygedm-app")
+logger.info("Starting pygedm web application")
+
 import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output, State, ctx, no_update
-import hickle as hkl
+import h5py
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as pgo
@@ -11,40 +24,82 @@ from astropy.coordinates import Angle, SkyCoord
 
 import pygedm
 
-# Load skymap data
-dskymap = hkl.load('data/gedm_dist_maps.hkl')
-skymap_dist = dskymap["dist"]
+logger.info("All imports completed")
 
-skymap_data_ne = xr.DataArray(
-    dskymap["ne2001"][:, ::2, ::2],
-    dims=("distance_kpc", "gb", "gl"),
-    coords={
-        "distance_kpc": skymap_dist,
-        "gl": dskymap["gl"][::2],
-        "gb": dskymap["gb"][::2],
-    },
-    attrs={"units": "DM pc/cm3"},
-)
-skymap_data_ne25 = xr.DataArray(
-    dskymap["ne2025"][:, ::2, ::2],
-    dims=("distance_kpc", "gb", "gl"),
-    coords={
-        "distance_kpc": skymap_dist,
-        "gl": dskymap["gl"][::2],
-        "gb": dskymap["gb"][::2],
-    },
-    attrs={"units": "DM pc/cm3"},
-)
-skymap_data_ymw = xr.DataArray(
-    dskymap["ymw16"][:, ::2, ::2],
-    dims=("distance_kpc", "gb", "gl"),
-    coords={
-        "distance_kpc": skymap_dist,
-        "gl": dskymap["gl"][::2],
-        "gb": dskymap["gb"][::2],
-    },
-    attrs={"units": "DM pc/cm3"},
-)
+# ── Data loading ─────────────────────────────────────────────────────────────
+DATA_PATH = "data/gedm_dist_maps.hkl"
+
+
+def load_skymap_data(path):
+    """Load skymap data from HKL file using h5py directly.
+    """
+    logger.info("Loading skymap data from %s", path)
+    t0 = time.time()
+
+    try:
+        with h5py.File(path, "r") as h:
+            if "data" not in h:
+                logger.error("HDF5 file missing 'data' group. Top-level keys: %s", list(h.keys()))
+                raise KeyError("Expected 'data' group in HDF5 file")
+
+            grp = h["data"]
+            logger.info("HDF5 data group keys: %s", list(grp.keys()))
+
+            # hickle wraps dict string keys in quotes: '"keyname"'
+            dist = grp['"dist"'][()]
+            gl = grp['"gl"'][()][::2]
+            gb = grp['"gb"'][()][::2]
+
+            # Read and downsample in one step – never holds full-res in memory
+            ne2001 = grp['"ne2001"'][:, ::2, ::2]
+            ne2025 = grp['"ne2025"'][:, ::2, ::2]
+            ymw16 = grp['"ymw16"'][:, ::2, ::2]
+
+            logger.info(
+                "Loaded arrays – ne2001: %s %s, ne2025: %s %s, ymw16: %s %s",
+                ne2001.shape, ne2001.dtype,
+                ne2025.shape, ne2025.dtype,
+                ymw16.shape, ymw16.dtype,
+            )
+
+    except FileNotFoundError:
+        logger.critical("Data file not found: %s", path)
+        raise
+    except KeyError as exc:
+        logger.critical("Missing expected key in HDF5 file: %s", exc)
+        raise
+    except Exception:
+        logger.critical("Failed to load skymap data", exc_info=True)
+        raise
+
+    nbytes = sum(a.nbytes for a in (ne2001, ne2025, ymw16, dist, gl, gb))
+    elapsed = time.time() - t0
+    logger.info("Skymap data loaded in %.2fs (%.1f MB in arrays)", elapsed, nbytes / 1024**2)
+
+    return dist, gl, gb, ne2001, ne2025, ymw16
+
+
+def _build_xarray(data, dist, gl, gb):
+    """Wrap a numpy array as an xarray DataArray."""
+    return xr.DataArray(
+        data,
+        dims=("distance_kpc", "gb", "gl"),
+        coords={"distance_kpc": dist, "gl": gl, "gb": gb},
+        attrs={"units": "DM pc/cm3"},
+    )
+
+
+try:
+    _dist, _gl, _gb, _ne2001, _ne2025, _ymw16 = load_skymap_data(DATA_PATH)
+    skymap_dist = _dist
+    skymap_data_ne = _build_xarray(_ne2001, _dist, _gl, _gb)
+    skymap_data_ne25 = _build_xarray(_ne2025, _dist, _gl, _gb)
+    skymap_data_ymw = _build_xarray(_ymw16, _dist, _gl, _gb)
+    del _ne2001, _ne2025, _ymw16, _dist, _gl, _gb  # free raw arrays
+    logger.info("xarray DataArrays built successfully")
+except Exception:
+    logger.critical("FATAL – could not initialise skymap data, exiting", exc_info=True)
+    sys.exit(1)
 
 # APP SETUP
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SPACELAB])
@@ -206,7 +261,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             sc = SkyCoord(0 * u.deg, 0 * u.deg, frame="galactic")
             coord_error = True
 
-    print(sc.galactic.l, sc.galactic.b, dmord, f)
+    logger.info("Calculating: gl=%s, gb=%s, dmord=%s, func=%s", sc.galactic.l, sc.galactic.b, dmord, f.__name__)
     dout = f(sc.galactic.l, sc.galactic.b, dmord, method=model, nu=nu)
     dout_ne = f(sc.galactic.l, sc.galactic.b, dmord, method="ne2001", nu=nu)
     dout_ne25 = f(sc.galactic.l, sc.galactic.b, dmord, method="ne2025", nu=nu)
@@ -253,7 +308,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
         skymap_data = skymap_data_ymw
         skymap_model_label = model
 
-    print(skymap_data.shape)
+    logger.debug("Selected skymap model=%s, shape=%s", skymap_model_label, skymap_data.shape)
 
     # Determine DM min/max for colorscale
     # Only reset if distance slider changed
@@ -434,7 +489,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     ]
 
     about_refs = [
-        html.H4("PyGEDM"),
+        html.H5("PyGEDM"),
         html.P("Price, D. C., Flynn, C., and Deller, A."),
         html.P([
             html.A(
@@ -442,7 +497,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://scixplorer.org/abs/2021PASA...38...38P/abstract",
             )
         ]),
-        html.H4("NE2001"),
+        html.H5("NE2001"),
         html.P("Cordes, J. M., & Lazio, T. J. W. (2002)"),
         html.P([
             html.A(
@@ -450,7 +505,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://ui.adsabs.harvard.edu/abs/2002astro.ph..7156C/abstract"
             )
         ]),
-        html.H4("NE2025"),
+        html.H5("NE2025"),
         html.P("Ocker, S.K. and Cordes, J.M. (2026)"),
         html.P([
             html.A(
@@ -458,7 +513,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
                 href="https://ui.adsabs.harvard.edu/abs/2026arXiv260211838O/abstract"
             )
         ]),
-        html.H4("YMW16"),
+        html.H5("YMW16"),
         html.P("Yao, J. M., Manchester, R. N., & Wang, N. (2017)"),
         html.P([
             html.A(
@@ -705,8 +760,12 @@ app.layout = dbc.Container(
                         ])
                     ], width=3),
                     dbc.Col([
-                        html.H5("References", className="mt-2"),
-                        html.Div(id="about-refs"),
+                        dbc.Card([
+                            dbc.CardBody([
+                                html.H4("References", className="card-title"),
+                                html.Div(id="about-refs"),
+                            ])
+                        ])
                     ], width=9),
                 ], className="mt-3"),
             ]),
