@@ -1,6 +1,4 @@
-# This workflows will upload a Python Package using Twine when a release is created.
-
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+# This workflows will upload a Python Package to PyPi
 
 name: Upload Python Package
 
@@ -13,22 +11,25 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write  # required for PyPI Trusted Publisher (OIDC)
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        sudo apt-get update 
-        sudo apt-get install gfortran build-essential git f2c pkg-config libhdf5-dev -y
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        python setup.py sdist
-        twine upload dist/*
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install gfortran build-essential git f2c pkg-config libhdf5-dev -y
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
