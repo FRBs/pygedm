@@ -173,13 +173,11 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
         )
     )
 
-    # Check if this is just a zoom/pan event - if so, don't regenerate the skymap
-    is_zoom_or_pan = False
+    # Check if this is just a zoom/pan event - if so, return immediately before any computation
     if triggered_id == 'skymap-output' and relayout_data:
-        # Check if it's a zoom/pan (contains axis ranges)
         if any(k in relayout_data for k in ['xaxis.range', 'yaxis.range', 'xaxis.range[0]', 'yaxis.range[0]',
                                               'xaxis.autorange', 'yaxis.autorange']):
-            is_zoom_or_pan = True
+            return (no_update,) * 8
 
     # Check if distance slider changed (relayoutData contains frame updates)
     reset_dm_range = False
@@ -187,7 +185,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     slider_store_out = no_update
     default_slider_idx = None
     slider_value_candidate = None
-    if relayout_data and not is_zoom_or_pan:
+    if relayout_data:
         # Check if slider.value key exists (frame changed)
         if 'slider.value' in relayout_data:
             reset_dm_range = True
@@ -542,10 +540,6 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     ]
 
     # Handle different update scenarios
-    if is_zoom_or_pan:
-        # Don't regenerate anything on zoom/pan, just let the figure handle it
-        return no_update, no_update, no_update, no_update, no_update, slider_store_out, no_update, no_update
-
     plot_out = fig if update_plot else no_update
     table_out = gedm_out if update_plot else no_update
 
