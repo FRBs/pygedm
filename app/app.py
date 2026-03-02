@@ -27,7 +27,7 @@ import pygedm
 logger.info("All imports completed")
 
 # ── Data loading ─────────────────────────────────────────────────────────────
-DATA_PATH = "data/gedm_dist_maps.hkl"
+DATA_PATH = "assets/gedm_dist_maps.hkl"
 
 
 def load_skymap_data(path):
