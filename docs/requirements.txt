@@ -2,7 +2,7 @@ pybind11
 astropy
 numpy
 recommonmark
-m2r
+m2r2
 scipy
 sphinx-rtd-theme
 git+https://github.com/telegraphic/pygedm
