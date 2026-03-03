@@ -27,56 +27,9 @@ import pygedm
 logger.info("All imports completed")
 
 # ── Data loading ─────────────────────────────────────────────────────────────
-DATA_PATH = "data/gedm_dist_maps.hkl"
+import os
+DATA_PATH = os.path.join(os.path.dirname(__file__), "assets", "gedm_dist_maps.hkl")
 
-
-def load_skymap_data(path):
-    """Load skymap data from HKL file using h5py directly.
-    """
-    logger.info("Loading skymap data from %s", path)
-    t0 = time.time()
-
-    try:
-        with h5py.File(path, "r") as h:
-            if "data" not in h:
-                logger.error("HDF5 file missing 'data' group. Top-level keys: %s", list(h.keys()))
-                raise KeyError("Expected 'data' group in HDF5 file")
-
-            grp = h["data"]
-            logger.info("HDF5 data group keys: %s", list(grp.keys()))
-
-            # hickle wraps dict string keys in quotes: '"keyname"'
-            dist = grp['"dist"'][()]
-            gl = grp['"gl"'][()][::2]
-            gb = grp['"gb"'][()][::2]
-
-            # Read and downsample in one step – never holds full-res in memory
-            ne2001 = grp['"ne2001"'][:, ::2, ::2]
-            ne2025 = grp['"ne2025"'][:, ::2, ::2]
-            ymw16 = grp['"ymw16"'][:, ::2, ::2]
-
-            logger.info(
-                "Loaded arrays – ne2001: %s %s, ne2025: %s %s, ymw16: %s %s",
-                ne2001.shape, ne2001.dtype,
-                ne2025.shape, ne2025.dtype,
-                ymw16.shape, ymw16.dtype,
-            )
-
-    except FileNotFoundError:
-        logger.critical("Data file not found: %s", path)
-        raise
-    except KeyError as exc:
-        logger.critical("Missing expected key in HDF5 file: %s", exc)
-        raise
-    except Exception:
-        logger.critical("Failed to load skymap data", exc_info=True)
-        raise
-
-    nbytes = sum(a.nbytes for a in (ne2001, ne2025, ymw16, dist, gl, gb))
-    elapsed = time.time() - t0
-    logger.info("Skymap data loaded in %.2fs (%.1f MB in arrays)", elapsed, nbytes / 1024**2)
-
-    return dist, gl, gb, ne2001, ne2025, ymw16
 
 
 def _build_xarray(data, dist, gl, gb):
@@ -89,16 +42,81 @@ def _build_xarray(data, dist, gl, gb):
     )
 
 
+# ── Skymap state ─────────────────────────────────────────────────────────────
+_current_skymap_model = None  # Name of the currently loaded skymap model
+_current_skymap_data = None   # The currently loaded xarray DataArray
+_skymap_coords = None         # Shared coordinates (loaded once)
+
+
+def _load_skymap_coords():
+    """Load and cache the shared coordinates (dist, gl, gb) - only called once."""
+    global _skymap_coords
+    if _skymap_coords is not None:
+        return _skymap_coords
+
+    logger.info("Loading skymap coordinates from %s", DATA_PATH)
+    t0 = time.time()
+    try:
+        with h5py.File(DATA_PATH, "r") as h:
+            grp = h["data"]
+            dist = grp['"dist"'][()]
+            gl = grp['"gl"'][()][::2]
+            gb = grp['"gb"'][()][::2]
+            _skymap_coords = (dist, gl, gb)
+            elapsed = time.time() - t0
+            logger.info("Skymap coordinates loaded in %.2fs (%.1f MB)", elapsed,
+                       sum(a.nbytes for a in _skymap_coords) / 1024**2)
+            return _skymap_coords
+    except Exception:
+        logger.critical("FATAL – could not load skymap coordinates", exc_info=True)
+        sys.exit(1)
+
+
+def get_skymap(model):
+    """Load skymap data for the requested model, reloading only if the model changes.
+
+    Args:
+        model (str): One of 'NE2001', 'NE2025', or 'YMW16'
+
+    Returns:
+        xarray.DataArray: The skymap for the requested model
+    """
+    global _current_skymap_model, _current_skymap_data
+
+    if model == _current_skymap_model:
+        logger.debug("Skymap model unchanged (%s), reusing loaded data", model)
+        return _current_skymap_data
+
+    model_key = f'"{model.lower()}"'
+    logger.info("Skymap model changed to %s, loading from %s", model, DATA_PATH)
+    t0 = time.time()
+
+    try:
+        dist, gl, gb = _load_skymap_coords()
+
+        with h5py.File(DATA_PATH, "r") as h:
+            grp = h["data"]
+            # Read and downsample in one step
+            data = grp[model_key][:, ::2, ::2]
+            nbytes = data.nbytes
+
+        _current_skymap_data = _build_xarray(data, dist, gl, gb)
+        _current_skymap_model = model
+        elapsed = time.time() - t0
+        logger.info("Skymap %s loaded in %.2fs (%.1f MB)", model, elapsed, nbytes / 1024**2)
+        return _current_skymap_data
+
+    except Exception:
+        logger.critical("FATAL – could not load skymap for %s", model, exc_info=True)
+        sys.exit(1)
+
+
+# Load coordinates at startup (minimal memory footprint)
 try:
-    _dist, _gl, _gb, _ne2001, _ne2025, _ymw16 = load_skymap_data(DATA_PATH)
-    skymap_dist = _dist
-    skymap_data_ne = _build_xarray(_ne2001, _dist, _gl, _gb)
-    skymap_data_ne25 = _build_xarray(_ne2025, _dist, _gl, _gb)
-    skymap_data_ymw = _build_xarray(_ymw16, _dist, _gl, _gb)
-    del _ne2001, _ne2025, _ymw16, _dist, _gl, _gb  # free raw arrays
-    logger.info("xarray DataArrays built successfully")
+    _load_skymap_coords()
+    logger.info("Skymap coordinate system initialized (lazy loading enabled)")
 except Exception:
-    logger.critical("FATAL – could not initialise skymap data, exiting", exc_info=True)
+    logger.critical("FATAL – could not initialise skymap coordinates, exiting", exc_info=True)
     sys.exit(1)
 
 # APP SETUP
@@ -155,13 +173,11 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
         )
     )
 
-    # Check if this is just a zoom/pan event - if so, don't regenerate the skymap
-    is_zoom_or_pan = False
+    # Check if this is just a zoom/pan event - if so, return immediately before any computation
     if triggered_id == 'skymap-output' and relayout_data:
-        # Check if it's a zoom/pan (contains axis ranges)
         if any(k in relayout_data for k in ['xaxis.range', 'yaxis.range', 'xaxis.range[0]', 'yaxis.range[0]',
                                               'xaxis.autorange', 'yaxis.autorange']):
-            is_zoom_or_pan = True
+            return (no_update,) * 8
 
     # Check if distance slider changed (relayoutData contains frame updates)
     reset_dm_range = False
@@ -169,7 +185,7 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     slider_store_out = no_update
     default_slider_idx = None
     slider_value_candidate = None
-    if relayout_data and not is_zoom_or_pan:
+    if relayout_data:
         # Check if slider.value key exists (frame changed)
         if 'slider.value' in relayout_data:
             reset_dm_range = True
@@ -261,11 +277,6 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             sc = SkyCoord(0 * u.deg, 0 * u.deg, frame="galactic")
             coord_error = True
 
-    logger.info("Calculating: gl=%s, gb=%s, dmord=%s, func=%s", sc.galactic.l, sc.galactic.b, dmord, f.__name__)
-    dout = f(sc.galactic.l, sc.galactic.b, dmord, method=model, nu=nu)
-    dout_ne = f(sc.galactic.l, sc.galactic.b, dmord, method="ne2001", nu=nu)
-    dout_ne25 = f(sc.galactic.l, sc.galactic.b, dmord, method="ne2025", nu=nu)
-    dout_ymw = f(sc.galactic.l, sc.galactic.b, dmord, method="ymw16", nu=nu)
 
     # Make plots
     D = np.linspace(0.1, dmord.value)
@@ -286,6 +297,11 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
             y_ne25[ii] = d_ne25[0].value
             y_ymw[ii] = d_ymw[0].value
 
+    # Reuse last loop values (at dmord) for the table output
+    dout_ne = d_ne21
+    dout_ne25 = d_ne25
+    dout_ymw = d_ymw
+
     # print(d, y)
     fig = pgo.Figure()
     fig.add_trace(pgo.Scatter(x=D, y=y_ne21, mode="lines", name="NE2001"))
@@ -299,14 +315,14 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
 
     # SKYMAP
     if model == "NE2001":
-        skymap_data = skymap_data_ne
         skymap_model_label = "NE2001"
     elif model == "NE2025":
-        skymap_data = skymap_data_ne25
         skymap_model_label = "NE2025"
     else:
-        skymap_data = skymap_data_ymw
         skymap_model_label = model
+
+    # Load only the requested skymap (lazy loading)
+    skymap_data = get_skymap(skymap_model_label)
 
     logger.debug("Selected skymap model=%s, shape=%s", skymap_model_label, skymap_data.shape)
 
@@ -524,10 +540,6 @@ def callback(n_clicks, skymap_apply_clicks, relayout_data, model, colorscale, dm
     ]
 
     # Handle different update scenarios
-    if is_zoom_or_pan:
-        # Don't regenerate anything on zoom/pan, just let the figure handle it
-        return no_update, no_update, no_update, no_update, no_update, slider_store_out, no_update, no_update
-
     plot_out = fig if update_plot else no_update
     table_out = gedm_out if update_plot else no_update
 

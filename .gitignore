@@ -13,3 +13,7 @@ ymw16.so
 build/
 dist/
 pyymw16.egg-info/
+app/gen_maps/*.hkl
+pygedm.egg-info/
+scripts/*.npy
+scripts/*.hkl

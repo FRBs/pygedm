@@ -43,7 +43,7 @@ docker compose restart
 
 ```bash
 docker build --tag pygedm_app .
-docker run -p 8050:8050 -v "$(pwd)/data:/app/data:ro" pygedm_app
+docker run -p 8050:8050 pygedm_app
 ```
 
 ## Logs

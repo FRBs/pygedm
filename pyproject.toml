@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygedm"
-version = "4.0.0"
-description = "Python/C++ version of NE2001, YMW16, and YT2020 electron density models"
+version = "4.0.1"
+description = "Python interface to NE2001, YMW16, NE2025 and YT2020 electron density models"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
