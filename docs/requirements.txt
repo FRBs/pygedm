@@ -4,4 +4,5 @@ numpy
 recommonmark
 m2r
 scipy
+sphinx-rtd-theme
 git+https://github.com/telegraphic/pygedm
