@@ -13,34 +13,8 @@
 import os
 import sys
 
-import sphinx
-from m2r import MdInclude
+from m2r2 import MdInclude
 from recommonmark.transform import AutoStructify
-
-
-def monkeypatch(cls):
-    """decorator to monkey-patch methods"""
-
-    def decorator(f):
-        method = f.__name__
-        old_method = getattr(cls, method)
-        setattr(
-            cls,
-            method,
-            lambda self, *args, **kwargs: f(old_method, self, *args, **kwargs),
-        )
-
-    return decorator
-
-
-# workaround until https://github.com/miyakogi/m2r/pull/55 is merged
-@monkeypatch(sphinx.registry.SphinxComponentRegistry)
-def add_source_parser(_old_add_source_parser, self, *args, **kwargs):
-    # signature is (parser: Type[Parser], **kwargs), but m2r expects
-    # the removed (str, parser: Type[Parser], **kwargs).
-    if isinstance(args[0], str):
-        args = args[1:]
-    return _old_add_source_parser(self, *args, **kwargs)
 
 
 sys.path.insert(0, os.path.abspath(".."))
@@ -113,4 +87,5 @@ def setup(app):
     app.add_config_value("m2r_parse_relative_links", False, "env")
     app.add_config_value("m2r_anonymous_references", False, "env")
     app.add_config_value("m2r_disable_inline_math", False, "env")
+    app.add_config_value("m2r_use_mermaid", False, "env")
     app.add_directive("mdinclude", MdInclude)
