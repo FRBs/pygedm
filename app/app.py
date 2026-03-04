@@ -120,7 +120,7 @@ except Exception:
     sys.exit(1)
 
 # APP SETUP
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SPACELAB])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SPACELAB], url_base_pathname='/pygedm/')
 app.title = "PyGEDM"
 server = app.server
 
