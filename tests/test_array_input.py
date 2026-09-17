@@ -1,8 +1,13 @@
 """Tests for numpy array input to dist_to_dm / dm_to_dist (issue #21)."""
 
 import numpy as np
+import pytest
 
 import pygedm
+
+requires_ne2001 = pytest.mark.skipif(
+    not pygedm.pygedm.HAS_NE2001, reason="ne21c not built (f2c unavailable)"
+)
 
 
 def _loop_dm_to_dist(gl, gb, dm, method):
@@ -47,6 +52,7 @@ def test_ymw16_array_dist_to_dm():
     assert np.allclose(tau.value, tau_loop, rtol=1e-5)
 
 
+@requires_ne2001
 def test_ne2001_array_dm_to_dist():
     gl = np.array([20.0, 30.0, 0.0])
     gb = np.array([-10.0, 30.0, 0.0])
@@ -60,6 +66,7 @@ def test_ne2001_array_dm_to_dist():
     assert dist.value[2] == 0.0
 
 
+@requires_ne2001
 def test_ne2001_array_dist_to_dm():
     gl = np.array([20.0, 30.0, 0.0])
     gb = np.array([-10.0, 30.0, 0.0])
@@ -73,8 +80,28 @@ def test_ne2001_array_dist_to_dm():
     assert dm.value[2] == 0.0
 
 
+@requires_ne2001
+def test_ne2001_array_full_output():
+    """full_output=True on the array path returns the raw per-field arrays."""
+    from pygedm import ne2001_wrapper
+
+    l = np.array([20.0, 30.0])
+    b = np.array([-10.0, 30.0])
+    dm = np.array([10.0, 50.0])
+    dist = np.array([1.0, 2.0])
+
+    d = ne2001_wrapper.dm_to_dist(l, b, dm, full_output=True)
+    assert set(d.keys()) >= {"dist", "sm", "smtau", "smtheta", "smiso", "tau_sc"}
+    assert len(d["dist"]) == 2
+
+    d = ne2001_wrapper.dist_to_dm(l, b, dist, full_output=True)
+    assert set(d.keys()) >= {"dm", "sm", "smtau", "smtheta", "smiso", "tau_sc"}
+    assert len(d["dm"]) == 2
+
+
 if __name__ == "__main__":
     test_ymw16_array_dm_to_dist()
     test_ymw16_array_dist_to_dm()
     test_ne2001_array_dm_to_dist()
     test_ne2001_array_dist_to_dm()
+    test_ne2001_array_full_output()
