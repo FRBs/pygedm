@@ -34,7 +34,6 @@ dependencies = [
     "tqdm",
     "importlib-metadata>=1.0; python_version < '3.8'",
     "importlib-resources>=1.3; python_version < '3.9'",
-    "mwprop @ git+https://github.com/telegraphic/mwprop"
 ]
 
 [project.optional-dependencies]
@@ -58,7 +57,12 @@ Repository = "https://github.com/frbs/pygedm"
 Documentation = "https://pygedm.readthedocs.io"
 
 [tool.setuptools]
-packages = ["pygedm"]
+packages = [
+    "pygedm",
+    "pygedm.mwprop_core",
+    "pygedm.mwprop_core.nemod",
+    "pygedm.mwprop_core.scattering_functions",
+]
 zip-safe = false
 include-package-data = true
 
@@ -72,6 +76,10 @@ pygedm = [
     "nelism.inp",
     "neclumpN.NE2001.dat",
     "nevoidN.NE2001.dat",
+]
+"pygedm.mwprop_core.nemod" = [
+    "README.txt",
+    "params/*",
 ]
 
 [tool.pytest.ini_options]
@@ -92,3 +100,4 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
+
