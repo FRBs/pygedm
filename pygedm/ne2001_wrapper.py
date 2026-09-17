@@ -114,9 +114,9 @@ def dm_to_dist(l, b, dm, nu=1.0, full_output=False):
     """Convert DM to distance and compute scattering timescale
 
     Args:
-        l (float): galactic longitude in degrees
-        b (float): galactic latitude in degrees
-        dm (floa): Dispersion measure
+        l (float or array-like): galactic longitude in degrees
+        b (float or array-like): galactic latitude in degrees
+        dm (float or array-like): Dispersion measure
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
         full_output (bool): Return full raw output (dict) from NE2001 if set to True
 
@@ -125,6 +125,18 @@ def dm_to_dist(l, b, dm, nu=1.0, full_output=False):
     """
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
+
+    if np.ndim(l_rad) > 0 or np.ndim(b_rad) > 0 or np.ndim(dm) > 0:
+        l_rad, b_rad, dm = np.broadcast_arrays(l_rad, b_rad, dm)
+        d = ne21c.dm_to_dist_arr(
+            l_rad.astype(np.float32), b_rad.astype(np.float32), np.asarray(dm, dtype=np.float32)
+        )
+        tau_sc = TAUISS(d["dist"], d["smtau"], nu=nu)
+        if not full_output:
+            return (d["dist"] * u.kpc).to("pc"), tau_sc * u.s
+        else:
+            d["tau_sc"] = tau_sc
+            return d
 
     if np.isclose(dm, 0):  # WAR Catch infinite timeout
         return 0.0 * u.pc, 0.0 * u.s
@@ -144,9 +156,9 @@ def dist_to_dm(l, b, dist, nu=1.0, full_output=False):
     """Convert distance to DM and compute scattering timescale
 
     Args:
-        l (float): galactic longitude in degrees
-        b (float): galactic latitude in degrees
-        dist (float): Distance in kpc
+        l (float or array-like): galactic longitude in degrees
+        b (float or array-like): galactic latitude in degrees
+        dist (float or array-like): Distance in kpc
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
         full_output (bool): Return full raw output (dict) from NE2001 if set to True
 
@@ -155,6 +167,18 @@ def dist_to_dm(l, b, dist, nu=1.0, full_output=False):
     """
     l_rad = np.deg2rad(l)
     b_rad = np.deg2rad(b)
+
+    if np.ndim(l_rad) > 0 or np.ndim(b_rad) > 0 or np.ndim(dist) > 0:
+        l_rad, b_rad, dist = np.broadcast_arrays(l_rad, b_rad, dist)
+        d = ne21c.dist_to_dm_arr(
+            l_rad.astype(np.float32), b_rad.astype(np.float32), np.asarray(dist, dtype=np.float32)
+        )
+        tau_sc = TAUISS(dist, d["smtau"], nu=nu)
+        if not full_output:
+            return d["dm"] * u.pc / u.cm**3, tau_sc * u.s
+        else:
+            d["tau_sc"] = tau_sc
+            return d
 
     if np.isclose(dist, 0):  # Catch infinite timeout bug
         return 0.0 * u.pc / u.cm**3, 0.0 * u.s

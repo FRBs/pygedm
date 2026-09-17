@@ -10,6 +10,7 @@ References:
 
 import os
 
+import numpy as np
 import ymw16
 from astropy import units as u
 from astropy.coordinates import Angle
@@ -30,9 +31,9 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode="gal", nu=1.0):
     """Convert a DM to a distance
 
     Args:
-        gl (float in deg or astropy.Angle): galactic longitude
-        gb (float in deg or astropy.Angle): galactic latitude
-        dm (float in pc/cm3 or astropy.Quantity): dispersion measure (pc cm^-3)
+        gl (float, array-like, or astropy.Angle): galactic longitude
+        gb (float, array-like, or astropy.Angle): galactic latitude
+        dm (float, array-like, or astropy.Quantity): dispersion measure (pc cm^-3)
         mode (str): Gal, MC, or IGM (for YMW16 only)
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
@@ -43,7 +44,14 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode="gal", nu=1.0):
     mode_id = MODE_IDS.get(mode.lower().strip())
     ndir, vbs, txt = 1, 0, ""
 
-    r = ymw16.dmdtau(gl, gb, dm, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
+    if np.ndim(gl) > 0 or np.ndim(gb) > 0 or np.ndim(dm) > 0:
+        gl_arr, gb_arr, dm_arr = np.broadcast_arrays(gl, gb, dm)
+        r = ymw16.dmdtau_arr(
+            gl_arr.astype(np.float64), gb_arr.astype(np.float64), dm_arr.astype(np.float64),
+            dm_host, ndir, mode_id, vbs, DATAPATH, txt,
+        )
+    else:
+        r = ymw16.dmdtau(gl, gb, dm, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
     if mode == "igm":
         r["dist"] *= u.Mpc
         r["tau_sc"] = r["tau_FRB"]
@@ -58,9 +66,9 @@ def dist_to_dm(gl, gb, dist, mode="gal", nu=1.0):
     """Convert a distance to a DM
 
     Args:
-        gl (float in deg or astropy.Angle): galactic longitude
-        gb (float in deg or astropy.Angle): galactic latitude
-        dist (float or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
+        gl (float, array-like, or astropy.Angle): galactic longitude
+        gb (float, array-like, or astropy.Angle): galactic latitude
+        dist (float, array-like, or astropy.Quantity): distance to source (pc) or if in mode IGM use (Mpc)
         mode (str): Gal, MC, or IGM (for YMW16 only)
         nu (float in GHz or astropy.Quantity): observing frequency (GHz)
 
@@ -70,7 +78,14 @@ def dist_to_dm(gl, gb, dist, mode="gal", nu=1.0):
     mode_id = MODE_IDS.get(mode.lower().strip())
     ndir, dm_host, vbs, txt = 2, 0, 0, ""
 
-    r = ymw16.dmdtau(gl, gb, dist, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
+    if np.ndim(gl) > 0 or np.ndim(gb) > 0 or np.ndim(dist) > 0:
+        gl_arr, gb_arr, dist_arr = np.broadcast_arrays(gl, gb, dist)
+        r = ymw16.dmdtau_arr(
+            gl_arr.astype(np.float64), gb_arr.astype(np.float64), dist_arr.astype(np.float64),
+            dm_host, ndir, mode_id, vbs, DATAPATH, txt,
+        )
+    else:
+        r = ymw16.dmdtau(gl, gb, dist, dm_host, ndir, mode_id, vbs, DATAPATH, txt)
     if mode == "igm":
         r["DM"] = r["DM_IGM"]
         r["tau_sc"] = r["tau_FRB"]
