@@ -35,7 +35,7 @@ from . import healpix_utils, ymw16_wrapper, yt2020, ne2025_wrapper
 try:
     from . import ne2001_wrapper
     HAS_NE2001 = True
-except ImportError:
+except ImportError:  # pragma: no cover -- only hit when built without f2c
     ne2001_wrapper = None
     HAS_NE2001 = False
 
