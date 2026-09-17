@@ -21,7 +21,7 @@ import ne21c
 import numpy as np
 from astropy import units as u
 
-if not hasattr(ne21c, "dm_to_dist"):
+if not hasattr(ne21c, "dm_to_dist"):  # pragma: no cover -- only hit when built without f2c
     # If the compiled extension wasn't built (e.g. f2c not found at install
     # time), the bare "ne21c" source directory can still be picked up as an
     # empty namespace package when running from a repo checkout. Treat that
