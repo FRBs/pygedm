@@ -14,9 +14,9 @@ from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
 
-from mwprop.nemod.NE2025 import ne2025
-from mwprop.nemod.NE2001 import ne2001
-from mwprop.nemod.density import density_2001
+from pygedm.mwprop_core.nemod.NE2025 import ne2025
+from pygedm.mwprop_core.nemod.NE2001 import ne2001
+from pygedm.mwprop_core.nemod.density import density_2001
 
 
 def dm_to_dist(gl, gb, dm, nu=1.0, model='ne2025', full_output=False):

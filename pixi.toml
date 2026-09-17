@@ -1,0 +1,30 @@
+[project]
+name = "pygedm"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64"]
+
+[dependencies]
+python = ">=3.10"
+pip = "*"
+setuptools = "*"
+wheel = "*"
+f2c = "*"
+pybind11 = "*"
+cxx-compiler = "*"
+astropy = "*"
+matplotlib = "*"
+numpy = "*"
+scipy = "*"
+tqdm = "*"
+
+[feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+healpy = "*"
+
+[environments]
+default = { features = [] }
+test = { features = ["test"] }
+
+[tasks]
+install = "pip install -e . --no-build-isolation"

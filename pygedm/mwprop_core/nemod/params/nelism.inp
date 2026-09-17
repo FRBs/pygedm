@@ -1,0 +1,13 @@
+parameters for local ism routine, neLISM3.f
+1.50 .750 .50 aldr, bldr, cldr
+1.36 8.06 0.0 xldr, yldr, zldr
+-24.2 0.0120 0.10 thetaldr, neldr, Fldr
+1.050 .4250 .3250 alsb, blsb, clsb
+-0.75 9.0 -0.05 xlsb, ylsb, zlsb
+139. 0.016 0.01 thetalsb, nelsb, Flsb
+.0850 .1000 .330 alhb, blhb, clhb
+0.01 8.45 0.17 xlhb, ylhb, zlhb
+15 0.005 0.01 thetalhb, nelhb, Flhb
+-0.045 8.40 0.07 xlpI ylpI zlpI
+0.120 0.060 rlpI drlpI
+0.0125 0.0125 0.2 0.01 nelpI dnelpI FlpI dFlpi

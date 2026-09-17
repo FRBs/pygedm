@@ -13,4 +13,3 @@ Pillow
 requests
 h5py
 numba
-git+https://github.com/telegraphic/mwprop
