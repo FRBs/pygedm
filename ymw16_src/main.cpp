@@ -27,8 +27,13 @@ Jumei Yao (yaojumei@xao.ac.cn), Richard N Manchester
 #include "cn.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+#include <algorithm>
+#include <limits>
 #include <map>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace py = pybind11;
 
@@ -43,6 +48,52 @@ extern std::map<std::string, float> dmdtau2(double gl, double gb, double dordm,
 
 extern std::map<std::string, float> frb_d(double DDM, double DM_Gal, double DM_MC,
        double DM_Host, int uu, int vbs, char* text);
+
+// Array-input version of dmdtau2: loops over gl/gb/dordm in C++ (avoiding a
+// Python-level loop) and returns a dict of numpy arrays, one per output key.
+// The scalar dmdtau2() can return slightly different key sets across calls
+// depending on the input values (not just ndir/np) -- e.g. DM_Gal/DM_MC are
+// only inserted along certain branches -- so we take the union of keys seen
+// across all elements and backfill missing entries with NaN.
+py::dict dmdtau_arr(py::array_t<double> gl, py::array_t<double> gb, py::array_t<double> dordm,
+       double DM_Host, int ndir, int np, int vbs, char *dirname, char *text) {
+    auto gl_buf = gl.unchecked<1>();
+    auto gb_buf = gb.unchecked<1>();
+    auto dordm_buf = dordm.unchecked<1>();
+    ssize_t n = gl_buf.shape(0);
+    if (gb_buf.shape(0) != n || dordm_buf.shape(0) != n) {
+        throw std::invalid_argument("gl, gb, and dordm must have the same shape");
+    }
+
+    std::vector<std::map<std::string, float>> results;
+    results.reserve(n);
+    for (ssize_t i = 0; i < n; i++) {
+        results.push_back(dmdtau2(gl_buf(i), gb_buf(i), dordm_buf(i), DM_Host,
+                                   ndir, np, vbs, dirname, text));
+    }
+
+    std::vector<std::string> keys;
+    for (const auto &r : results) {
+        for (const auto &kv : r) {
+            if (std::find(keys.begin(), keys.end(), kv.first) == keys.end()) {
+                keys.push_back(kv.first);
+            }
+        }
+    }
+
+    py::dict out;
+    double nan = std::numeric_limits<double>::quiet_NaN();
+    for (const auto &key : keys) {
+        py::array_t<double> arr(n);
+        auto arr_buf = arr.mutable_unchecked<1>();
+        for (ssize_t i = 0; i < n; i++) {
+            auto it = results[i].find(key);
+            arr_buf(i) = (it != results[i].end()) ? it->second : nan;
+        }
+        out[py::str(key)] = arr;
+    }
+    return out;
+}
 
 
 PYBIND11_MODULE(ymw16, m) {
@@ -100,6 +151,23 @@ m.def("dmdtau", &dmdtau2, R"pbdoc(
     Returns:
       Python dictionary with computed values.
       tsc has units of seconds.
+    )pbdoc",
+py::arg("gl"),
+py::arg("gb"),
+py::arg("dordm"),
+py::arg("DM_Host"),
+py::arg("ndir"),
+py::arg("np"),
+py::arg("vbs"),
+py::arg("dirname"),
+py::arg("text")
+);
+
+m.def("dmdtau_arr", &dmdtau_arr, R"pbdoc(
+    Array version of dmdtau. gl, gb and dordm are numpy arrays of the same
+    shape; DM_Host, ndir, np, vbs, dirname and text are shared across all
+    elements. Returns a dict of numpy arrays, one per output key (any key
+    absent for a given element is filled with NaN).
     )pbdoc",
 py::arg("gl"),
 py::arg("gb"),

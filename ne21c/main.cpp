@@ -1,10 +1,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <cmath>
 #include <stdlib.h>
 #include <stdio.h>
 #include <map>
 #include <string>
+#include <stdexcept>
 
 #ifdef __cplusplus
  extern "C" {
@@ -100,6 +102,96 @@ std::map<std::string, float> density_xyz(float x, float y, float z) {
     return result;
 }
 
+// Array versions of dm_to_dist/dist_to_dm: loop over the inputs in C++
+// (avoiding a Python-level loop) and return a dict of numpy arrays. Elements
+// with dm/dist close to zero are skipped rather than passed into the
+// Fortran-derived dmdsm_ call, which is known to hang at dm==0/dist==0 (see
+// the WAR comment in the scalar Python wrapper) -- those outputs are set to
+// 0 directly instead.
+py::dict dm_to_dist_arr(py::array_t<float> gl_rad, py::array_t<float> gb_rad, py::array_t<float> dm_arr) {
+    auto gl_buf = gl_rad.unchecked<1>();
+    auto gb_buf = gb_rad.unchecked<1>();
+    auto dm_buf = dm_arr.unchecked<1>();
+    ssize_t n = gl_buf.shape(0);
+    if (gb_buf.shape(0) != n || dm_buf.shape(0) != n) {
+        throw std::invalid_argument("gl_rad, gb_rad, and dm must have the same shape");
+    }
+
+    py::array_t<float> out_dist(n), out_sm(n), out_smtau(n), out_smtheta(n), out_smiso(n);
+    auto dist_buf = out_dist.mutable_unchecked<1>();
+    auto sm_buf = out_sm.mutable_unchecked<1>();
+    auto smtau_buf = out_smtau.mutable_unchecked<1>();
+    auto smtheta_buf = out_smtheta.mutable_unchecked<1>();
+    auto smiso_buf = out_smiso.mutable_unchecked<1>();
+
+    for (ssize_t i = 0; i < n; i++) {
+        if (std::fabs(dm_buf(i)) <= 1e-8f) {
+            dist_buf(i) = 0.0f;
+            sm_buf(i) = 0.0f;
+            smtau_buf(i) = 0.0f;
+            smtheta_buf(i) = 0.0f;
+            smiso_buf(i) = 0.0f;
+            continue;
+        }
+        std::map<std::string, float> r = dm_to_dist(gl_buf(i), gb_buf(i), dm_buf(i));
+        dist_buf(i) = r["dist"];
+        sm_buf(i) = r["sm"];
+        smtau_buf(i) = r["smtau"];
+        smtheta_buf(i) = r["smtheta"];
+        smiso_buf(i) = r["smiso"];
+    }
+
+    py::dict out;
+    out["dist"] = out_dist;
+    out["sm"] = out_sm;
+    out["smtau"] = out_smtau;
+    out["smtheta"] = out_smtheta;
+    out["smiso"] = out_smiso;
+    return out;
+}
+
+py::dict dist_to_dm_arr(py::array_t<float> gl_rad, py::array_t<float> gb_rad, py::array_t<float> dist_arr) {
+    auto gl_buf = gl_rad.unchecked<1>();
+    auto gb_buf = gb_rad.unchecked<1>();
+    auto dist_buf_in = dist_arr.unchecked<1>();
+    ssize_t n = gl_buf.shape(0);
+    if (gb_buf.shape(0) != n || dist_buf_in.shape(0) != n) {
+        throw std::invalid_argument("gl_rad, gb_rad, and dist must have the same shape");
+    }
+
+    py::array_t<float> out_dm(n), out_sm(n), out_smtau(n), out_smtheta(n), out_smiso(n);
+    auto dm_buf = out_dm.mutable_unchecked<1>();
+    auto sm_buf = out_sm.mutable_unchecked<1>();
+    auto smtau_buf = out_smtau.mutable_unchecked<1>();
+    auto smtheta_buf = out_smtheta.mutable_unchecked<1>();
+    auto smiso_buf = out_smiso.mutable_unchecked<1>();
+
+    for (ssize_t i = 0; i < n; i++) {
+        if (std::fabs(dist_buf_in(i)) <= 1e-8f) {
+            dm_buf(i) = 0.0f;
+            sm_buf(i) = 0.0f;
+            smtau_buf(i) = 0.0f;
+            smtheta_buf(i) = 0.0f;
+            smiso_buf(i) = 0.0f;
+            continue;
+        }
+        std::map<std::string, float> r = dist_to_dm(gl_buf(i), gb_buf(i), dist_buf_in(i));
+        dm_buf(i) = r["dm"];
+        sm_buf(i) = r["sm"];
+        smtau_buf(i) = r["smtau"];
+        smtheta_buf(i) = r["smtheta"];
+        smiso_buf(i) = r["smiso"];
+    }
+
+    py::dict out;
+    out["dm"] = out_dm;
+    out["sm"] = out_sm;
+    out["smtau"] = out_smtau;
+    out["smtheta"] = out_smtheta;
+    out["smiso"] = out_smiso;
+    return out;
+}
+
 PYBIND11_MODULE(ne21c, m) {
     m.doc() = R"pbdoc(ne21c -- python bindings to C port of NE2001.
     The program NE2001 computes distances for Galactic pulsars, Magellanic Cloud pulsars,
@@ -127,6 +219,17 @@ PYBIND11_MODULE(ne21c, m) {
     py::arg("dm")
     );
 
+    m.def("dm_to_dist_arr", &dm_to_dist_arr, R"pbdoc(
+    Array version of dm_to_dist. gl_rad, gb_rad and dm are numpy arrays of
+    the same shape. Elements with dm close to zero are returned as all-zero
+    rows rather than evaluated (avoids a known hang in the underlying model
+    at dm==0). Returns a dict of numpy arrays.
+    )pbdoc",
+    py::arg("gl_rad"),
+    py::arg("gb_rad"),
+    py::arg("dm")
+    );
+
     m.def("dist_to_dm", &dist_to_dm, R"pbdoc(
     Convert a distance in kpc to a DM estimate 
 
@@ -142,7 +245,18 @@ PYBIND11_MODULE(ne21c, m) {
     py::arg("gb_rad"),
     py::arg("dist")
     );
-    
+
+    m.def("dist_to_dm_arr", &dist_to_dm_arr, R"pbdoc(
+    Array version of dist_to_dm. gl_rad, gb_rad and dist are numpy arrays of
+    the same shape. Elements with dist close to zero are returned as all-zero
+    rows rather than evaluated (avoids a known hang in the underlying model
+    at dist==0). Returns a dict of numpy arrays.
+    )pbdoc",
+    py::arg("gl_rad"),
+    py::arg("gb_rad"),
+    py::arg("dist")
+    );
+
     m.def("density_xyz", &density_xyz, R"pbdoc(
     Compute electron density at galactocentric coordinates (X, Y, Z)
     

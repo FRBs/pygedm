@@ -129,9 +129,10 @@ def dist_to_dm(gl, gb, dist, mode="gal", method="ymw16", nu=1.0):
         dist = _unit_convert(dist, "pc")
 
     # Catch NE2001 crash if dist too large
-    if _unit_convert(dist, "pc") >= 100000:
-        dist = 50000
+    too_far = np.asarray(dist) >= 100000
+    if np.any(too_far):
         warnings.warn("Distance too large, setting to 50 kpc.", UserWarning)
+        dist = np.where(too_far, 50000, dist) if np.ndim(dist) > 0 else 50000
 
     nu = _unit_convert(nu, "GHz")
 
