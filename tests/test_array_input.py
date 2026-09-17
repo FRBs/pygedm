@@ -99,9 +99,59 @@ def test_ne2001_array_full_output():
     assert len(d["dm"]) == 2
 
 
+@pytest.mark.parametrize("method", ["ne2025", "ne2001p"])
+def test_ne2025_array_dm_to_dist(method):
+    gl = np.array([20.0, 30.0, 0.0])
+    gb = np.array([-10.0, 30.0, 0.0])
+    dm = np.array([10.0, 50.0, 0.0])  # zero DM element exercises the "spline failure" guard
+
+    dist, tau = pygedm.dm_to_dist(gl, gb, dm, method=method)
+    dist_loop, tau_loop = _loop_dm_to_dist(gl, gb, dm, method=method)
+
+    assert np.allclose(dist.value, dist_loop, rtol=1e-5)
+    assert np.allclose(tau.value, tau_loop, rtol=1e-5)
+    assert dist.value[2] == 0.0
+
+
+@pytest.mark.parametrize("method", ["ne2025", "ne2001p"])
+def test_ne2025_array_dist_to_dm(method):
+    gl = np.array([20.0, 30.0, 0.0])
+    gb = np.array([-10.0, 30.0, 0.0])
+    dist = np.array([100.0, 200.0, 0.0])  # zero distance element exercises the "spline failure" guard
+
+    dm, tau = pygedm.dist_to_dm(gl, gb, dist, method=method)
+    dm_loop, tau_loop = _loop_dist_to_dm(gl, gb, dist, method=method)
+
+    assert np.allclose(dm.value, dm_loop, rtol=1e-5)
+    assert np.allclose(tau.value, tau_loop, rtol=1e-5)
+    assert dm.value[2] == 0.0
+
+
+def test_ne2025_array_full_output():
+    """full_output=True on the array path returns a list of per-element dicts."""
+    from pygedm import ne2025_wrapper
+
+    gl = np.array([20.0, 30.0])
+    gb = np.array([-10.0, 30.0])
+    dm = np.array([10.0, 50.0])
+    dist = np.array([100.0, 200.0])
+
+    results = ne2025_wrapper.dm_to_dist(gl, gb, dm, full_output=True)
+    assert isinstance(results, list) and len(results) == 2
+    assert all("tau_sc" in r for r in results)
+
+    results = ne2025_wrapper.dist_to_dm(gl, gb, dist, full_output=True)
+    assert isinstance(results, list) and len(results) == 2
+    assert all("tau_sc" in r for r in results)
+
+
 if __name__ == "__main__":
     test_ymw16_array_dm_to_dist()
     test_ymw16_array_dist_to_dm()
     test_ne2001_array_dm_to_dist()
     test_ne2001_array_dist_to_dm()
     test_ne2001_array_full_output()
+    for _method in ("ne2025", "ne2001p"):
+        test_ne2025_array_dm_to_dist(_method)
+        test_ne2025_array_dist_to_dm(_method)
+    test_ne2025_array_full_output()

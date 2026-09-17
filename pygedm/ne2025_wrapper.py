@@ -23,18 +23,34 @@ def dm_to_dist(gl, gb, dm, nu=1.0, model='ne2025', full_output=False):
     """Convert a DM to a distance
 
     Args:
-        gl (float in deg): galactic longitude
-        gb (float in deg): galactic latitude
-        dm (float in pc/cm3): dispersion measure (pc cm^-3)
+        gl (float or array-like, in deg): galactic longitude
+        gb (float or array-like, in deg): galactic latitude
+        dm (float or array-like, in pc/cm3): dispersion measure (pc cm^-3)
         nu (float in GHz): Observing frequency
         model (str): One of 'ne2001' or 'ne2025'
 
     Notes:
         In this wrapper, 'ne2001' == 'ne2001p'.
+        ne2025/ne2001p are pure-Python models with no C-level vectorized path,
+        so array input is handled by looping over elements here. If
+        full_output=True and array input is given, a list of per-element
+        output dicts is returned instead of a single dict.
 
     Returns:
         dist (astropy.Quantity), tau_sc (astropy.Quantity): distance (pc) and scattering time scale (s)
     """
+    if np.ndim(gl) > 0 or np.ndim(gb) > 0 or np.ndim(dm) > 0:
+        gl_arr, gb_arr, dm_arr = np.broadcast_arrays(gl, gb, dm)
+        results = [
+            dm_to_dist(float(gl_i), float(gb_i), float(dm_i), nu=nu, model=model, full_output=full_output)
+            for gl_i, gb_i, dm_i in zip(gl_arr.ravel(), gb_arr.ravel(), dm_arr.ravel())
+        ]
+        if full_output:
+            return results
+        dist = np.array([r[0].value for r in results]).reshape(gl_arr.shape) * results[0][0].unit
+        tau_sc = np.array([r[1].value for r in results]).reshape(gl_arr.shape) * results[0][1].unit
+        return dist, tau_sc
+
     if np.isclose(dm, 0):  # WAR Catch spline failure
         return 0.0 * u.pc, 0.0 * u.s
     else:
@@ -57,18 +73,34 @@ def dist_to_dm(gl, gb, dist, nu=1.0, model='ne2025', full_output=False):
     """Convert a DM to a distance
 
     Args:
-        gl (float in deg): galactic longitude
-        gb (float in deg): galactic latitude
-        dist (float in pc/cm3): dispersion measure (pc cm^-3)
+        gl (float or array-like, in deg): galactic longitude
+        gb (float or array-like, in deg): galactic latitude
+        dist (float or array-like, in pc/cm3): dispersion measure (pc cm^-3)
         nu (float in GHz): Observing frequency
         model (str): One of 'ne2001' or 'ne2025'
 
     Notes:
         In this wrapper, 'ne2001' == 'ne2001p'.
+        ne2025/ne2001p are pure-Python models with no C-level vectorized path,
+        so array input is handled by looping over elements here. If
+        full_output=True and array input is given, a list of per-element
+        output dicts is returned instead of a single dict.
 
     Returns:
         dist (kpc), tau_sc (astropy.Quantity): distance (pc) and scattering time scale (s)
     """
+    if np.ndim(gl) > 0 or np.ndim(gb) > 0 or np.ndim(dist) > 0:
+        gl_arr, gb_arr, dist_arr = np.broadcast_arrays(gl, gb, dist)
+        results = [
+            dist_to_dm(float(gl_i), float(gb_i), float(dist_i), nu=nu, model=model, full_output=full_output)
+            for gl_i, gb_i, dist_i in zip(gl_arr.ravel(), gb_arr.ravel(), dist_arr.ravel())
+        ]
+        if full_output:
+            return results
+        dm = np.array([r[0].value for r in results]).reshape(gl_arr.shape) * results[0][0].unit
+        tau_sc = np.array([r[1].value for r in results]).reshape(gl_arr.shape) * results[0][1].unit
+        return dm, tau_sc
+
     if np.isclose(dist, 0):  # WAR Catch spline failure
         return 0.0 * u.pc, 0.0 * u.s
     else:
