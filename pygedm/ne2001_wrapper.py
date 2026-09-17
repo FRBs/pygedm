@@ -21,6 +21,13 @@ import ne21c
 import numpy as np
 from astropy import units as u
 
+if not hasattr(ne21c, "dm_to_dist"):
+    # If the compiled extension wasn't built (e.g. f2c not found at install
+    # time), the bare "ne21c" source directory can still be picked up as an
+    # empty namespace package when running from a repo checkout. Treat that
+    # the same as the extension being missing.
+    raise ImportError("ne21c compiled extension not found (only the source directory is present)")
+
 DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
