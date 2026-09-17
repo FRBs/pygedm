@@ -21,8 +21,15 @@ def test_raises():
         pygedm.dist_to_dm(100, 10, 100, mode="igm", method="ne2001")
     with pytest.raises(RuntimeError):
         pygedm.convert_lbr_to_xyz(0, 0, 0, method="chicken")
-    with pytest.warns(UserWarning):
-        pygedm.dist_to_dm(0, 0, 555555, method="ne2001")
+    if pygedm.pygedm.HAS_NE2001:
+        with pytest.warns(UserWarning):
+            pygedm.dist_to_dm(0, 0, 555555, method="ne2001")
+    else:
+        # Without the compiled ne21c extension, the distance is still
+        # clamped (and warned about) before the missing-extension
+        # RuntimeError is raised.
+        with pytest.warns(UserWarning), pytest.raises(RuntimeError):
+            pygedm.dist_to_dm(0, 0, 555555, method="ne2001")
 
 
 if __name__ == "__main__":
