@@ -8,6 +8,8 @@
 import os
 import sys
 import tempfile
+import warnings
+from distutils.ccompiler import new_compiler
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
@@ -32,6 +34,42 @@ class get_pybind_include(object):
 
 prefix = os.environ.get("CONDA_PREFIX")
 
+
+def have_f2c(include_dirs, library_dirs):
+    """Check whether f2c.h and libf2c are available, so we can build ne21c.
+
+    NE2001 is the only extension that needs f2c, and f2c isn't on PyPI, so
+    we skip building it (rather than failing the whole install) when f2c
+    isn't present.
+    """
+    compiler = new_compiler()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        src = os.path.join(tmpdir, "f2c_check.c")
+        with open(src, "w") as f:
+            f.write('#include "f2c.h"\nint main(void) { return 0; }\n')
+        try:
+            objs = compiler.compile([src], output_dir=tmpdir, include_dirs=include_dirs)
+            compiler.link_executable(
+                objs, "f2c_check", output_dir=tmpdir, library_dirs=library_dirs, libraries=["f2c"]
+            )
+            return True
+        except Exception:
+            return False
+
+
+ne21c_include_dirs = [
+    os.path.join(__here__, "ne21c"),
+    f"{prefix}/include" if prefix else "/usr/include",
+]
+ne21c_library_dirs = [f"{prefix}/lib"] if prefix else []
+
+HAS_F2C = have_f2c(ne21c_include_dirs, ne21c_library_dirs)
+if not HAS_F2C:
+    warnings.warn(
+        "f2c not found -- skipping the ne21c extension. pygedm will install "
+        "without method='ne2001' support; use method='ne2001p' or 'ne2025' "
+        "instead, or install f2c and reinstall pygedm for the compiled NE2001."
+    )
 
 ext_modules = [
     Extension(
@@ -63,24 +101,27 @@ ext_modules = [
         extra_link_args=["-lm"],
         language="c++",
     ),
-    Extension(
-        "ne21c",
-        sources=[
-            "ne21c/main.cpp",
-        ],
-        include_dirs=[
-            # Path to pybind11 headers
-            get_pybind_include(),
-            get_pybind_include(user=True),
-            os.path.join(__here__, "ne21c"),
-            f"{prefix}/include" if prefix else "/usr/include",
-        ],
-        library_dirs=[f"{prefix}/lib"] if prefix else [],
-        extra_compile_args=["-Wno-write-strings"],
-        extra_link_args=["-lm", "-lf2c"],
-        language="c++",
-    ),
 ]
+
+if HAS_F2C:
+    ext_modules.append(
+        Extension(
+            "ne21c",
+            sources=[
+                "ne21c/main.cpp",
+            ],
+            include_dirs=[
+                # Path to pybind11 headers
+                get_pybind_include(),
+                get_pybind_include(user=True),
+                *ne21c_include_dirs,
+            ],
+            library_dirs=ne21c_library_dirs,
+            extra_compile_args=["-Wno-write-strings"],
+            extra_link_args=["-lm", "-lf2c"],
+            language="c++",
+        )
+    )
 
 
 def has_flag(compiler, flagname):

@@ -6,6 +6,10 @@ from astropy.units import Quantity, Unit
 
 import pygedm
 
+pytestmark = pytest.mark.skipif(
+    not pygedm.pygedm.HAS_NE2001, reason="ne21c not built (f2c unavailable)"
+)
+
 
 def test_dm_to_dist():
     """Test that astropy units / angles work with dm_to_dist"""

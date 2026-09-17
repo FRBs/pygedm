@@ -46,3 +46,23 @@ jobs:
         file: ./coverage.xml
         name: codecov-umbrella
         fail_ci_if_error: true
+
+  build-no-f2c:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies (no f2c)
+      run: |
+        sudo apt-get update
+        sudo apt-get install build-essential git pkg-config libhdf5-dev -y
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov healpy
+        pip install .
+    - name: Test with pytest (ne2001 tests should be skipped)
+      run: |
+        pytest tests/

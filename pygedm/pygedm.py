@@ -30,11 +30,24 @@ from astropy.units import Quantity, Unit
 
 from tqdm import tqdm
 
-from . import healpix_utils, ne2001_wrapper, ymw16_wrapper, yt2020, ne2025_wrapper
+from . import healpix_utils, ymw16_wrapper, yt2020, ne2025_wrapper
+
+try:
+    from . import ne2001_wrapper
+    HAS_NE2001 = True
+except ImportError:  # pragma: no cover -- only hit when built without f2c
+    ne2001_wrapper = None
+    HAS_NE2001 = False
 
 HAS_HEALPIX = healpix_utils.check_for_healpix_install()
 if HAS_HEALPIX:
     import healpy as hp
+
+_NE2001_MISSING_MSG = (
+    "method='ne2001' requires the compiled ne21c/f2c extension, which is not "
+    "installed. Use method='ne2001p' or 'ne2025' for a pure-Python NE2001-equivalent, "
+    "or install f2c and reinstall pygedm."
+)
 
 
 def _gl_gb_convert(gl, gb, unit="rad"):
@@ -85,6 +98,8 @@ def dm_to_dist(gl, gb, dm, dm_host=0, mode="gal", method="ymw16", nu=1.0):
         elif method.lower() == 'ne2001p':
             return ne2025_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu, model='ne2001p')
         else:
+            if not HAS_NE2001:
+                raise RuntimeError(_NE2001_MISSING_MSG)
             return ne2001_wrapper.dm_to_dist(gl, gb, dm - dm_host, nu=nu)
     elif method.lower() == "ymw16":
         return ymw16_wrapper.dm_to_dist(gl, gb, dm, dm_host=0, mode=mode, nu=nu)
@@ -127,6 +142,8 @@ def dist_to_dm(gl, gb, dist, mode="gal", method="ymw16", nu=1.0):
             raise RuntimeError("NE2001 only supports Galactic (gal) mode.")
         dist_kpc = dist / 1000.0
         if method.lower() == 'ne2001':
+            if not HAS_NE2001:
+                raise RuntimeError(_NE2001_MISSING_MSG)
             return ne2001_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu)
         elif method.lower() == "ne2001p":
             return ne2025_wrapper.dist_to_dm(gl, gb, dist_kpc, nu=nu, model='ne2001p')
@@ -154,6 +171,8 @@ def calculate_electron_density_xyz(x, y, z, method="ymw16"):
     if method.lower() == "ymw16":
         return ymw16_wrapper.calculate_electron_density_xyz(x, y, z)
     elif method.lower() == "ne2001":
+        if not HAS_NE2001:
+            raise RuntimeError(_NE2001_MISSING_MSG)
         return ne2001_wrapper.calculate_electron_density_xyz(x / 1e3, y / 1e3, z / 1e3)
     elif method.lower() == "ne2025":
         return ne2025_wrapper.calculate_electron_density_xyz(x / 1e3, y / 1e3, z / 1e3)
@@ -178,6 +197,8 @@ def calculate_electron_density_lbr(gl, gb, dist, method="ymw16"):
     if method.lower() == "ymw16":
         return ymw16_wrapper.calculate_electron_density_lbr(gl, gb, dist)
     elif method.lower() == "ne2001":
+        if not HAS_NE2001:
+            raise RuntimeError(_NE2001_MISSING_MSG)
         x, y, z = convert_lbr_to_xyz(gl, gb, dist, method="ne2001")
         return ne2001_wrapper.calculate_electron_density_xyz(
             x.to("kpc").value, y.to("kpc").value, z.to("kpc").value

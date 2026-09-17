@@ -1,9 +1,14 @@
 import astropy.units as u
 import numpy as np
+import pytest
 from astropy.coordinates import Angle
 from astropy.units import Quantity, Unit
 
 import pygedm
+
+pytestmark = pytest.mark.skipif(
+    not pygedm.pygedm.HAS_NE2001, reason="ne21c not built (f2c unavailable)"
+)
 
 
 def test_tau_sc_nu():
