@@ -71,8 +71,13 @@ print(tau_sc.to('ns'))
 
 ### Installation
 
-Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work), plus `f2c`.
+Requires `pybind11`, `astropy`, `numpy`, `scipy`, a newish C compiler with C++11 support (Ubuntu 16.04+ default gcc will work).
 
+`f2c` is optional: it's only needed to build the compiled NE2001 extension (`method='ne2001'`).
+If `f2c` isn't found at install time, pygedm still installs fine (with `ymw16`, `ne2025`,
+and the pure-Python `'ne2001p'` NE2001-equivalent all available); calling `method='ne2001'`
+will raise a `RuntimeError` telling you to use `'ne2001p'`/`'ne2025'` instead, or to install
+`f2c` and reinstall pygedm.
 
 Basic installation is via `pip`:
 
