@@ -90,7 +90,7 @@ minversion = "6.0"
 
 [tool.coverage.run]
 source = ["pygedm"]
-omit = ["*/tests/*", "*/test_*.py"]
+omit = ["*/tests/*", "*/test_*.py", "*/mwprop_core/*"]
 
 [tool.coverage.report]
 exclude_lines = [
