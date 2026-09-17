@@ -29,6 +29,7 @@ classifiers = [
 dependencies = [
     "pybind11>=2.2",
     "astropy",
+    "matplotlib",
     "numpy",
     "scipy",
     "tqdm",
